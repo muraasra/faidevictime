@@ -1,0 +1,21 @@
+<script setup lang="ts">
+
+</script>
+
+<template>
+  <div class="flex min-h-screen">
+    <main class="w-full flex h-full">
+      <SectionsCollectSidebar />
+      <div class="flex-1 h-full pl-0 md:pl-[200px] pb-10">
+        <SectionsCollectMainHeaderRoot />
+
+        <slot />
+        
+      </div>
+    </main>
+
+  </div>
+  <footer>
+    <AppFooter />
+  </footer>
+</template>
