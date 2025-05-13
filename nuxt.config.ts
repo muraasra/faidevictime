@@ -4,7 +4,7 @@ export default defineNuxtConfig({
       '@nuxtjs/color-mode',
       '@nuxt/image',
       '@pinia/nuxt',
-      '@unocss/nuxt',
+       
   ], 
   runtimeConfig: {
     public: {
