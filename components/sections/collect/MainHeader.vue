@@ -58,21 +58,6 @@ function handleLogout() {
   </button>
             </li>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            
           </ul>
         
       </div>
