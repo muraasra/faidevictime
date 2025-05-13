@@ -17,11 +17,11 @@ const navLinks = [
         href: "/services"
     },
     {
-        text: "Formations",
+        text: "Sensibilisations",
         href: "/formations"
     },
     {
-        text: "Tarifs",
+        text: "Chatbot",
         href: "/tarification"
     },
     {
@@ -42,7 +42,7 @@ const navLinks = [
                             <img src="/ico.png" width="40" alt="avatar"
                                     class="w-10 h-10 rounded-full border-2 border-white dark:border-gray-400 object-cover">
                         </span>
-                        <span class="text-lg text-gray-700 dark:text-white">Compta-ka</span>
+                        <span class="text-lg text-gray-700 dark:text-white">VictiSafe</span>
                     </NuxtLink>
                 </div>
                 <div 
@@ -67,7 +67,7 @@ const navLinks = [
                         -->
                         
                         <AtomsLinkBtn href="/quote" variant="primary">
-                            Obtenir un devis
+                            Discutez avec nous!
                         </AtomsLinkBtn>
                     </div>
 

@@ -2,6 +2,8 @@
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { NAVIGATION_ITEMS } from "~/constants";
 
+
+
 // État pour gérer la position de la sidebar
 const isFixed = ref(true);
 

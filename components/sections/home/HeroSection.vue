@@ -33,7 +33,7 @@
 
                     <div class="flex items-center gap-3 pt-9 flex-col sm:flex-row sm:w-max sm:mx-auto lg:mx-0">
                         <AtomsLinkBtn href="/about" variant="primary" class="w-full sm:w-max flex justify-center">
-                            Nous contacter
+                           Recherchez un services 
                         </AtomsLinkBtn>
 
                         <AtomsLinkBtn href="#" variant="costum" costum-span-class="px-6 md:px-7 hover:bg-primary/10"

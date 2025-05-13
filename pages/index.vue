@@ -1,8 +1,8 @@
 <script setup lang="ts">
 useHead({
-  title: 'Compta-ka - Home',
+  title: 'VictiSafe - Home',
   meta: [
-    { name: 'description', content: 'Podux Podcast landing page website.' },
+  { name: 'description', content: 'Plateforme d\'assistante au victime.' },
   ],
   link: [
     { rel: 'icon', type: 'image/png', href: '/ico.png' }

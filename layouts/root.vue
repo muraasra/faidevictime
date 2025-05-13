@@ -7,7 +7,7 @@
     <main class="w-full flex h-full">
       <SectionsCollectSidebar />
       <div class="flex-1 h-full pl-0 md:pl-[200px] pb-10">
-        <SectionsCollectMainHeaderRoot />
+        <SectionsCollectMainHeader />
 
         <slot />
         
@@ -16,6 +16,6 @@
 
   </div>
   <footer>
-    <AppFooter />
+    <!--<AppFooter />-->
   </footer>
 </template>

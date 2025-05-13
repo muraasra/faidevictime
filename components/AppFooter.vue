@@ -8,7 +8,7 @@
                             <img src="/ico.png" width="40" alt="avatar"
                                     class="w-10 h-10 rounded-full border-2 border-white dark:border-gray-400 object-cover">
                         </span>
-                        <span class="text-xl font-bold text-gray-700 dark:text-white">Compta-ka</span>
+                        <span class="text-xl font-bold text-gray-700 dark:text-white">VictiSafe</span>
                     </NuxtLink>
 
                     <p class="text-gray-600 dark:text-gray-300 pt-6">
@@ -27,7 +27,7 @@
                 <div class="flex justify-between items-center gap-5 text-gray-600 dark:text-gray-300">
                     <div class="">
                         &copy; {{ new Date().getFullYear() }} © 2024 Tous droits réservés. Conçu par  <NuxtLink target="_blank"
-                            to="https://itia-consulting.com" class="font-bold text-primary">Itia-consulting</NuxtLink>
+                            to="https://portfoliotayou.vercel.app" class="font-bold text-primary">Wilfried Tayou's, Developpeur fullstack</NuxtLink>
                     </div>
 
                     <div class="flex items-center gap-x-3">

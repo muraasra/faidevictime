@@ -1,7 +1,6 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: "root",
-});
+definePageMeta({layout: "root"});
+
 // pages/profil.vue
 
 import { ref } from "vue";
