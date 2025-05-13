@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import SectionsCollectSidebar from "~/components/sections/collect/Sidebar.vue";
+import SectionsCollectMainHeader from "~/components/sections/collect/MainHeader.vue";
 
 </script>
 

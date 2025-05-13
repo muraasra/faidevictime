@@ -57,6 +57,7 @@ function handleLogout() {
     Se déconnecter
   </button>
             </li>
+
           </ul>
         
       </div>
