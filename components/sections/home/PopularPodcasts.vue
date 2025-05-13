@@ -16,84 +16,76 @@
         <AtomsContainer class-name="relative">
             <div class="flex justify-between pb-6 relative">
                 <div class="">
-                    <AtomsTitle texte="Popular podcast" />
+                    <AtomsTitle texte="sensibilisations" />
                 </div>
                 <div class="flex items-center min-w-max gap-5">
-                    <AtomsLinkBtn href="#" variant="primary">
-                        See all
+                    <AtomsLinkBtn href="/sensibilisations" variant="primary">
+                        Voir plus
                     </AtomsLinkBtn>
                 </div>
             </div>
             <div
                 class="grid grid-cols-2 items-stretch sm:grid-cols-3 lg:grid-cols-4 gap-x-3 gap-y-10 sm:gap-x-5 sm:gap-y-8">
 
-                <CardsPodCast title="Start your journey in SEO" 
+                <CardsPodCast title="Violences basées sur le genre " 
                     href="#" 
-                    duration="24min"
-                    cover-image="/images/podCast.webp" 
+                    cover-image="/images/femme-affaires-asiatique-serieuse-donnant-presentation-equipe-multiraciale-tableau-feuilles-mobiles_1163-4630.avif" 
                     category="" 
                     created-at=""
                     description="Lorem ipsum dolor sit amet,  voluptates porro" 
                 />
 
-                <CardsPodCast title="Start your journey in SEO" 
+                <CardsPodCast title="Stop aux violences ! " 
                     href="#" 
-                    duration="24min"
-                    cover-image="/images/podCast.webp" 
+                    cover-image="/images/femme-affaires-asiatique-serieuse-donnant-presentation-equipe-multiraciale-tableau-feuilles-mobiles_1163-4630.avif" 
                     category="" 
                     created-at=""
                     description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae voluptates porro" 
                 />
 
-                <CardsPodCast title="Start your journey in SEO" 
+                <CardsPodCast title="Briser les silences" 
                     href="#" 
-                    duration="24min"
-                    cover-image="/images/podCast.webp" 
+                    cover-image="/images/femme-affaires-asiatique-serieuse-donnant-presentation-equipe-multiraciale-tableau-feuilles-mobiles_1163-4630.avif" 
                     category="" 
                     created-at=""
                     description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae voluptates porro" 
                 />
 
-                <CardsPodCast title="Start your journey in SEO" 
+                <CardsPodCast title="Lutter contre les violences" 
                     href="#" 
-                    duration="24min"
-                    cover-image="/images/podCast.webp" 
+                    cover-image="/images/femme-affaires-asiatique-serieuse-donnant-presentation-equipe-multiraciale-tableau-feuilles-mobiles_1163-4630.avif" 
                     category="" 
                     created-at=""
                     description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae voluptates porro" 
                 />
 
-                <CardsPodCast title="Start your journey in SEO" 
+                <CardsPodCast title="Plaidoyer pour l’égalité" 
                     href="#" 
-                    duration="24min"
-                    cover-image="/images/podCast.webp" 
+                    cover-image="/images/femme-affaires-asiatique-serieuse-donnant-presentation-equipe-multiraciale-tableau-feuilles-mobiles_1163-4630.avif" 
                     category="" 
                     created-at=""
                     description="Lorem ipsum dolor sit amet,  voluptates porro" 
                 />
 
-                <CardsPodCast title="Start your journey in SEO" 
+                <CardsPodCast title="Vers une société sans violence " 
                     href="#" 
-                    duration="24min"
-                    cover-image="/images/podCast.webp" 
+                    cover-image="/images/femme-affaires-asiatique-serieuse-donnant-presentation-equipe-multiraciale-tableau-feuilles-mobiles_1163-4630.avif" 
                     category="" 
                     created-at=""
                     description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae voluptates porro" 
                 />
 
-                <CardsPodCast title="Start your journey in SEO" 
+                <CardsPodCast title="Réduire les inégalités, combattre les violences" 
                     href="#" 
-                    duration="24min"
-                    cover-image="/images/podCast.webp" 
+                    cover-image="/images/femme-affaires-asiatique-serieuse-donnant-presentation-equipe-multiraciale-tableau-feuilles-mobiles_1163-4630.avif" 
                     category="" 
                     created-at=""
                     description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae voluptates porro" 
                 />
 
-                <CardsPodCast title="Start your journey in SEO" 
+                <CardsPodCast title="Éduquer, prévenir, agir " 
                     href="#" 
-                    duration="24min"
-                    cover-image="/images/podCast.webp" 
+                    cover-image="/images/femme-affaires-asiatique-serieuse-donnant-presentation-equipe-multiraciale-tableau-feuilles-mobiles_1163-4630.avif" 
                     category="" 
                     created-at=""
                     description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae voluptates porro" 

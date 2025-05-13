@@ -7,7 +7,7 @@
                 </div>
                 <div class="flex items-center min-w-max relative">
                     <AtomsLinkBtn href="#" variant="primary">
-                        Explore more
+                        Voir plus
                     </AtomsLinkBtn>
                 </div>
             </div>

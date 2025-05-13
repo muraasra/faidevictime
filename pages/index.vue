@@ -12,10 +12,10 @@ useHead({
 <template>
     <div>
         <SectionsHomeHeroSection/>
-        <SectionsHomeLatestPodcast/>
-        <SectionsHomePopularPodcasts/>
         <SectionsAboutPodux/>
         <SectionsWhyUs/>
+        <!-- <SectionsHomeLatestPodcast/> -->
+        <SectionsHomePopularPodcasts/>
         <SectionsCallToAction/>
     </div>
 </template>

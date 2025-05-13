@@ -18,25 +18,26 @@
                 class="grid lg:grid-cols-2 gap-10 xl:gap-14 relative pt-24 lg:max-w-none max-w-2xl md:max-w-3xl mx-auto">
                 <div class="lg:py-6">
                     <div class="text-center lg:text-left">
-                        <span class="px-2 py-1 rounded-md bg-gray-100 dark:bg-body text-primary ">Lorem ipsum dolor </span>
+                        <span class="px-2 py-1 rounded-md bg-gray-100 dark:bg-body text-primary ">Services d’Aide aux Victimes </span>
                         <h1 class="text-gray-800 pt-4 dark:text-white font-bold text-4xl md:text-5xl lg:text-6xl">
-                            Lorem ipsum  <br> amet <span
-                                class="text-transparent bg-clip-text bg-gradient-to-br from-primary to-[#8cd66a]">possimus</span>
-                                illo consequatur
+                             Vous <span
+                                class="text-transparent bg-clip-text bg-gradient-to-br from-primary to-[#8cd66a]">Accompagner</span>
+                                Où Que Vous Soyez
                         </h1>
                     </div>
 
+
                     <p class="text-gray-600 dark:text-gray-300 pt-8 text-center lg:text-left mx-auto max-w-xl">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum, beatae omnis ipsa magnam neque
-                        ut nam nesciunt esse fugit praesentium hic magni possimus illo consequatur.
+                       Nous mettons à votre disposition un ensemble de services confidentiels, gratuits et accessibles, pour accompagner les personnes victimes de violences sexuelles, culurels, et lié au genre. <br>
+                       Nous vous guidons vers des services médicaux, juridiques et sociaux. : notre mission est de vous aider à reprendre le contrôle de votre vie, en toute sécurité et avec bienveillance.
                     </p>
 
                     <div class="flex items-center gap-3 pt-9 flex-col sm:flex-row sm:w-max sm:mx-auto lg:mx-0">
-                        <AtomsLinkBtn href="/about" variant="primary" class="w-full sm:w-max flex justify-center">
+                        <AtomsLinkBtn href="/services" variant="primary" class="w-full sm:w-max flex justify-center">
                            Recherchez un services 
                         </AtomsLinkBtn>
 
-                        <AtomsLinkBtn href="#" variant="costum" costum-span-class="px-6 md:px-7 hover:bg-primary/10"
+                        <AtomsLinkBtn href="/contact" variant="costum" costum-span-class="px-6 md:px-7 hover:bg-primary/10"
                             costum-text-color="text-primary ">
                             <div class="flex items-center gap-3">
                                 <span class="p-2 rounded-full border border-primary">
@@ -47,6 +48,7 @@
                                 </span>
 
                                 <span>
+
                                     +03692569874361
                                 </span>
                             </div>
