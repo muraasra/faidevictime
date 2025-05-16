@@ -68,7 +68,7 @@ router.afterEach(() => {
 
       <!-- Logo -->
       <NuxtLink to="/" class="flex items-center space-x-2">
-        <span class="text-xl font-bold text-emerald-600">Compta-KA</span>
+        <span class="text-xl font-bold text-emerald-600">VictiSafe</span>
       </NuxtLink>
     </div>
 
