@@ -12,6 +12,11 @@ export const NAVIGATION_ITEMS = [
       link: "/collect/root",
       icon: "i-heroicons-squares-plus",
     },
+    {
+      name: "Services Admin",
+      link: "/collect/dash",
+      icon: "i-heroicons-squares-plus",
+    }
     // {
     //   name: "Order Lists",
     //   link: "/order-lists",
