@@ -29,7 +29,7 @@
             <td class="p-3 text-gray-800 dark:text-white">{{ capitalize(service.fonction_repondant) }}</td>
             <td class="p-3 text-gray-800 dark:text-white">{{ capitalize(service.nom_repondant) }}</td>
             <td class="p-3 text-gray-800 dark:text-white">{{ service.telephone_repondant }}</td>
-            <td class="p-3 text-gray-800 dark:text-white">{{ service.soins_medicaux ? 'Soins Médicaux' : 'Autre' }}</td>
+            <td class="p-3 text-gray-800 dark:text-white font-semibold text-emerald-600 dark:text-emerald-400">{{ getServiceCategory(service) }}</td>
             <td class="p-3 text-right space-x-2 whitespace-nowrap">
               <NuxtLink :to="`/collect/view/${service.id}`" class="text-blue-600 hover:underline">Voir</NuxtLink>
               <NuxtLink :to="`/collect/edit/${service.id}`" class="text-yellow-600 hover:underline">Éditer</NuxtLink>
@@ -141,5 +141,16 @@ function deleteService(id: number) {
     console.log('Suppression du service ID:', id)
     // TODO : appel API + rechargement
   }
+}
+
+function getServiceCategory(service: any): string {
+  if (!service) return 'Non spécifié';
+  if (service.soins_medicaux) return 'Soins médicaux';
+  if (service.appui_psychosocial) return 'Appui psychosocial';
+  if (service.police_securite) return 'Police / Sécurité';
+  if (service.assistance_juridique) return 'Assistance juridique';
+  if (service.sante_mentale) return 'Santé mentale';
+  if (service.reinsertion_economique) return 'Réinsertion économique';
+  return 'Non spécifié';
 }
 </script>

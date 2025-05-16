@@ -31,7 +31,7 @@ const handleScroll = () => {
     <!-- Logo -->
     <div class="flex items-center justify-center">
       <NuxtLink href="/" class="text-2xl font-extrabold text-emerald-500">
-        Sto<span class="text-gray-800 dark:text-white">Rage</span>
+        Victi<span class="text-gray-800 dark:text-white">Safe</span>
       </NuxtLink>
     </div>
 
