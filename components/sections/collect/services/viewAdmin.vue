@@ -34,6 +34,12 @@
               <span>{{ service.nom_structure }}</span>
             </p>
             <p class="flex justify-between border-b dark:border-zinc-700 pb-2">
+              <span class="font-medium">Catégorie:</span>
+              <span class="font-semibold text-emerald-600 dark:text-emerald-400">
+                {{ getServiceCategory(service) }}
+              </span>
+            </p>
+            <p class="flex justify-between border-b dark:border-zinc-700 pb-2">
               <span class="font-medium">Fonction du répondant:</span>
               <span>{{ service.fonction_repondant }}</span>
             </p>
@@ -81,7 +87,7 @@
           </div>
         </div>
       </div>
-      <pre>{{ service }}</pre>
+       
 
       <!-- Services spécifiques -->
       <template v-if="service.soins_medicaux">
@@ -218,5 +224,17 @@ async function toggleServiceStatus() {
     console.error('Erreur lors de la mise à jour du statut:', error)
     alert('Une erreur est survenue lors de la mise à jour du statut du service.')
   }
+}
+
+// Ajouter la fonction pour déterminer la catégorie avec un retour par défaut
+function getServiceCategory(service: Service): string {
+  if (!service) return 'Non spécifié';
+  if (service.soins_medicaux) return 'Soins médicaux';
+  if (service.appui_psychosocial) return 'Appui psychosocial';
+  if (service.police_securite) return 'Police / Sécurité';
+  if (service.assistance_juridique) return 'Assistance juridique';
+  if (service.sante_mentale) return 'Santé mentale';
+  if (service.reinsertion_economique) return 'Réinsertion économique';
+  return 'Non spécifié';
 }
 </script>

@@ -147,7 +147,7 @@
                 <label v-for="option in question.options" :key="option" class="inline-flex items-center">
                   <input
                     type="radio"
-                    :name="question.key"
+                    :name="'radio_' + question.key"
                     :value="option"
                     v-model="form.specifiques[question.key]"
                     class="mr-2"
@@ -163,22 +163,20 @@
                   <label class="inline-flex items-center">
                     <input 
                       type="radio" 
-                      :name="form.specifiques[question.key]" 
-                      value="1" 
-                      v-model="form.specifiques[question.key]" 
+                      :name="'radio_' + question.key"
+                      :value="true" 
+                      v-model="form.specifiques.radioAnswers[question.key]" 
                       class="mr-2"
-                      @change="validateField(question.key, form.specifiques[question.key])"
                     />
                     Oui
                   </label>
                   <label class="inline-flex items-center">
                     <input 
                       type="radio" 
-                      :name="form.specifiques[question.key]" 
-                      value="0" 
-                      v-model="form.specifiques[question.key]" 
+                      :name="'radio_' + question.key"
+                      :value="false" 
+                      v-model="form.specifiques.radioAnswers[question.key]" 
                       class="mr-2"
-                      @change="validateField(question.key, form.specifiques[question.key])"
                     />
                     Non
                   </label>
@@ -221,7 +219,7 @@
       </button>
     </div>
   </div>
-  <pre> {{ form }} // {{ jso }}</pre>
+  <pre>{{ form }}</pre>
 </template>
 
 <script setup lang="ts">
@@ -254,8 +252,63 @@ const showNotification = (message: string, type: 'success' | 'error') => {
   }, 3000);
 };
 
-// Formulaire réactif
-const form = reactive({
+// Type de base pour les questions
+interface BaseQuestion {
+  key: string;
+  label: string;
+  type?: string;
+  required?: boolean;
+  options?: string[];
+}
+
+// Type pour les questions spécifiques
+type CategoryQuestions = {
+  'Soins médicaux': BaseQuestion[];
+  'Appui psychosocial': BaseQuestion[];
+  'Police / Sécurité': BaseQuestion[];
+  'Assistance juridique': BaseQuestion[];
+  'Hébergement': BaseQuestion[];
+  'Réinsertion économique': BaseQuestion[];
+  [key: string]: BaseQuestion[]; // Pour l'accès dynamique
+};
+
+// Type pour les réponses transversales
+interface TransversalesForm {
+  nom_structure: string;
+  fonction_repondant: string;
+  nom_repondant: string;
+  telephone_repondant: string;
+  longitude: number;
+  latitude: number;
+  email: string;
+  site_web: string;
+  langues_parlees: string[];
+  jours_ouverture: string[];
+  heures_ouverture: string;
+  gratuit: string[];
+  author: number | null;
+  [key: string]: any; // Pour permettre l'accès dynamique aux propriétés
+}
+
+// Type pour les réponses spécifiques
+interface SpecifiquesForm {
+  medicaments_disponibles: string[];
+  categorie: string;
+  radioAnswers: Record<string, boolean>;
+  [key: string]: any;
+}
+
+// Type pour le formulaire complet
+interface FormData {
+  transversales: TransversalesForm;
+  specifiques: SpecifiquesForm;
+  reponsesByCategory: Record<string, Record<string, any>>;
+}
+
+// Ajouter dans la partie script, avant la définition du formulaire
+const radioAnswers = reactive<Record<string, boolean>>({});
+
+const form = reactive<FormData>({
   transversales: {
     nom_structure: "",
     fonction_repondant: "",
@@ -269,12 +322,59 @@ const form = reactive({
     jours_ouverture: [],
     heures_ouverture: "",
     gratuit: [],
-    author: auth.user?.id
+    author: auth.user?.id ?? null
   },
   specifiques: {
     medicaments_disponibles: [],
-    categorie: selectedCategory,
+    categorie: selectedCategory.value,
+    radioAnswers: {},
   },
+  reponsesByCategory: {}
+});
+
+// Conversion des questions importées
+const typedSpecificQuestions = specificQuestions as CategoryQuestions;
+const typedGeneralQuestions = generalQuestions as BaseQuestion[];
+
+// Réinitialiser les spécifiques avec les valeurs par défaut
+const getDefaultSpecifiques = (category: string): SpecifiquesForm => {
+  const defaultValues: SpecifiquesForm = {
+    medicaments_disponibles: [],
+    categorie: category,
+    radioAnswers: {},
+  };
+
+  // Initialiser toutes les questions spécifiques avec des valeurs par défaut
+  if (category && typedSpecificQuestions[category]) {
+    typedSpecificQuestions[category].forEach(question => {
+      if (question.type === 'radioBol') {
+        defaultValues.radioAnswers[question.key] = false; // Initialiser à false par défaut
+      }
+    });
+  }
+
+  return defaultValues;
+};
+
+// Watch pour gérer le changement de catégorie
+watch(selectedCategory, (newCategory, oldCategory) => {
+  if (oldCategory) {
+    // Sauvegarder les réponses de l'ancienne catégorie
+    form.reponsesByCategory[oldCategory] = { ...form.specifiques };
+  }
+  
+  // Réinitialiser avec les valeurs par défaut
+  const defaultValues = getDefaultSpecifiques(newCategory);
+  
+  // Restaurer les réponses précédentes si elles existent
+  if (newCategory && form.reponsesByCategory[newCategory]) {
+    form.specifiques = {
+      ...defaultValues,
+      ...form.reponsesByCategory[newCategory]
+    };
+  } else {
+    form.specifiques = defaultValues;
+  }
 });
 
 const fillCoordinates = () => {
@@ -321,10 +421,12 @@ const errors = reactive<Record<string, string>>({});
 const validateField = (key: string, value: any): boolean => {
   delete errors[key];
 
-  // Skip validation for non-required fields
-  const field = [...generalQuestions, ...Object.values(specificQuestions).flat()]
+  // Trouver le champ dans les questions générales ou spécifiques
+  const field = [...typedGeneralQuestions, ...(typedSpecificQuestions[selectedCategory.value] || [])]
     .find(q => q.key === key);
-  if (field && !field.required) {
+
+  // Skip validation for non-required fields
+  if (!field?.required) {
     return true;
   }
 
@@ -374,7 +476,7 @@ const validateForm = (): boolean => {
 
   // Validate required transversales
   for (const [key, value] of Object.entries(form.transversales)) {
-    const field = generalQuestions.find(q => q.key === key);
+    const field = typedGeneralQuestions.find(q => q.key === key);
     if (field?.required && !validateField(key, value)) {
       isValid = false;
     }
@@ -388,9 +490,9 @@ const validateForm = (): boolean => {
 
   // Validate required specifiques if category is selected
   if (selectedCategory.value) {
-    for (const [key, value] of Object.entries(form.specifiques)) {
-      const field = specificQuestions[selectedCategory.value]?.find(q => q.key === key);
-      if (field?.required && !validateField(key, value)) {
+    const categoryQuestions = typedSpecificQuestions[selectedCategory.value] || [];
+    for (const question of categoryQuestions) {
+      if (question.required && !validateField(question.key, form.specifiques[question.key])) {
         isValid = false;
       }
     }
@@ -403,23 +505,54 @@ const validateForm = (): boolean => {
   return isValid;
 };
 
-const submitForm = async (): Promise<void> => {
+const submitForm = async () => {
   if (!validateForm()) {
     return;
   }
 
   isLoading.value = true;
-  let jso= JSON.stringify(form)
-
   try {
-    const response = await useApi('http://localhost:8000/api/submit-form/', {
-      method: 'POST',
-      body: JSON.stringify(form), 
+    const formData = {
+      transversales: { ...form.transversales },
+      specifiques: { ...form.specifiques },
+      categorie: selectedCategory.value
+    };
+
+    // Ajouter les réponses sauvegardées de toutes les catégories
+    Object.keys(form.reponsesByCategory).forEach(category => {
+      if (category !== selectedCategory.value) {
+        formData.specifiques = {
+          ...formData.specifiques,
+          ...form.reponsesByCategory[category]
+        };
+      }
     });
 
-    if (response?.data) {
-      showNotification('Formulaire soumis avec succès! Votre service a bien été enregistré.', 'success');
-      // Reset form
+    const response = await fetch('http://localhost:8000/api/submit-form/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${auth.token}`
+      },
+      body: JSON.stringify(formData)
+    });
+
+    if (!response.ok) {
+      throw new Error('Erreur lors de l\'envoi du formulaire');
+    }
+
+    showNotification('Formulaire envoyé avec succès!', 'success');
+    resetForm();
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Une erreur est survenue';
+    showNotification(`Erreur lors de l'envoi du formulaire: ${errorMessage}`, 'error');
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Fonction pour réinitialiser le formulaire
+const resetForm = () => {
       form.transversales = {
         nom_structure: "",
         fonction_repondant: "",
@@ -433,21 +566,21 @@ const submitForm = async (): Promise<void> => {
         jours_ouverture: [],
         heures_ouverture: "",
         gratuit: [],
-        author: auth.user?.id
+    author: auth.user?.id ?? null
       };
       form.specifiques = {
         medicaments_disponibles: [],
         categorie: "",
+    radioAnswers: {},
       };
+  form.reponsesByCategory = {};
       selectedCategory.value = "";
-    } else {
-      throw new Error(response?.error?.value?.message || 'Une erreur est survenue');
-    }
-  } catch (error) {
-    showNotification(error instanceof Error ? error.message : 'Erreur de connexion au serveur', 'error');
-  } finally {
-    isLoading.value = false;
-  }
+  Object.keys(errors).forEach(key => delete errors[key]);
+};
+
+// Fonction pour gérer le changement des boutons radio
+const handleRadioChange = (questionKey: string, value: boolean) => {
+  form.specifiques.radioAnswers[questionKey] = value;
 };
 
 </script>

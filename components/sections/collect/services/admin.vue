@@ -7,6 +7,73 @@
       </NuxtLink>
     </div>
 
+    <!-- Filtres et recherche -->
+    <div class="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- Barre de recherche -->
+      <div class="col-span-1 sm:col-span-2">
+        <input
+          type="text"
+          v-model="searchQuery"
+          placeholder="Rechercher un service..."
+          class="w-full px-4 py-2 rounded-lg border dark:border-gray-600 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+        />
+      </div>
+
+      <!-- Filtre par catégorie -->
+      <div class="col-span-1">
+        <select
+          v-model="categoryFilter"
+          class="w-full px-4 py-2 rounded-lg border dark:border-gray-600 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+        >
+          <option value="">Toutes les catégories</option>
+          <option value="soins_medicaux">Soins médicaux</option>
+          <option value="appui_psychosocial">Appui psychosocial</option>
+          <option value="police_securite">Police / Sécurité</option>
+          <option value="assistance_juridique">Assistance juridique</option>
+          <option value="sante_mentale">Santé mentale</option>
+          <option value="reinsertion_economique">Réinsertion économique</option>
+        </select>
+      </div>
+
+      <!-- Filtre par statut -->
+      <div class="col-span-1">
+        <select
+          v-model="statusFilter"
+          class="w-full px-4 py-2 rounded-lg border dark:border-gray-600 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+        >
+          <option value="">Tous les statuts</option>
+          <option value="true">Actif</option>
+          <option value="false">Inactif</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Résumé des filtres actifs -->
+    <div v-if="hasActiveFilters" class="mb-4 flex flex-wrap gap-2">
+      <span class="text-sm text-gray-600 dark:text-gray-400">Filtres actifs:</span>
+      <span
+        v-if="searchQuery"
+        class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200"
+      >
+        Recherche: "{{ searchQuery }}"
+        <button @click="searchQuery = ''" class="ml-1 hover:text-emerald-600">&times;</button>
+      </span>
+      <span
+        v-if="categoryFilter"
+        class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+      >
+        Catégorie: {{ getCategoryLabel(categoryFilter) }}
+        <button @click="categoryFilter = ''" class="ml-1 hover:text-blue-600">&times;</button>
+      </span>
+      <span
+        v-if="statusFilter !== ''"
+        class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
+      >
+        Statut: {{ statusFilter === 'true' ? 'Actif' : 'Inactif' }}
+        <button @click="statusFilter = ''" class="ml-1 hover:text-purple-600">&times;</button>
+      </span>
+    </div>
+
     <div class="overflow-x-auto mt-6 rounded-md shadow">
       <table class="min-w-full bg-white dark:bg-zinc-900 text-sm">
         <thead class="bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300">
@@ -30,7 +97,7 @@
             <td class="p-3 text-gray-800 dark:text-white">{{ capitalize(service.fonction_repondant) }}</td>
             <td class="p-3 text-gray-800 dark:text-white">{{ capitalize(service.nom_repondant) }}</td>
             <td class="p-3 text-gray-800 dark:text-white">{{ service.telephone_repondant }}</td>
-            <td class="p-3 text-gray-800 dark:text-white">{{ service.soins_medicaux ? 'Soins Médicaux' : 'Autre' }}</td>
+            <td class="p-3 text-gray-800 dark:text-white font-semibold text-emerald-600 dark:text-emerald-400">{{ getServiceCategory(service) }}</td>
             <td class="p-3 text-gray-800 dark:text-white">
               <span 
                 :class="service.is_active ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'" 
@@ -101,8 +168,13 @@ type Service = {
   nom_repondant: string
   telephone_repondant: string
   soins_medicaux: SoinsMedicaux | null
+  appui_psychosocial: any | null
+  police_securite: any | null
+  assistance_juridique: any | null
+  sante_mentale: any | null
+  reinsertion_economique: any | null
   author: number | null
-  is_active: boolean // Ajout du champ pour le statut
+  is_active: boolean
 }
 
 // Authentification
@@ -120,10 +192,57 @@ function capitalize(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
-// Filtrer les services de l'utilisateur connecté
-const filteredServices = computed(() =>
-  (services.value || [])
-)
+// Filtres
+const searchQuery = ref('')
+const categoryFilter = ref('')
+const statusFilter = ref('')
+
+// Computed pour vérifier si des filtres sont actifs
+const hasActiveFilters = computed(() => {
+  return searchQuery.value || categoryFilter.value || statusFilter.value !== ''
+})
+
+// Fonction pour obtenir le label d'une catégorie
+function getCategoryLabel(category: string): string {
+  const categories: { [key: string]: string } = {
+    soins_medicaux: 'Soins médicaux',
+    appui_psychosocial: 'Appui psychosocial',
+    police_securite: 'Police / Sécurité',
+    assistance_juridique: 'Assistance juridique',
+    sante_mentale: 'Santé mentale',
+    reinsertion_economique: 'Réinsertion économique'
+  }
+  return categories[category] || category
+}
+
+// Filtrer les services
+const filteredServices = computed(() => {
+  let filtered = services.value || []
+
+  // Filtre par recherche
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    filtered = filtered.filter(service => 
+      service.nom_structure.toLowerCase().includes(query) ||
+      service.nom_repondant.toLowerCase().includes(query) ||
+      service.fonction_repondant.toLowerCase().includes(query) ||
+      service.telephone_repondant.includes(query)
+    )
+  }
+
+  // Filtre par catégorie
+  if (categoryFilter.value) {
+    filtered = filtered.filter(service => service[categoryFilter.value as keyof Service])
+  }
+
+  // Filtre par statut
+  if (statusFilter.value !== '') {
+    const isActive = statusFilter.value === 'true'
+    filtered = filtered.filter(service => service.is_active === isActive)
+  }
+
+  return filtered
+})
 
 // Pagination
 const itemsPerPage = 10
@@ -191,5 +310,16 @@ async function toggleServiceStatus(service: Service) {
     console.error('Erreur lors de la mise à jour du statut:', error)
     alert('Une erreur est survenue lors de la mise à jour du statut du service.')
   }
+}
+
+function getServiceCategory(service: Service): string {
+  if (!service) return 'Non spécifié';
+  if (service.soins_medicaux) return 'Soins médicaux';
+  if (service.appui_psychosocial) return 'Appui psychosocial';
+  if (service.police_securite) return 'Police / Sécurité';
+  if (service.assistance_juridique) return 'Assistance juridique';
+  if (service.sante_mentale) return 'Santé mentale';
+  if (service.reinsertion_economique) return 'Réinsertion économique';
+  return 'Non spécifié';
 }
 </script>
