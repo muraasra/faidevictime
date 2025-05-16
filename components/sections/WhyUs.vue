@@ -36,7 +36,7 @@
                     </div>
 
                         <div class="pt-10 flex">
-                            <AtomsLinkBtn href="/chatbot" variant="primary">
+                            <AtomsLinkBtn href="/chat" variant="primary">
                                 Commencer le chat
                             </AtomsLinkBtn>
                         </div>

@@ -21,7 +21,7 @@ const navLinks = [
     },
     {
         text: "Chatbot",
-        href: "/tarification"
+        href: "/chatbot"
     },
     {
         text: "Contact",

@@ -172,6 +172,7 @@ export type Service = {
   heures_ouverture: string
   gratuit: string
   is_active: boolean
+  statut: boolean
 }
 
 const route = useRoute()
@@ -204,11 +205,16 @@ async function toggleServiceStatus() {
       : `Voulez-vous vraiment désactiver le service "${service.value.nom_structure}" ?`
     
     if (confirm(confirmMessage)) {
+      // Mise à jour optimiste de l'UI
       service.value.is_active = newStatus
+      service.value.statut = newStatus // Mettre à jour aussi le champ statut
       
       await $fetch(`http://localhost:8000/api/question-transversale/${service.value.id}/`, {
         method: 'PATCH',
-        body: { is_active: newStatus },
+        body: { 
+          is_active: newStatus,
+          statut: newStatus // Envoyer aussi le champ statut
+        },
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${auth.token}`
@@ -219,7 +225,9 @@ async function toggleServiceStatus() {
     }
   } catch (error) {
     if (service.value) {
+      // Rétablir l'état précédent en cas d'erreur
       service.value.is_active = !service.value.is_active
+      service.value.statut = !service.value.is_active // Rétablir aussi le champ statut
     }
     console.error('Erreur lors de la mise à jour du statut:', error)
     alert('Une erreur est survenue lors de la mise à jour du statut du service.')

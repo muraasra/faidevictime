@@ -100,10 +100,10 @@
             <td class="p-3 text-gray-800 dark:text-white font-semibold text-emerald-600 dark:text-emerald-400">{{ getServiceCategory(service) }}</td>
             <td class="p-3 text-gray-800 dark:text-white">
               <span 
-                :class="service.is_active ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'" 
+                :class="service.statut ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'" 
                 class="px-2 py-1 rounded-full text-xs font-medium"
               >
-                {{ service.is_active ? 'Actif' : 'Inactif' }}
+                {{ service.statut ? 'Actif' : 'Inactif' }}
               </span>
             </td>
             <td class="p-3 text-right space-x-2 whitespace-nowrap">
@@ -175,6 +175,7 @@ type Service = {
   reinsertion_economique: any | null
   author: number | null
   is_active: boolean
+  statut: boolean
 }
 
 // Authentification
@@ -290,11 +291,15 @@ async function toggleServiceStatus(service: Service) {
     if (confirm(confirmMessage)) {
       // Mise à jour optimiste de l'UI
       service.is_active = newStatus
+      service.statut = newStatus
       
       // Appel API pour mettre à jour le statut
       await $fetch(`http://localhost:8000/api/question-transversale/${service.id}/`, {
         method: 'PATCH',
-        body: { is_active: newStatus },
+        body: { 
+          is_active: newStatus,
+          statut: newStatus
+        },
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${auth.token}`
@@ -302,11 +307,12 @@ async function toggleServiceStatus(service: Service) {
       })
       
       // Notification de succès
-      alert(`Le service a été ${newStatus ? 'activé' : 'désactivé'} avec succès.`)
+      alert(`Le service a été ${newStatus ? 'activé' : 'désactivé'} avec succès. ${newStatus}`)
     }
   } catch (error) {
     // Rétablir l'état précédent en cas d'erreur
     service.is_active = !service.is_active
+    service.statut = !service.is_active
     console.error('Erreur lors de la mise à jour du statut:', error)
     alert('Une erreur est survenue lors de la mise à jour du statut du service.')
   }

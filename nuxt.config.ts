@@ -13,7 +13,8 @@ export default defineNuxtConfig({
   },
 
   css:[
-      '~/assets/css/app.css'
+      '~/assets/css/app.css',
+       '@fortawesome/fontawesome-free/css/all.css'
   ],
 
   colorMode:{
