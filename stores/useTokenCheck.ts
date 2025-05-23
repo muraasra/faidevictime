@@ -6,7 +6,7 @@ export async function useTokenCheck(): Promise<boolean> {
   if (!auth.token) return false
 
   try {
-    const { error } = await useFetch('http://127.0.0.1:8000/api/token/verify/', {
+    const { error } = await useFetch('https://wilfriedtayou.pythonanywhere.com/api/token/verify/', {
       method: 'POST',
       body: { token: auth.token },
       server: false // assure que ce composable fonctionne aussi côté client
