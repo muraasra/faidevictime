@@ -108,8 +108,8 @@ const router = useRouter()
 const id = route.params.id
 
 // Récupération des données du service
-const { data: service } = await useApi(`http://localhost:8000/api/question-transversale/${id}/`)
-const { data: transversalData } = await useApi(`http://localhost:8000/api/question-transversale/`)
+const { data: service } = await useApi(`https://wilfriedtayou.pythonanywhere.com/api/question-transversale/${id}/`)
+const { data: transversalData } = await useApi(`https://wilfriedtayou.pythonanywhere.com/api/question-transversale/`)
 
 // Form data
 const form = reactive({
@@ -135,7 +135,7 @@ function formatLabel(key: string): string {
 
 async function submit() {
   try {
-    await useApi(`http://localhost:8000/api/question-transversale/${id}/`, {
+    await useApi(`https://wilfriedtayou.pythonanywhere.com/api/question-transversale/${id}/`, {
       method: 'PUT',
       body: JSON.stringify({
         ...form,

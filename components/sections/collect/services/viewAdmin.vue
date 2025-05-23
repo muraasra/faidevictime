@@ -180,7 +180,7 @@ const auth = useAuthStore()
 const id = route.params.id
 const loading = ref(true)
 
-const { data: service } = await useApi<Service>(`http://localhost:8000/api/question-transversale/${id}/`, {
+const { data: service } = await useApi<Service>(`https://wilfriedtayou.pythonanywhere.com/api/question-transversale/${id}/`, {
   server: false,
   onResponse: () => {
     loading.value = false
@@ -209,7 +209,7 @@ async function toggleServiceStatus() {
       service.value.is_active = newStatus
       service.value.statut = newStatus // Mettre à jour aussi le champ statut
       
-      await $fetch(`http://localhost:8000/api/question-transversale/${service.value.id}/`, {
+      await $fetch(`https://wilfriedtayou.pythonanywhere.com/api/question-transversale/${service.value.id}/`, {
         method: 'PATCH',
         body: { 
           is_active: newStatus,
