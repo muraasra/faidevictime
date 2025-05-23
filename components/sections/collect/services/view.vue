@@ -74,7 +74,7 @@ type Service = {
 const route = useRoute()
 const id = route.params.id
 
-const { data: service } = await useApi<Service>(`http://localhost:8000/api/question-transversale/${id}/`, {
+const { data: service } = await useApi<Service>(`https://wilfriedtayou.pythonanywhere.com/api/question-transversale/${id}/`, {
   server: false
 })
 </script>

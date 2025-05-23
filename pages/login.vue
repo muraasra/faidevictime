@@ -49,7 +49,7 @@ const handleSubmit = async () => {
   }
 
   try {
-    const { data, error: fetchError } = await useFetch<LoginResponse>('http://127.0.0.1:8000/api/token/', {
+    const { data, error: fetchError } = await useFetch<LoginResponse>('https://wilfriedtayou.pythonanywhere.com/api/token/', {
       method: 'POST',
       body: {
         username: username.value,

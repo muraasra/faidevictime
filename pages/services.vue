@@ -660,7 +660,7 @@ onMounted(async () => {
     createTileLayer(currentProviderIndex).addTo(map)
 
     // Récupération des services actifs
-    const response = await axios.get('http://localhost:8000/api/question-transversale/', {
+    const response = await axios.get('https://wilfriedtayou.pythonanywhere.com/api/question-transversale/', {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',

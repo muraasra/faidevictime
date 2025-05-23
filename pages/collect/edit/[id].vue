@@ -7,7 +7,7 @@ import { DASHBOARD_CARDS_DATA } from "~/constants";
 
 const config = useRuntimeConfig()
 
-// const { data: services } = await useApi('http://127.0.0.1:8000/api/services/', {
+// const { data: services } = await useApi('https://wilfriedtayou.pythonanywhere.com/api/services/', {
 
 // })
 

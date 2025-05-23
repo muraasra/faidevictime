@@ -528,7 +528,7 @@ const submitForm = async () => {
       }
     });
 
-    const response = await fetch('http://localhost:8000/api/submit-form/', {
+    const response = await fetch('https://wilfriedtayou.pythonanywhere.com/api/submit-form/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

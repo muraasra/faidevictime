@@ -93,7 +93,7 @@ const auth = useAuthStore()
 const userId = auth.user?.id
 
 // Appel API
-const { data: services } = await useApi<Service[]>('http://localhost:8000/api/question-transversale/', {
+const { data: services } = await useApi<Service[]>('https://wilfriedtayou.pythonanywhere.com/api/question-transversale/', {
   server: false
 })
 

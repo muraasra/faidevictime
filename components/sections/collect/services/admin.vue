@@ -183,7 +183,7 @@ const auth = useAuthStore()
 const userId = auth.user?.id
 
 // Appel API
-const { data: services } = await useApi<Service[]>('http://localhost:8000/api/question-transversale/', {
+const { data: services } = await useApi<Service[]>('https://wilfriedtayou.pythonanywhere.com/api/question-transversale/', {
   server: false
 })
 
@@ -294,7 +294,7 @@ async function toggleServiceStatus(service: Service) {
       service.statut = newStatus
       
       // Appel API pour mettre à jour le statut
-      await $fetch(`http://localhost:8000/api/question-transversale/${service.id}/`, {
+      await $fetch(`https://wilfriedtayou.pythonanywhere.com/api/question-transversale/${service.id}/`, {
         method: 'PATCH',
         body: { 
           is_active: newStatus,
