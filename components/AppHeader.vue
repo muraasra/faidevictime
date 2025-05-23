@@ -20,7 +20,7 @@ const navLinks = [
         href: "/formations"
     },
     {
-        text: "Chatbot",
+        text: "Assistance",
         href: "/chatbot"
     },
     {
@@ -53,7 +53,7 @@ const navLinks = [
                 ></div>
 
                 <div 
-                    class="fixed top-0 bottom-0 left-0 w-[280px] lg:w-auto lg:static bg-white dark:bg-gray-900 lg:bg-transparent 
+                    class="fixed top-0 bottom-0 left-0 w-[280px] lg:w-auto lg:static bg-white  lg:bg-transparent dark:text-white
                     p-6 lg:p-0 transition-transform duration-300 transform lg:transform-none shadow-lg lg:shadow-none"
                     :class="navIsOpen ? 'translate-x-0' : '-translate-x-full'"
                 >
@@ -76,7 +76,7 @@ const navLinks = [
                 <div class="flex items-center bg-inherit gap-1 lg:gap-3 min-w-max">
                     <ElementsThemeSwitcher />
                     <div class="hidden lg:flex lg:items-center gap-4">
-                        <AtomsLinkBtn href="/quote" variant="primary">
+                        <AtomsLinkBtn href="/chat" variant="primary">
                             Discutez avec nous!
                         </AtomsLinkBtn>
                     </div>

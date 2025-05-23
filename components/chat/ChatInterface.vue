@@ -1,4 +1,5 @@
 <template>
+     <div class="chat-page py-12 px-6 md:px-12"> <!--pour l'espace entre la navbar et le body -->
   <div class="chat-container" :class="{ 'dark-mode': isDarkMode }">
     <div 
       class="chat-sidebar" 
@@ -141,6 +142,7 @@
     >
       <i :class="isSidebarVisible ? 'fas fa-times' : 'fas fa-bars'"></i>
     </button>
+  </div>
   </div>
 </template>
 

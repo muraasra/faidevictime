@@ -5,7 +5,7 @@
                 <div class="flex md:h-full ">
                     <div
                         class="w-full md:h-full rounded-3xl bg-white dark:bg-body shadow-lg shadow-box-shadow border border-box-border">
-                        <img src="/images/solidarite.jpg" alt="Illustratuin about" width="500"
+                        <img src="/images/solidarte.avif" alt="Illustratuin about" width="500"
                             class="w-full h-full object-cover rounded-2xl">
                     </div>
                 </div>

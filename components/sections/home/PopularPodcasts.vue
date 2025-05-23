@@ -16,7 +16,7 @@
         <AtomsContainer class-name="relative">
             <div class="flex justify-between pb-6 relative">
                 <div class="">
-                    <AtomsTitle texte="sensibilisations" />
+                    <AtomsTitle texte="Sensibilisations" />
                 </div>
                 <div class="flex items-center min-w-max gap-5">
                     <AtomsLinkBtn href="/sensibilisations" variant="primary">
@@ -29,7 +29,7 @@
 
                 <CardsPodCast title="Violences basées sur le genre " 
                     href="#" 
-                    cover-image="/images/femme-affaires-asiatique-serieuse-donnant-presentation-equipe-multiraciale-tableau-feuilles-mobiles_1163-4630.avif" 
+                    cover-image="/images/sensibilisation.webp" 
                     category="" 
                     created-at=""
                     description="Lorem ipsum dolor sit amet,  voluptates porro" 
@@ -37,7 +37,7 @@
 
                 <CardsPodCast title="Stop aux violences ! " 
                     href="#" 
-                    cover-image="/images/femme-affaires-asiatique-serieuse-donnant-presentation-equipe-multiraciale-tableau-feuilles-mobiles_1163-4630.avif" 
+                    cover-image="/images/sensibilisation.webp" 
                     category="" 
                     created-at=""
                     description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae voluptates porro" 
@@ -45,7 +45,7 @@
 
                 <CardsPodCast title="Briser les silences" 
                     href="#" 
-                    cover-image="/images/femme-affaires-asiatique-serieuse-donnant-presentation-equipe-multiraciale-tableau-feuilles-mobiles_1163-4630.avif" 
+                    cover-image="/images/sensibilisation.webp" 
                     category="" 
                     created-at=""
                     description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae voluptates porro" 
@@ -53,7 +53,7 @@
 
                 <CardsPodCast title="Lutter contre les violences" 
                     href="#" 
-                    cover-image="/images/femme-affaires-asiatique-serieuse-donnant-presentation-equipe-multiraciale-tableau-feuilles-mobiles_1163-4630.avif" 
+                    cover-image="/images/sensibilisation.webp" 
                     category="" 
                     created-at=""
                     description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae voluptates porro" 
@@ -61,7 +61,7 @@
 
                 <CardsPodCast title="Plaidoyer pour l’égalité" 
                     href="#" 
-                    cover-image="/images/femme-affaires-asiatique-serieuse-donnant-presentation-equipe-multiraciale-tableau-feuilles-mobiles_1163-4630.avif" 
+                    cover-image="/images/sensibilisation.webp" 
                     category="" 
                     created-at=""
                     description="Lorem ipsum dolor sit amet,  voluptates porro" 
@@ -69,7 +69,7 @@
 
                 <CardsPodCast title="Vers une société sans violence " 
                     href="#" 
-                    cover-image="/images/femme-affaires-asiatique-serieuse-donnant-presentation-equipe-multiraciale-tableau-feuilles-mobiles_1163-4630.avif" 
+                    cover-image="/images/sensibilisation.webp" 
                     category="" 
                     created-at=""
                     description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae voluptates porro" 
@@ -77,7 +77,7 @@
 
                 <CardsPodCast title="Réduire les inégalités, combattre les violences" 
                     href="#" 
-                    cover-image="/images/femme-affaires-asiatique-serieuse-donnant-presentation-equipe-multiraciale-tableau-feuilles-mobiles_1163-4630.avif" 
+                    cover-image="/images/sensibilisation.webp" 
                     category="" 
                     created-at=""
                     description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae voluptates porro" 
@@ -85,7 +85,7 @@
 
                 <CardsPodCast title="Éduquer, prévenir, agir " 
                     href="#" 
-                    cover-image="/images/femme-affaires-asiatique-serieuse-donnant-presentation-equipe-multiraciale-tableau-feuilles-mobiles_1163-4630.avif" 
+                    cover-image="/images/sensibilisation.webp" 
                     category="" 
                     created-at=""
                     description="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Recusandae voluptates porro" 
