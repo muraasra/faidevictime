@@ -531,11 +531,11 @@ onMounted(async () => {
     // Import du CSS de Leaflet
     await import('leaflet/dist/leaflet.css')
     
-    // Vérification du token
-    if (!auth.token) {
-      error.value = 'Erreur d\'authentification. Veuillez vous reconnecter.'
-      return
-    }
+    // // Vérification du token
+    // if (!auth.token) {
+    //   error.value = 'Erreur d\'authentification. Veuillez vous reconnecter.'
+    //   return
+    // }
 
     // Attendre que le DOM soit prêt
     await nextTick()
@@ -663,8 +663,8 @@ onMounted(async () => {
     const response = await axios.get('https://wilfriedtayou.pythonanywhere.com/api/question-transversale/', {
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${auth.token}`
+        'Content-Type': 'application/json'
+        // 'Authorization': `Bearer ${auth.token}`
       }
     })
     
