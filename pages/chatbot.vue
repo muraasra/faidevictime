@@ -144,8 +144,8 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
+  
+  <script setup lang="ts">
 import { ref, reactive } from 'vue'
 
 const formData = reactive({
@@ -181,9 +181,9 @@ const handleSubmit = async () => {
     isSubmitting.value = false
   }
 }
-</script>
-
-<style scoped>
+  </script>
+  
+  <style scoped>
 .chatbot-page {
   max-width: 1200px;
   margin: 0 auto;
@@ -396,4 +396,4 @@ input:focus, select:focus, textarea:focus {
     justify-content: center;
   }
 }
-</style>
+  </style>
