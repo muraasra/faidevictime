@@ -421,7 +421,7 @@ definePageMeta({
 })
 
 const router = useRouter()
-const API_BASE = 'https://wilfriedtayou.pythonanywhere.com//assistance'
+const API_BASE = 'https://wilfriedtayou.pythonanywhere.com/assistance'
 
 // État
 const requests = ref([])

@@ -295,7 +295,7 @@ body {
 import { useChatStore } from '~/stores/chat'
 
 // Configuration
-const API_BASE = 'https://wilfriedtayou.pythonanywhere.com//chatbot'
+const API_BASE = 'https://wilfriedtayou.pythonanywhere.com/chatbot'
 
 // État réactif
 const conversations = ref([])

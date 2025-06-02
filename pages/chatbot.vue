@@ -168,7 +168,7 @@ const handleSubmit = async () => {
   isSubmitting.value = true
   try {
     // On soumet toujours au backend d'abord
-    const response = await fetch('https://wilfriedtayou.pythonanywhere.com//assistance/requests/', {
+    const response = await fetch('https://wilfriedtayou.pythonanywhere.com/assistance/requests/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -207,7 +207,7 @@ const handleSubmit = async () => {
       const formattedMessage = `Je m'appelle ${data.first_name || 'Anonyme'}. Je suis dans une situation de ${data.situation_type} au cameroun. ${data.message} Que puis-je faire maintenant ?`
 
       // Créer une nouvelle conversation avec le message initial formaté
-      const chatResponse = await fetch('https://wilfriedtayou.pythonanywhere.com//chatbot/chat/', {
+      const chatResponse = await fetch('https://wilfriedtayou.pythonanywhere.com/chatbot/chat/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
