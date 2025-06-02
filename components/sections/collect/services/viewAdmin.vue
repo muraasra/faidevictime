@@ -9,10 +9,10 @@
         </NuxtLink>
         <span 
           v-if="service" 
-          :class="service.is_active ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'" 
+          :class="service.statut ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'" 
           class="px-3 py-1.5 rounded-md text-sm font-medium"
         >
-          {{ service.is_active ? 'Actif' : 'Inactif' }}
+          {{ service.statut ? 'Actif' : 'Inactif' }}
         </span>
       </div>
     </div>
@@ -81,7 +81,7 @@
               <span>{{ service.heures_ouverture || 'Non spécifié' }}</span>
             </p>
             <p class="flex justify-between pb-2">
-              <span class="font-medium">Gratuité du service:</span>
+              <span class="font-medium">Type du service:</span>
               <span>{{ service.gratuit || 'Non spécifié' }}</span>
             </p>
           </div>
@@ -124,10 +124,10 @@
         </NuxtLink>
         <button 
           @click="toggleServiceStatus" 
-          :class="service.is_active ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'"
+          :class="service.statut ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'"
           class="text-white px-4 py-2 rounded text-center"
         >
-          {{ service.is_active ? 'Désactiver' : 'Activer' }}
+          {{ service.statut ? 'Désactiver' : 'Activer' }}
         </button>
       </div>
     </div>

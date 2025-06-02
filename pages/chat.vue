@@ -292,8 +292,10 @@ body {
 </template>
 
 <script setup>
+import { useChatStore } from '~/stores/chat'
+
 // Configuration
-const API_BASE = 'https://wilfriedtayou.pythonanywhere.com/chatbot'
+const API_BASE = 'https://wilfriedtayou.pythonanywhere.com//chatbot'
 
 // État réactif
 const conversations = ref([])
@@ -308,11 +310,48 @@ const inputArea = ref(null)
 const inputHeight = ref(160)
 const showScrollButton = ref(false)
 
+const chatStore = useChatStore()
+
 // Charger les conversations au démarrage
 onMounted(async () => {
   await loadConversations()
   calculateInputHeight()
   window.addEventListener('resize', calculateInputHeight)
+
+  // Si nous avons des données dans le store, les utiliser
+  if (chatStore.currentConversationId) {
+    currentConversationId.value = chatStore.currentConversationId
+    if (chatStore.initialMessage) {
+      // Ajouter le message initial à l'affichage uniquement
+      messages.value.push({
+        id: Date.now().toString(),
+        sender: 'user',
+        content: chatStore.initialMessage,
+        created_at: new Date().toISOString()
+      })
+      // Afficher l'indicateur de chargement
+      isLoading.value = true
+      scrollToBottom()
+      
+      // Attendre la réponse de l'assistant
+      try {
+        const response = await $fetch(`${API_BASE}/chat/${currentConversationId.value}/`, {
+          credentials: 'include'
+        })
+        
+        if (Array.isArray(response.messages)) {
+          messages.value = response.messages
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement de la réponse:', error)
+      } finally {
+        isLoading.value = false
+        scrollToBottom()
+      }
+    }
+    // Nettoyer le store
+    chatStore.clearConversationData()
+  }
 })
 
 onUnmounted(() => {
@@ -458,8 +497,7 @@ const selectConversation = async (id) => {
   await loadConversation(id)
 }
 
-const sendMessage = async () => {
-  const messageText = newMessage.value.trim()
+const sendMessage = async (messageText = newMessage.value.trim()) => {
   if (!messageText || isLoading.value) return
 
   // Afficher immédiatement le message utilisateur
@@ -479,6 +517,7 @@ const sendMessage = async () => {
     messageInput.value.style.height = 'auto'
     calculateInputHeight()
   }
+
   try {
     let response;
 
@@ -493,7 +532,6 @@ const sendMessage = async () => {
 
       // Recharger la conversation pour avoir tous les messages
       const updatedConv = await $fetch(`${API_BASE}/chat/${currentConversationId.value}/`, {
-        method: 'GET',
         credentials: 'include'
       });
       
@@ -503,7 +541,11 @@ const sendMessage = async () => {
       response = await $fetch(`${API_BASE}/chat/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: messageText }),
+        body: JSON.stringify({ 
+          message: messageText,
+          situation_type: chatStore.situationType,
+          first_name: chatStore.firstName
+        }),
         credentials: 'include'
       });
 
@@ -543,7 +585,6 @@ const sendMessage = async () => {
 
     alert(errorMessage);
     newMessage.value = messageText; // Restaurer le message
-
   } finally {
     isLoading.value = false;
 

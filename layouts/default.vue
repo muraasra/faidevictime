@@ -1,5 +1,5 @@
 <script setup lang="ts">
-
+import ChatbotButton from '~/components/ChatbotButton.vue'
 </script>
 
 <template>
@@ -7,5 +7,6 @@
     <AppHeader/>
     <slot/>
     <AppFooter/>
+    <ChatbotButton />
   </div>  
 </template>

@@ -133,7 +133,7 @@
                         : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
                     ]"
                   >
-                    <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: getMarkerColor(category.label) }"></span>
+                    <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: getMarkerColor(category.label).color }"></span>
                     {{ category.label }}
                   </button>
                 </div>
@@ -341,15 +341,43 @@ function getServiceCategory(service: Service): string {
   return 'Non spécifié';
 }
 
-function getMarkerColor(categorie: string): string {
+function getMarkerColor(categorie: string): { color: string, icon: string } {
   switch (categorie.toLowerCase()) {
-    case "soins médicaux": return '#dc2626'
-    case "appui psychosocial": return '#ca8a04'
-    case "police / sécurité": return '#16a34a'
-    case "assistance juridique": return '#2563eb'
-    case "santé mentale": return '#7c3aed'
-    case "réinsertion économique": return '#ea580c'
-    default: return '#4b5563'
+    case "soins médicaux": 
+      return { 
+        color: '#dc2626',
+        icon: 'fas fa-hospital'
+      }
+    case "appui psychosocial": 
+      return { 
+        color: '#ca8a04',
+        icon: 'fas fa-hands-helping'
+      }
+    case "police / sécurité": 
+      return { 
+        color: '#16a34a',
+        icon: 'fas fa-shield-alt'
+      }
+    case "assistance juridique": 
+      return { 
+        color: '#2563eb',
+        icon: 'fas fa-balance-scale'
+      }
+    case "santé mentale": 
+      return { 
+        color: '#7c3aed',
+        icon: 'fas fa-brain'
+      }
+    case "réinsertion économique": 
+      return { 
+        color: '#ea580c',
+        icon: 'fas fa-briefcase'
+      }
+    default: 
+      return { 
+        color: '#4b5563',
+        icon: 'fas fa-map-marker-alt'
+      }
   }
 }
 
@@ -702,27 +730,38 @@ onMounted(async () => {
       }
 
       const categorie = getServiceCategory(service)
-      const marker = L.default.circleMarker([lat, lng], {
-        radius: 8,
-        fillColor: getMarkerColor(categorie),
-        color: '#fff',
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 0.8
+      const { color, icon } = getMarkerColor(categorie)
+
+      // Créer un marqueur personnalisé avec icône
+      const marker = L.default.divIcon({
+        className: 'custom-marker',
+        html: `
+          <div class="marker-container">
+            <div class="marker-icon" style="background-color: ${color}">
+              <i class="${icon}"></i>
+            </div>
+            <div class="marker-label">${service.nom_structure}</div>
+          </div>
+        `,
+        iconSize: [40, 60],
+        iconAnchor: [20, 60],
+        popupAnchor: [0, -60]
       })
 
-      marker.bindTooltip(service.nom_structure, {
+      const markerInstance = L.default.marker([lat, lng], { icon: marker })
+
+      markerInstance.bindTooltip(service.nom_structure, {
         permanent: false,
         direction: 'top',
         className: 'custom-tooltip'
       })
 
-      marker.on('click', () => {
+      markerInstance.on('click', () => {
         selectService(service)
       })
 
-      markersGroup.addLayer(marker)
-      markers.push(marker)
+      markersGroup.addLayer(markerInstance)
+      markers.push(markerInstance)
     })
 
     // Ajout du groupe de marqueurs à la carte
@@ -744,6 +783,23 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+// Add new refs for chatbot
+const isFullscreen = ref(true)
+
+// Add lifecycle hook to handle fullscreen timing
+onMounted(() => {
+  // After 3 seconds, minimize the chatbot
+  setTimeout(() => {
+    isFullscreen.value = false
+  }, 3000)
+})
+
+// Add function to open chat
+const openChat = () => {
+  // Add your chat opening logic here
+  console.log('Opening chat...')
+}
 </script>
 
 <style>
@@ -772,6 +828,8 @@ onMounted(async () => {
   font-size: 0.875rem;
   font-weight: 500;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  white-space: nowrap;
+  margin-top: 10px;
 }
 
 .dark .custom-tooltip {
@@ -857,6 +915,191 @@ onMounted(async () => {
   80%, 100% {
     transform: scale(2.5);
     opacity: 0;
+  }
+}
+
+.custom-marker {
+  background: none;
+  border: none;
+}
+
+.marker-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.marker-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 2px solid white;
+  transition: transform 0.2s ease;
+  z-index: 2;
+}
+
+.marker-icon i {
+  font-size: 1.2rem;
+}
+
+.marker-label {
+  position: relative;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  text-align: center;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 1;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.dark .marker-label {
+  background-color: rgba(31, 41, 55, 0.9);
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.marker-container:hover .marker-icon {
+  transform: scale(1.1);
+}
+
+.dark .marker-icon {
+  border-color: #1f2937;
+}
+
+/* Animation pour les marqueurs */
+@keyframes markerPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.marker-icon {
+  animation: markerPulse 2s infinite;
+}
+
+/* Chatbot Styles */
+.chatbot-container {
+  position: fixed;
+  z-index: 1000;
+  transition: all 0.5s ease-in-out;
+}
+
+.chatbot-fullscreen {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chatbot-minimized {
+  bottom: 2rem;
+  right: 2rem;
+  transform: scale(1);
+}
+
+.chatbot-content {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #1a5f3c 0%, #2d8659 100%);
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.chatbot-header {
+  margin-bottom: 1.5rem;
+}
+
+.chatbot-button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: white;
+  color: #1a5f3c;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.chatbot-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.chatbot-button:active {
+  transform: translateY(0);
+}
+
+/* Animation for fullscreen to minimized transition */
+@keyframes minimizeChat {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.8);
+    opacity: 0.9;
+  }
+}
+
+.chatbot-minimized .chatbot-content {
+  animation: minimizeChat 0.5s ease-out forwards;
+}
+
+/* Dark mode support */
+.dark .chatbot-button {
+  background-color: #1f2937;
+  color: white;
+}
+
+.dark .chatbot-button:hover {
+  background-color: #374151;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .chatbot-minimized {
+    bottom: 1rem;
+    right: 1rem;
+  }
+
+  .chatbot-content {
+    padding: 1rem;
+  }
+
+  .chatbot-button span {
+    display: none;
+  }
+
+  .chatbot-button {
+    padding: 0.75rem;
   }
 }
 </style>

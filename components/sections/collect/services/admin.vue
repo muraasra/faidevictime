@@ -74,14 +74,15 @@
       </span>
     </div>
 
-    <div class="overflow-x-auto mt-6 rounded-md shadow">
+    <!-- Vue Desktop/Tablet - Table classique -->
+    <div class="hidden md:block overflow-x-auto mt-6 rounded-md shadow">
       <table class="min-w-full bg-white dark:bg-zinc-900 text-sm">
         <thead class="bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300">
           <tr>
             <th class="p-3 text-left font-semibold whitespace-nowrap">Nom Structure</th>
             <th class="p-3 text-left font-semibold whitespace-nowrap">Fonction Répondant</th>
             <th class="p-3 text-left font-semibold whitespace-nowrap">Nom Répondant</th>
-            <th class="p-3 text-left font-semibold whitespace-nowrap">Téléphone Répondant</th>
+            <th class="p-3 text-left font-semibold whitespace-nowrap">Téléphone</th>
             <th class="p-3 text-left font-semibold whitespace-nowrap">Catégorie</th>
             <th class="p-3 text-left font-semibold whitespace-nowrap">Statut</th>
             <th class="p-3 text-right font-semibold whitespace-nowrap">Actions</th>
@@ -107,16 +108,63 @@
               </span>
             </td>
             <td class="p-3 text-right space-x-2 whitespace-nowrap">
-              <NuxtLink :to="`/collect/viewAdmin/${service.id}`" class="text-blue-600 hover:underline">Voir</NuxtLink>
-              <NuxtLink :to="`/collect/edit/${service.id}`" class="text-yellow-600 hover:underline">Éditer</NuxtLink>
-              <button 
-                @click="toggleServiceStatus(service)" 
-                :class="service.is_active ? 'text-red-600' : 'text-green-600'"
-                class="hover:underline"
-              >
-                {{ service.is_active ? 'Désactiver' : 'Activer' }}
-              </button>
-              <button @click="deleteService(service.id)" class="text-red-600 hover:underline">Supprimer</button>
+              <div class="flex justify-end gap-2">
+                <!-- Voir -->
+                <div class="relative group">
+                  <NuxtLink :to="`/collect/viewAdmin/${service.id}`" class="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                  </NuxtLink>
+                  <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    Voir les détails
+                  </div>
+                </div>
+
+                <!-- Éditer -->
+                <div class="relative group">
+                  <NuxtLink :to="`/collect/edit/${service.id}`" class="p-2 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-md transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  </NuxtLink>
+                  <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    Modifier le service
+                  </div>
+                </div>
+
+                <!-- Activer/Désactiver -->
+                <div class="relative group">
+                  <button 
+                    @click="toggleServiceStatus(service)" 
+                    :class="service.is_active ? 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20' : 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'"
+                    class="p-2 rounded-md transition-colors"
+                  >
+                    <svg v-if="service.is_active" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </button>
+                  <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    {{ service.is_active ? 'Désactiver' : 'Activer' }}
+                  </div>
+                </div>
+
+                <!-- Supprimer -->
+                <div class="relative group">
+                  <button @click="deleteService(service.id)" class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                  <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                    Supprimer le service
+                  </div>
+                </div>
+              </div>
             </td>
           </tr>
           <tr v-if="filteredServices.length === 0">
@@ -128,20 +176,127 @@
       </table>
     </div>
 
+    <!-- Vue Mobile - Cards -->
+    <div class="md:hidden mt-6 space-y-4">
+      <div
+        v-for="service in paginatedServices"
+        :key="service.id"
+        class="bg-white dark:bg-zinc-900 rounded-lg shadow-md p-4 border dark:border-gray-700"
+      >
+        <!-- Header avec nom et statut -->
+        <div class="flex justify-between items-start mb-3">
+          <h3 class="font-semibold text-gray-800 dark:text-white text-lg">
+            {{ capitalize(service.nom_structure) }}
+          </h3>
+          <span 
+            :class="service.statut ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'" 
+            class="px-2 py-1 rounded-full text-xs font-medium"
+          >
+            {{ service.statut ? 'Actif' : 'Inactif' }}
+          </span>
+        </div>
+
+        <!-- Informations principales -->
+        <div class="space-y-2 mb-4">
+          <div class="flex items-center text-sm">
+            <span class="font-medium text-gray-600 dark:text-gray-400 w-20">Contact:</span>
+            <span class="text-gray-800 dark:text-white">{{ capitalize(service.nom_repondant) }}</span>
+          </div>
+          <div class="flex items-center text-sm">
+            <span class="font-medium text-gray-600 dark:text-gray-400 w-20">Tél:</span>
+            <span class="text-gray-800 dark:text-white">{{ service.telephone_repondant }}</span>
+          </div>
+          <div class="flex items-center text-sm">
+            <span class="font-medium text-gray-600 dark:text-gray-400 w-20">Catégorie:</span>
+            <span class="text-emerald-600 dark:text-emerald-400 font-medium">{{ getServiceCategory(service) }}</span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-end gap-3 pt-3 border-t dark:border-gray-700">
+          <!-- Voir -->
+          <div class="relative group">
+            <NuxtLink :to="`/collect/viewAdmin/${service.id}`" class="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+            </NuxtLink>
+            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+              Voir
+            </div>
+          </div>
+
+          <!-- Éditer -->
+          <div class="relative group">
+            <NuxtLink :to="`/collect/edit/${service.id}`" class="p-2 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-md transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+              </svg>
+            </NuxtLink>
+            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+              Éditer
+            </div>
+          </div>
+
+          <!-- Activer/Désactiver -->
+          <div class="relative group">
+            <button 
+              @click="toggleServiceStatus(service)" 
+              :class="service.is_active ? 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20' : 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'"
+              class="p-2 rounded-md transition-colors"
+            >
+              <svg v-if="service.is_active" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </button>
+            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+              {{ service.is_active ? 'Activer' : 'Désactiver' }}
+            </div>
+          </div>
+
+          <!-- Supprimer -->
+          <div class="relative group">
+            <button @click="deleteService(service.id)" class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+            </button>
+            <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+              Supprimer
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Message si aucun service -->
+      <div v-if="filteredServices.length === 0" class="bg-white dark:bg-zinc-900 rounded-lg shadow-md p-8 text-center border dark:border-gray-700">
+        <div class="text-gray-500 dark:text-gray-400">
+          <svg class="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          <p>Aucun service enregistré par vous.</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Pagination -->
     <div class="flex justify-center items-center gap-4 mt-6">
       <button
-        class="px-4 py-1 bg-gray-200 dark:bg-zinc-800 rounded hover:bg-gray-300 dark:hover:bg-zinc-700"
+        class="px-4 py-2 bg-gray-200 dark:bg-zinc-800 rounded hover:bg-gray-300 dark:hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         @click="prevPage"
         :disabled="currentPage === 1"
       >
         Précédent
       </button>
-      <span class="text-sm text-gray-700 dark:text-gray-300">
+      <span class="text-sm text-gray-700 dark:text-gray-300 px-4">
         Page {{ currentPage }} / {{ totalPages }}
       </span>
       <button
-        class="px-4 py-1 bg-gray-200 dark:bg-zinc-800 rounded hover:bg-gray-300 dark:hover:bg-zinc-700"
+        class="px-4 py-2 bg-gray-200 dark:bg-zinc-800 rounded hover:bg-gray-300 dark:hover:bg-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         @click="nextPage"
         :disabled="currentPage === totalPages"
       >
@@ -219,7 +374,6 @@ function getCategoryLabel(category: string): string {
 // Filtrer les services
 const filteredServices = computed(() => {
   let filtered = services.value || []
-
   // Filtre par recherche
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
@@ -239,8 +393,11 @@ const filteredServices = computed(() => {
   // Filtre par statut
   if (statusFilter.value !== '') {
     const isActive = statusFilter.value === 'true'
-    filtered = filtered.filter(service => service.is_active === isActive)
+    filtered = filtered.filter(service => service.statut === isActive)
   }
+
+  // Trier par ordre décroissant (par ID)
+  filtered = filtered.sort((a, b) => b.id - a.id)
 
   return filtered
 })
@@ -273,11 +430,18 @@ function prevPage() {
 }
 
 // Supprimer un service (à connecter plus tard)
+
+const showDeletePopup = ref(false)
+const serviceToDelete = ref<number | null>(null)
+
+function confirmDeleteService(id: number) {
+  serviceToDelete.value = id
+  showDeletePopup.value = true
+}
+
 function deleteService(id: number) {
-  if (confirm('Voulez-vous vraiment supprimer ce service ?')) {
-    console.log('Suppression du service ID:', id)
-    // TODO : appel API + rechargement
-  }
+  console.log('Suppression du service ID:', id)
+  // TODO : appel API + rechargement
 }
 
 // Changer le statut d'un service (actif/inactif)
@@ -307,7 +471,7 @@ async function toggleServiceStatus(service: Service) {
       })
       
       // Notification de succès
-      alert(`Le service a été ${newStatus ? 'activé' : 'désactivé'} avec succès. ${newStatus}`)
+      showSuccessPopup(`Le service a été ${newStatus ? 'activé' : 'désactivé'} avec succès.`)
     }
   } catch (error) {
     // Rétablir l'état précédent en cas d'erreur
@@ -327,5 +491,26 @@ function getServiceCategory(service: Service): string {
   if (service.sante_mentale) return 'Santé mentale';
   if (service.reinsertion_economique) return 'Réinsertion économique';
   return 'Non spécifié';
+}
+function showSuccessPopup(message: string) {
+  // Display a success popup to the user
+  const successPopup = document.createElement('div');
+  successPopup.textContent = message;
+  successPopup.style.position = 'fixed';
+  successPopup.style.bottom = '20px';
+  successPopup.style.right = '20px';
+  successPopup.style.backgroundColor = '#4caf50';
+  successPopup.style.color = 'white';
+  successPopup.style.padding = '10px 20px';
+  successPopup.style.borderRadius = '5px';
+  successPopup.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.2)';
+  successPopup.style.zIndex = '1000';
+  document.body.appendChild(successPopup);
+
+  setTimeout(() => {
+    successPopup.style.opacity = '0';
+    successPopup.style.transition = 'opacity 0.5s';
+    setTimeout(() => document.body.removeChild(successPopup), 500);
+  }, 3000);
 }
 </script>

@@ -1,10 +1,44 @@
 <script lang="ts" setup>
 const navIsOpen = useState('navIsOpen', () => false)
+const lastScrollY = ref(0)
+const isVisible = ref(true)
 
 function toggleNav(event: MouseEvent): void {
     event.preventDefault()
     navIsOpen.value = !navIsOpen.value
 }
+
+// Gestion du scroll avec animation fluide
+const handleScroll = () => {
+    const currentScrollY = window.scrollY
+    
+    // Déterminer la direction du scroll
+    if (currentScrollY > lastScrollY.value && currentScrollY > 100) {
+        // Scroll vers le bas et pas tout en haut
+        isVisible.value = false
+    } else {
+        // Scroll vers le haut ou tout en haut
+        isVisible.value = true
+    }
+    
+    lastScrollY.value = currentScrollY
+}
+
+// Gestion du scroll avec debounce
+let scrollTimeout: NodeJS.Timeout
+const debouncedScroll = () => {
+    clearTimeout(scrollTimeout)
+    scrollTimeout = setTimeout(handleScroll, 10)
+}
+
+onMounted(() => {
+    window.addEventListener('scroll', debouncedScroll)
+})
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', debouncedScroll)
+    clearTimeout(scrollTimeout)
+})
 
 const navLinks = [
     {
@@ -28,10 +62,16 @@ const navLinks = [
         href: "/contact"
     }
 ]
-
 </script>
+
 <template>
-    <header class="fixed inset-x-0 top-0 py-3 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
+    <header 
+        class="fixed inset-x-0 top-0 py-3 z-50 transition-all duration-300 ease-in-out"
+        :class="[
+            isVisible ? 'translate-y-0' : '-translate-y-full',
+            'bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm'
+        ]"
+    >
         <AtomsContainer class-name="relative">
             <nav class="flex items-center justify-between w-full relative">
                 <!-- app logo -->
@@ -39,7 +79,7 @@ const navLinks = [
                     <NuxtLink to="/" class="flex items-center gap-2">
                         <span class="flex">
                             <img src="/ico.png" width="40" alt="avatar"
-                                class="w-10 h-10 rounded-full border-2 border-white dark:border-gray-400 object-cover">
+                                class="w-10 h-10 rounded-full border-2 border-white dark:border-zinc-700 object-cover">
                         </span>
                         <span class="text-lg text-gray-700 dark:text-white">VictiSafe</span>
                     </NuxtLink>
@@ -47,13 +87,13 @@ const navLinks = [
 
                 <!-- Navigation mobile -->
                 <div 
-                    class="fixed inset-0 bg-gray-800/40 dark:bg-gray-900/60 lg:hidden transition-opacity duration-300"
+                    class="fixed inset-0 bg-zinc-800/40 dark:bg-zinc-900/60 lg:hidden transition-opacity duration-300"
                     :class="navIsOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'"
                     @click="navIsOpen = false"
                 ></div>
 
                 <div 
-                    class="fixed top-0 bottom-0 left-0 w-[280px] lg:w-auto lg:static bg-white  lg:bg-transparent dark:text-white
+                    class="fixed top-0 bottom-0 left-0 w-[280px] lg:w-auto lg:static bg-white lg:bg-transparent dark:bg-zinc-900 dark:text-white
                     p-6 lg:p-0 transition-transform duration-300 transform lg:transform-none shadow-lg lg:shadow-none"
                     :class="navIsOpen ? 'translate-x-0' : '-translate-x-full'"
                 >
@@ -84,7 +124,7 @@ const navLinks = [
                     <!-- Menu mobile toggle -->
                     <button 
                         @click="toggleNav" 
-                        class="flex lg:hidden p-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none"
+                        class="flex lg:hidden p-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800 focus:outline-none"
                         aria-label="Toggle mobile menu"
                     >
                         <div class="w-6 h-5 relative flex flex-col justify-between">
@@ -121,5 +161,16 @@ const navLinks = [
     .nav-link {
         @apply block w-full py-2;
     }
+}
+
+/* Animation de la barre de navigation */
+.fixed {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+/* Ajout d'un espace pour compenser la barre de navigation fixe */
+:deep(body) {
+    padding-top: 4rem;
 }
 </style>

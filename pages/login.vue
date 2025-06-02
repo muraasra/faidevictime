@@ -71,7 +71,7 @@ const handleSubmit = async () => {
     });
 
     await nextTick();
-    router.push('/collect/root');
+    router.push('/collect/dash');
   } catch (err) {
     console.error(err);
     error.value = 'Erreur lors de la connexion';

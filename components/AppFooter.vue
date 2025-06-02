@@ -12,14 +12,16 @@
                     </NuxtLink>
 
                     <p class="text-gray-600 dark:text-gray-300 pt-6">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia nemo, veritatis
+                        VictiSafe est une plateforme d'assistance aux victimes qui offre un soutien psychologique, 
+                        des ressources juridiques et un accompagnement personnalisé pour vous aider à surmonter 
+                        les difficultés et retrouver votre bien-être.
                     </p>
                 </div>
 
-                <BlocksFooterNavBlock title="Enterprise" :links="quickLinks" />
                 <BlocksFooterNavBlock title="Ressources" :links="ressourcesLinks" />
-                <BlocksFooterNavBlock title="Support" :links="supportLinks" />
-                <BlocksFooterNavBlock title="Enterprise" :links="quickLinks" />
+                <BlocksFooterNavBlock title="Aide & Support" :links="supportLinks" />
+                <BlocksFooterNavBlock title="Organisations" :links="organizationLinks" />
+                <BlocksFooterNavBlock title="Légal" :links="legalLinks" />
             </div>
         </AtomsContainer>
         <div class="py-2 bg-gray-200 dark:bg-[rgb(10,16,29)]">
@@ -31,7 +33,7 @@
                     </div>
 
                     <div class="flex items-center gap-x-3">
-                        <NuxtLink target="_blank" to="#" class="transition hover:!text-primary">
+                        <NuxtLink target="_blank" to="https://twitter.com/cipcre" class="transition hover:!text-primary">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                                 class="w-5 h-5" viewBox="0 0 16 16">
                                 <path
@@ -56,57 +58,63 @@
 </template>
 
 <script lang="ts" setup>
-const quickLinks = [
-    {
-        href: "#",
-        text: "About us"
-    },
-    {
-        href: "#",
-        text: "News"
-    },
-    {
-        href: "#",
-        text: "Team"
-    },
-    {
-        href: "#",
-        text: "Solution"
-    }
-]
 const ressourcesLinks = [
     {
-        href: "#",
-        text: "Developpers"
+        href: "https://www.cipcre.org/ressources/",
+        text: "Ressources"
     },
     {
-        href: "#",
-        text: "Integration"
+        href: "https://www.cipcre.org/actualites/",
+        text: "Actualités"
     },
     {
-        href: "#",
-        text: "Pricing"
+        href: "https://www.cipcre.org/publications/",
+        text: "Publications"
     }
 ]
 
 const supportLinks = [
     {
-        href: "#",
-        text: "Contact-us"
+        href: "https://www.cipcre.org/contact/",
+        text: "Contactez-nous"
     },
     {
-        href: "#",
-        text: "Licence"
+        href: "/chat",
+        text: "Assistance en ligne"
     },
     {
-        href: "#",
-        text: "Terms"
-    },
-    {
-        href: "#",
+        href: "https://www.cipcre.org/faq/",
         text: "FAQ"
     }
 ]
 
+const organizationLinks = [
+    {
+        href: "https://www.cipcre.org/",
+        text: "CIPCRE"
+    },
+    {
+        href: "https://www.cipcre.org/partenaires/",
+        text: "Partenaires"
+    },
+    {
+        href: "https://www.cipcre.org/nous-soutenir/",
+        text: "Nous soutenir"
+    }
+]
 
+const legalLinks = [
+    {
+        href: "https://www.cipcre.org/mentions-legales/",
+        text: "Mentions légales"
+    },
+    {
+        href: "https://www.cipcre.org/politique-de-confidentialite/",
+        text: "Confidentialité"
+    },
+    {
+        href: "https://www.cipcre.org/conditions-dutilisation/",
+        text: "Conditions d'utilisation"
+    }
+]
 </script>

@@ -1,14 +1,34 @@
 <script setup lang="ts">
 import ThemeSwitcher from "~/components/elements/ThemeSwitcher.vue";
 import { NAVIGATION_ITEMS } from "~/constants/index";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 
 // État du menu mobile
 const isMobileMenuOpen = ref(false);
+const isScrolled = ref(false);
+const lastScrollY = ref(0);
+const isVisible = ref(true);
 
 // Fonction pour basculer le menu mobile
 const toggleMobileMenu = () => {
   isMobileMenuOpen.value = !isMobileMenuOpen.value;
+};
+
+// Gestion du scroll avec animation fluide
+const handleScroll = () => {
+  const currentScrollY = window.scrollY;
+  
+  // Déterminer la direction du scroll
+  if (currentScrollY > lastScrollY.value && currentScrollY > 100) {
+    // Scroll vers le bas et pas tout en haut
+    isVisible.value = false;
+  } else {
+    // Scroll vers le haut ou tout en haut
+    isVisible.value = true;
+  }
+  
+  lastScrollY.value = currentScrollY;
+  isScrolled.value = currentScrollY > 50;
 };
 
 // Fonction de déconnexion
@@ -29,18 +49,39 @@ const router = useRouter();
 router.afterEach(() => {
   isMobileMenuOpen.value = false;
 });
+
+// Gestion du scroll avec debounce
+let scrollTimeout: NodeJS.Timeout;
+const debouncedScroll = () => {
+  clearTimeout(scrollTimeout);
+  scrollTimeout = setTimeout(handleScroll, 10);
+};
+
+onMounted(() => {
+  window.addEventListener('scroll', debouncedScroll);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', debouncedScroll);
+  clearTimeout(scrollTimeout);
+});
 </script>
 
 <template>
   <header
-    class="sticky top-0 z-20 py-2 px-4 sm:px-6 w-full flex items-center justify-between border-b dark:bg-black dark:border-b-gray-600 bg-white border-b-gray-200 shadow-sm"
+    :class="[
+      'fixed top-0 z-20 w-full transition-all duration-300 ease-in-out',
+      isVisible ? 'translate-y-0' : '-translate-y-full',
+      'py-2 px-4 sm:px-6 flex items-center justify-between',
+      'border-b dark:bg-zinc-900 dark:border-b-zinc-700 bg-white border-b-gray-200 shadow-sm'
+    ]"
   >
     <!-- Logo et bouton menu mobile -->
     <div class="flex items-center gap-x-4">
       <!-- Bouton menu hamburger pour mobile -->
       <button 
         @click="toggleMobileMenu"
-        class="p-2 rounded-lg md:hidden hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none"
+        class="p-2 rounded-lg md:hidden hover:bg-gray-100 dark:hover:bg-zinc-800 focus:outline-none"
         aria-label="Menu"
       >
         <svg 
@@ -95,7 +136,7 @@ router.afterEach(() => {
             {{ auth.user?.username }}
           </span>
           <span class="text-xs text-gray-500 dark:text-gray-400">
-            {{ auth.user?.role || 'Utilisateur' }}
+            {{ auth.user?.username ? 'Utilisateur' : 'Invité' }}
           </span>
         </div>
 
@@ -116,17 +157,17 @@ router.afterEach(() => {
     <!-- Menu mobile -->
     <div 
       v-show="isMobileMenuOpen"
-      class="absolute top-full left-0 right-0 bg-white dark:bg-black border-b dark:border-b-gray-600 shadow-lg md:hidden transform transition-transform ease-in-out duration-300"
+      class="absolute top-full left-0 right-0 bg-white dark:bg-zinc-900 border-b dark:border-b-zinc-700 shadow-lg md:hidden transform transition-transform ease-in-out duration-300"
     >
       <div class="px-4 py-3 space-y-4">
         <!-- Profil utilisateur mobile -->
-        <div class="flex items-center gap-x-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <div class="flex items-center gap-x-3 p-4 bg-gray-50 dark:bg-zinc-800 rounded-lg">
           <div class="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center text-lg font-medium">
             {{ userInitials }}
           </div>
           <div class="flex flex-col">
             <span class="font-medium text-gray-900 dark:text-gray-100">{{ auth.user?.username }}</span>
-            <span class="text-sm text-gray-500 dark:text-gray-400">{{ auth.user?.role || 'Utilisateur' }}</span>
+            <span class="text-sm text-gray-500 dark:text-gray-400">{{ auth.user?.username ? 'Utilisateur' : 'Invité' }}</span>
           </div>
         </div>
 
@@ -165,5 +206,16 @@ input:focus {
   transition-property: transform, opacity;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
+}
+
+/* Animation de la barre de navigation */
+.fixed {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+/* Ajout d'un espace pour compenser la barre de navigation fixe */
+:deep(body) {
+  padding-top: 4rem;
 }
 </style>

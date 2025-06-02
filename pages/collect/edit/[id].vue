@@ -7,6 +7,9 @@ import { DASHBOARD_CARDS_DATA } from "~/constants";
 
 const config = useRuntimeConfig()
 
+const route = useRoute()
+const id = route.params.id
+
 // const { data: services } = await useApi('https://wilfriedtayou.pythonanywhere.com/api/services/', {
 
 // })
@@ -25,7 +28,7 @@ const config = useRuntimeConfig()
      
     </div>
     <br>
-    <SectionsCollectServicesEdit/>
+    <SectionsCollectServicesEdit :id="id" />
   
   </div>
 </template>

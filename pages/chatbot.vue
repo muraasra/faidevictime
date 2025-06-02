@@ -18,7 +18,7 @@
         <form class="message-form" @submit.prevent="handleSubmit">
           <div class="form-group">
             <label class="dark:text-white">Votre situation <span class="required">*</span></label>
-            <select v-model="formData.situationType" required class="dark:bg-zinc-700 dark:text-white dark:border-gray-600">
+            <select v-model="formData.situation_type" required class="dark:bg-zinc-700 dark:text-white dark:border-gray-600">
               <option value="">Sélectionnez le type de situation</option>
               <option value="urgence">Situation d'urgence</option>
               <option value="harcelement">Harcèlement</option>
@@ -32,7 +32,7 @@
               <label class="dark:text-white">Votre prénom</label>
               <input 
                 type="text" 
-                v-model="formData.firstName"
+                v-model="formData.first_name"
                 placeholder="Prénom (facultatif)"
                 class="dark:bg-zinc-700 dark:text-white dark:border-gray-600"
               >
@@ -65,24 +65,24 @@
             <label class="dark:text-white">Comment souhaitez-vous être contacté(e) ? <span class="required">*</span></label>
             <div class="contact-options">
               <label class="contact-option dark:bg-zinc-700 dark:text-white dark:border-gray-600">
-                <input type="radio" v-model="formData.contactPreference" value="chat">
+                <input type="radio" v-model="formData.contact_preference" value="chat">
                 <i class="fas fa-comments text-emerald-600 dark:text-emerald-400"></i>
                 <span>Chat en ligne</span>
               </label>
               <label class="contact-option dark:bg-zinc-700 dark:text-white dark:border-gray-600">
-                <input type="radio" v-model="formData.contactPreference" value="email">
+                <input type="radio" v-model="formData.contact_preference" value="email">
                 <i class="fas fa-envelope text-emerald-600 dark:text-emerald-400"></i>
                 <span>Email</span>
               </label>
               <label class="contact-option dark:bg-zinc-700 dark:text-white dark:border-gray-600">
-                <input type="radio" v-model="formData.contactPreference" value="phone">
+                <input type="radio" v-model="formData.contact_preference" value="phone">
                 <i class="fas fa-phone text-emerald-600 dark:text-emerald-400"></i>
                 <span>Téléphone</span>
               </label>
             </div>
           </div>
 
-          <div class="form-group" v-if="formData.contactPreference === 'email'">
+          <div class="form-group" v-if="formData.contact_preference === 'email'">
             <label class="dark:text-white">Votre email <span class="required">*</span></label>
             <input 
               type="email" 
@@ -93,7 +93,7 @@
             >
           </div>
 
-          <div class="form-group" v-if="formData.contactPreference === 'phone'">
+          <div class="form-group" v-if="formData.contact_preference === 'phone'">
             <label class="dark:text-white">Votre numéro de téléphone <span class="required">*</span></label>
             <input 
               type="tel" 
@@ -145,45 +145,110 @@
   </div>
 </template>
   
-  <script setup lang="ts">
+<script setup lang="ts">
 import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import { useChatStore } from '~/stores/chat'
 
 const formData = reactive({
-  situationType: '',
-  firstName: '',
+  situation_type: '',
+  first_name: '',
   age: '',
   message: '',
-  contactPreference: 'chat',
+  contact_preference: 'chat',
   email: '',
   phone: ''
 })
 
 const isSubmitting = ref(false)
+const router = useRouter()
+const chatStore = useChatStore()
 
 const handleSubmit = async () => {
   isSubmitting.value = true
   try {
-    // Simuler l'envoi du message
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    console.log('Message envoyé:', formData)
+    // On soumet toujours au backend d'abord
+    const response = await fetch('https://wilfriedtayou.pythonanywhere.com//assistance/requests/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        situation_type: formData.situation_type,
+        first_name: formData.first_name,
+        age: formData.age ? parseInt(formData.age) : null,
+        message: formData.message,
+        contact_preference: formData.contact_preference,
+        email: formData.contact_preference === 'email' ? formData.email : null,
+        phone: formData.contact_preference === 'phone' ? formData.phone : null
+      })
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.detail || 'Erreur lors de l\'envoi du message')
+    }
+
+    const data = await response.json()
+    console.log('Message envoyé:', data)
+    
     // Réinitialiser le formulaire
-    formData.situationType = ''
-    formData.firstName = ''
+    formData.situation_type = ''
+    formData.first_name = ''
     formData.age = ''
     formData.message = ''
-    formData.contactPreference = 'chat'
+    formData.contact_preference = 'chat'
     formData.email = ''
     formData.phone = ''
-    alert('Votre message a été envoyé. Nous vous contacterons rapidement.')
-  } catch (error) {
-    alert('Une erreur est survenue. Veuillez réessayer.')
+
+    // Si l'utilisateur a choisi le chat en ligne, on redirige vers la conversation
+    if (data.contact_preference === 'chat') {
+      // Formater le message initial avec toutes les informations
+      const formattedMessage = `Je m'appelle ${data.first_name || 'Anonyme'}. Je suis dans une situation de ${data.situation_type} au cameroun. ${data.message} Que puis-je faire maintenant ?`
+
+      // Créer une nouvelle conversation avec le message initial formaté
+      const chatResponse = await fetch('https://wilfriedtayou.pythonanywhere.com//chatbot/chat/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: formattedMessage,
+          situation_type: data.situation_type,
+          first_name: data.first_name
+        }),
+        credentials: 'include'
+      })
+
+      if (!chatResponse.ok) {
+        throw new Error('Erreur lors de la création de la conversation')
+      }
+
+      const chatData = await chatResponse.json()
+      
+      // Stocker les données de la conversation dans le store
+      chatStore.setConversationData({
+        conversationId: chatData.id,
+        initialMessage: formattedMessage,
+        situationType: data.situation_type,
+        firstName: data.first_name
+      })
+
+      // Rediriger vers la page de chat
+      router.push('/chat')
+    } else {
+      alert('Votre message a été envoyé. Nous vous contacterons rapidement.')
+    }
+  } catch (error: any) {
+    console.error('Erreur:', error)
+    alert(error.message || 'Une erreur est survenue. Veuillez réessayer.')
   } finally {
     isSubmitting.value = false
   }
 }
-  </script>
+</script>
   
-  <style scoped>
+<style scoped>
 .chatbot-page {
   max-width: 1200px;
   margin: 0 auto;
@@ -396,4 +461,4 @@ input:focus, select:focus, textarea:focus {
     justify-content: center;
   }
 }
-  </style>
+</style>
