@@ -70,14 +70,14 @@ body {
       <div class="bg-white border-b border-gray-200 px-4 py-4 shadow-sm flex-shrink-0">
         <div class="flex items-center justify-between">
           <!-- Menu Mobile -->
-          <button 
-            @click="showMobileMenu = !showMobileMenu"
+      <button 
+        @click="showMobileMenu = !showMobileMenu"
             class="md:hidden p-2 rounded-lg hover:bg-gray-100"
-          >
+      >
             <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-          </button>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
 
           <div class="flex-1 ml-4 md:ml-0">
             <h2 class="text-lg font-semibold text-gray-800">
@@ -93,56 +93,56 @@ body {
             <span class="text-sm font-medium text-green-700">En ligne</span>
           </div>
         </div>
-      </div>
+    </div>
 
       <!-- Menu Mobile -->
-      <div 
-        v-if="showMobileMenu" 
+    <div 
+      v-if="showMobileMenu" 
         class="md:hidden fixed inset-0 z-50 flex"
-      >
-        <div class="fixed inset-0 bg-black bg-opacity-50" @click="showMobileMenu = false"></div>
-        <div class="relative w-80 bg-white shadow-xl max-w-[85vw] flex flex-col">
-          <div class="p-4 border-b border-gray-200 flex items-center justify-between">
-            <h1 class="text-lg font-bold text-gray-800">Soutien Moral</h1>
-            <button @click="showMobileMenu = false" class="p-2 hover:bg-gray-100 rounded-lg">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
-          </div>
-          
-          <div class="flex-1 overflow-y-auto p-4">
+    >
+      <div class="fixed inset-0 bg-black bg-opacity-50" @click="showMobileMenu = false"></div>
+      <div class="relative w-80 bg-white shadow-xl max-w-[85vw] flex flex-col">
+        <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+          <h1 class="text-lg font-bold text-gray-800">Soutien Moral</h1>
+          <button @click="showMobileMenu = false" class="p-2 hover:bg-gray-100 rounded-lg">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto p-4">
             <button 
               @click="() => { startNewChat(); showMobileMenu = false; }" 
               class="w-full mb-4 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
               </svg>
               Nouvelle Conversation
             </button>
-            
-            <div class="space-y-3">
-              <div v-if="conversations.length === 0 && !isLoading" class="text-center py-4">
-                <p class="text-sm text-gray-500">Aucune conversation</p>
-              </div>
-              <div 
-                v-for="conv in conversations" 
-                :key="conv.id"
+          
+          <div class="space-y-3">
+            <div v-if="conversations.length === 0 && !isLoading" class="text-center py-4">
+              <p class="text-sm text-gray-500">Aucune conversation</p>
+            </div>
+            <div 
+              v-for="conv in conversations" 
+              :key="conv.id"
                 @click="() => { selectConversation(conv.id); showMobileMenu = false; }"
-                class="p-3 rounded-lg cursor-pointer transition-all border-l-4"
-                :class="{ 
-                  'bg-green-50 border-green-500': currentConversationId === conv.id,
-                  'bg-white border-transparent hover:bg-gray-50': currentConversationId !== conv.id 
-                }"
-              >
-                <h3 class="font-medium text-gray-800 text-sm">{{ conv.title || 'Nouvelle conversation' }}</h3>
-                <p class="text-xs text-gray-500 mt-1">{{ formatDate(conv.created_at) }}</p>
-              </div>
+              class="p-3 rounded-lg cursor-pointer transition-all border-l-4"
+              :class="{ 
+                'bg-green-50 border-green-500': currentConversationId === conv.id,
+                'bg-white border-transparent hover:bg-gray-50': currentConversationId !== conv.id 
+              }"
+            >
+              <h3 class="font-medium text-gray-800 text-sm">{{ conv.title || 'Nouvelle conversation' }}</h3>
+              <p class="text-xs text-gray-500 mt-1">{{ formatDate(conv.created_at) }}</p>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
       <!-- Zone des Messages -->
       <div 
@@ -549,7 +549,7 @@ const sendMessage = async (messageText = newMessage.value.trim(), event = null) 
         }),
         credentials: 'include'
       });
-
+      
       // Définir l'ID de la conversation courante
       if (response.id) {
         currentConversationId.value = response.id;

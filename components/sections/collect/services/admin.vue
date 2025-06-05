@@ -101,7 +101,7 @@
             <td class="p-3 text-gray-800 dark:text-white font-semibold text-emerald-600 dark:text-emerald-400 w-[15%]">{{ getServiceCategory(service) }}</td>
             <td class="p-3 text-gray-800 dark:text-white w-[10%]">
               <span 
-                :class="service.statut ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'"
+                :class="service.statut ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'" 
                 class="px-2 py-1 rounded-full text-xs font-medium"
               >
                 {{ service.statut ? 'Actif' : 'Inactif' }}

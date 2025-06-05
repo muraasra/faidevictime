@@ -46,7 +46,7 @@ const isOpen = ref(false);
             v-for="(group, index) in NAVIGATION_ITEMS"
             :key="index"
             class="space-y-2 pb-4 border-b border-gray-200 last:border-b-0 dark:border-zinc-700"
-          >
+            >
             <!-- Liens de navigation -->
             <div class="space-y-1">
               <NuxtLink
