@@ -16,7 +16,7 @@ const config = useRuntimeConfig()
 </script>
   
   <template>
-    <div class="py-6 px-4 md:px-10 text-gray-800 dark:text-white">
+    <div class="py-6 px-4 md:px-10 text-gray-800 dark:text-white  bg-gray-50 dark:bg-zinc-800">
       <h1 class="text-3xl font-bold text-emerald-500 mb-4">Gestion des services </h1>
       <pre>
        

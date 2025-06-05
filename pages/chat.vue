@@ -435,12 +435,13 @@ const getCurrentConversationTitle = () => {
 
 // Gestion du textarea
 const handleEnterKey = (event) => {
+  console.log('handleEnterKey called with:', event);
   if (event.shiftKey) {
     // Shift + Enter = nouvelle ligne
-    return
+    return;
   } else {
     // Enter = envoyer
-    sendMessage()
+    sendMessage(newMessage.value.trim(), event); // Explicitly pass the event
   }
 }
 
@@ -497,8 +498,9 @@ const selectConversation = async (id) => {
   await loadConversation(id)
 }
 
-const sendMessage = async (messageText = newMessage.value.trim()) => {
-  if (!messageText || isLoading.value) return
+const sendMessage = async (messageText = newMessage.value.trim(), event = null) => {
+  console.log('sendMessage called with:', { messageText, event });
+  if (!messageText || isLoading.value) return;
 
   // Afficher immédiatement le message utilisateur
   const userMessage = {

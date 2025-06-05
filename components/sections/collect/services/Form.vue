@@ -1,4 +1,5 @@
 <template>
+  
   <div class="p-6 bg-white dark:bg-zinc-900 rounded shadow w-full max-w-full lg:max-w-none">
     <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Formulaire de service</h2>
 
@@ -398,7 +399,6 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
-import { data } from 'autoprefixer';
 import { ref, reactive, watch, computed } from 'vue';
 import { specificQuestions, generalQuestions } from '~/constants/services'
 
@@ -445,7 +445,7 @@ type CategoryQuestions = {
   'Appui psychosocial': BaseQuestion[];
   'Police / Sécurité': BaseQuestion[];
   'Assistance juridique': BaseQuestion[];
-  'Hébergement': BaseQuestion[];
+  // 'Hébergement': BaseQuestion[];
   'Réinsertion économique': BaseQuestion[];
   [key: string]: BaseQuestion[]; // Pour l'accès dynamique
 };
@@ -526,12 +526,13 @@ const totalSteps = computed(() => {
 
 // Functions to get questions for each step
 const getQuestionsForStep = (step: number): BaseQuestion[] => {
+  let questions: BaseQuestion[] = [];
   if (step === 1) {
-    return typedGeneralQuestions.slice(0, questionsPerStep);
+    questions = typedGeneralQuestions.slice(0, questionsPerStep);
   } else if (step === 2) {
-    return typedGeneralQuestions.slice(questionsPerStep);
+    questions = typedGeneralQuestions.slice(questionsPerStep);
   }
-  return [];
+  return questions;
 };
 
 const getSpecificQuestionsForStep = (specificStep: number): BaseQuestion[] => {
@@ -555,13 +556,86 @@ const getSpecificStepsCount = (): number => {
 
 // Navigation functions
 const nextStep = () => {
-  if (canProceedToNextStep()) {
+  // Validate current step before proceeding
+  let currentQuestions: BaseQuestion[] = [];
+
+  if (currentStep.value === 1) {
+    currentQuestions = getQuestionsForStep(1);
+  } else if (currentStep.value === 2) {
+    currentQuestions = getQuestionsForStep(2);
+  } else if (currentStep.value >= 3 && selectedCategory.value) {
+     // Only validate specific questions if a category is selected
+    currentQuestions = getSpecificQuestionsForStep(currentStep.value - 2);
+  }
+
+  let isValidStep = true;
+  // Clear errors for the current step before re-validating
+  for (const question of currentQuestions) {
+      delete errors[question.key];
+  }
+  // Clear category error for step 2
+  if (currentStep.value === 2) {
+      delete errors.category;
+  }
+
+  // Explicitly validate each required field in the current step
+  for (const question of currentQuestions) {
+    // Only validate required fields when navigating steps
+    if (question.required) {
+      let value;
+      if (currentStep.value <= 2) {
+        value = form.transversales[question.key];
+      } else {
+        value = form.specifiques[question.key];
+      }
+      // Use validateField to populate the global errors object
+      if (!validateField(question.key, value)) {
+        isValidStep = false;
+      }
+    }
+  }
+
+  // Also validate category selection for step 2
+  if (currentStep.value === 2 && !selectedCategory.value) {
+    errors.category = "Veuillez sélectionner une catégorie";
+    isValidStep = false;
+  }
+
+  if (isValidStep) {
     currentStep.value++;
+    // Clear errors related to the previous step after moving forward
+    // This was already done at the beginning of the function for the current step's errors.
+    // We only need to ensure category error is cleared if moving past step 2.
+     if (currentStep.value === 3) {
+        delete errors.category;
+     }
+  } else {
+    // Show notification if there are validation errors
+    showNotification('Veuillez corriger les erreurs dans le formulaire', 'error');
   }
 };
 
 const previousStep = () => {
   if (currentStep.value > 1) {
+    // Clear errors when going back a step
+    let currentQuestions: BaseQuestion[] = [];
+
+    if (currentStep.value === 1) {
+      currentQuestions = getQuestionsForStep(1);
+    } else if (currentStep.value === 2) {
+      currentQuestions = getQuestionsForStep(2);
+    } else if (currentStep.value >= 3 && selectedCategory.value) {
+       currentQuestions = getSpecificQuestionsForStep(currentStep.value - 2);
+    }
+
+    for (const question of currentQuestions) {
+        delete errors[question.key];
+    }
+     // Clear category error if returning from specific questions step
+     if (currentStep.value === 3) {
+         delete errors.category;
+     }
+
     currentStep.value--;
   }
 };
@@ -625,23 +699,24 @@ const getDefaultSpecifiques = (category: string): SpecifiquesForm => {
 
 // Watch pour gérer le changement de catégorie
 watch(selectedCategory, (newCategory, oldCategory) => {
-  if (oldCategory) {
-    // Sauvegarder les réponses de l'ancienne catégorie
-    form.reponsesByCategory[oldCategory] = { ...form.specifiques };
-  }
+  // if (oldCategory) {
+  //   // Sauvegarder les réponses de l'ancienne catégorie
+  //   form.reponsesByCategory[oldCategory] = { ...form.specifiques };
+  // }
   
-  // Réinitialiser avec les valeurs par défaut
+  // Réinitialiser les spécifiques avec les valeurs par défaut pour la nouvelle catégorie
   const defaultValues = getDefaultSpecifiques(newCategory);
-  
-  // Restaurer les réponses précédentes si elles existent
-  if (newCategory && form.reponsesByCategory[newCategory]) {
-    form.specifiques = {
-      ...defaultValues,
-      ...form.reponsesByCategory[newCategory]
-    };
-  } else {
-    form.specifiques = defaultValues;
-  }
+  form.specifiques = defaultValues;
+
+  // // Restaurer les réponses précédentes si elles existent (commenté car l'utilisateur souhaite vider les champs)
+  // if (newCategory && form.reponsesByCategory[newCategory]) {
+  //   form.specifiques = {
+  //     ...defaultValues,
+  //     ...form.reponsesByCategory[newCategory]
+  //   };
+  // } else {
+  //   form.specifiques = defaultValues;
+  // }
 });
 
 const fillCoordinates = () => {
@@ -723,10 +798,11 @@ const validateField = (key: string, value: any): boolean => {
 
     case 'telephone_repondant':
       // Allow both formats: 10 digits or international format
-      if (value && !/^(\+\d{1,3}\s?)?\d{10}$/.test(value.replace(/\s/g, ''))) {
-        errors[key] = "Format invalide. Exemple: 0123456789 ou +225 0123456789";
-        return false;
-      }
+      // Removed specific format validation as requested
+      // if (value && !/^(\+\d{1,3}\s?)?\d{10}$/.test(value.replace(/\s/g, ''))) {
+      //   errors[key] = "Format invalide. Exemple: 0123456789 ou +225 0123456789";
+      //   return false;
+      // }
       break;
 
     case 'heures_ouverture':
@@ -765,15 +841,18 @@ const validateField = (key: string, value: any): boolean => {
 
 const validateForm = (): boolean => {
   let isValid = true;
+  // This function will now primarily be used by submitForm for a full validation check.
+  // Step validation is handled within nextStep.
 
-  // Validate required transversales
+  // Clear all errors before a full validation check
+  Object.keys(errors).forEach(key => delete errors[key]);
+
+  // Validate all required transversales
   const requiredTransversales = typedGeneralQuestions.filter(q => q.required);
   for (const question of requiredTransversales) {
     const value = form.transversales[question.key];
     if (!validateField(question.key, value)) {
       isValid = false;
-      showNotification(`Le champ "${question.label}" est invalide ou requis`, 'error');
-      return false; // Stop validation on first error
     }
   }
 
@@ -787,21 +866,21 @@ const validateForm = (): boolean => {
   if (selectedCategory.value) {
     const categoryQuestions = typedSpecificQuestions[selectedCategory.value] || [];
     for (const question of categoryQuestions) {
+      // Check if the specific question's key exists in form.specifiques before validating
       if (question.required && !validateField(question.key, form.specifiques[question.key])) {
         isValid = false;
       }
     }
   }
 
-  if (!isValid) {
-    showNotification('Veuillez corriger les erreurs dans le formulaire', 'error');
-  }
-
-  return isValid;
+  return isValid; // Return true only if no errors were found and isValid remained true
 };
 
 const submitForm = async () => {
+  // Validate the entire form before submitting
   if (!validateForm()) {
+     // validateForm will now populate the errors object
+     showNotification('Veuillez corriger les erreurs dans le formulaire', 'error');
     return;
   }
 
@@ -823,6 +902,8 @@ const submitForm = async () => {
       }
     });
 
+    console.log('Sending formData:', JSON.stringify(formData, null, 2)); // Log formData
+
     const response = await fetch('https://wilfriedtayou.pythonanywhere.com/api/submit-form/', {
       method: 'POST',
       headers: {
@@ -833,7 +914,9 @@ const submitForm = async () => {
     });
 
     if (!response.ok) {
-      throw new Error('Erreur lors de l\'envoi du formulaire');
+      const errorData = await response.json(); // Read the error response body
+      console.error('Backend error response:', errorData); // Log the error response
+      throw new Error(`Erreur HTTP ${response.status}: ${response.statusText}`);
     }
 
     showNotification('Formulaire envoyé avec succès!', 'success');

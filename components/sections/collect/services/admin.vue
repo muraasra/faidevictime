@@ -79,13 +79,13 @@
       <table class="min-w-full bg-white dark:bg-zinc-900 text-sm">
         <thead class="bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300">
           <tr>
-            <th class="p-3 text-left font-semibold whitespace-nowrap">Nom Structure</th>
-            <th class="p-3 text-left font-semibold whitespace-nowrap">Fonction Répondant</th>
-            <th class="p-3 text-left font-semibold whitespace-nowrap">Nom Répondant</th>
-            <th class="p-3 text-left font-semibold whitespace-nowrap">Téléphone</th>
-            <th class="p-3 text-left font-semibold whitespace-nowrap">Catégorie</th>
-            <th class="p-3 text-left font-semibold whitespace-nowrap">Statut</th>
-            <th class="p-3 text-right font-semibold whitespace-nowrap">Actions</th>
+            <th class="p-3 text-left font-semibold whitespace-nowrap w-1/4">Nom Structure</th>
+            <th class="p-3 text-left font-semibold whitespace-nowrap w-1/6">Fonction Répondant</th>
+            <th class="p-3 text-left font-semibold whitespace-nowrap w-1/6">Nom Répondant</th>
+            <th class="p-3 text-left font-semibold whitespace-nowrap w-1/6">Téléphone</th>
+            <th class="p-3 text-left font-semibold whitespace-nowrap w-[15%]">Catégorie</th>
+            <th class="p-3 text-left font-semibold whitespace-nowrap w-[10%]">Statut</th>
+            <th class="p-3 text-right font-semibold whitespace-nowrap w-[10%]">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -94,24 +94,24 @@
             :key="service.id"
             class="border-t dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-zinc-800"
           >
-            <td class="p-3 text-gray-800 dark:text-white">{{ capitalize(service.nom_structure) }}</td>
-            <td class="p-3 text-gray-800 dark:text-white">{{ capitalize(service.fonction_repondant) }}</td>
-            <td class="p-3 text-gray-800 dark:text-white">{{ capitalize(service.nom_repondant) }}</td>
-            <td class="p-3 text-gray-800 dark:text-white">{{ service.telephone_repondant }}</td>
-            <td class="p-3 text-gray-800 dark:text-white font-semibold text-emerald-600 dark:text-emerald-400">{{ getServiceCategory(service) }}</td>
-            <td class="p-3 text-gray-800 dark:text-white">
+            <td class="p-3 text-gray-800 dark:text-white w-1/4">{{ capitalize(service.nom_structure) }}</td>
+            <td class="p-3 text-gray-800 dark:text-white w-1/6">{{ capitalize(service.fonction_repondant) }}</td>
+            <td class="p-3 text-gray-800 dark:text-white w-1/6">{{ capitalize(service.nom_repondant) }}</td>
+            <td class="p-3 text-gray-800 dark:text-white w-1/6">{{ service.telephone_repondant }}</td>
+            <td class="p-3 text-gray-800 dark:text-white font-semibold text-emerald-600 dark:text-emerald-400 w-[15%]">{{ getServiceCategory(service) }}</td>
+            <td class="p-3 text-gray-800 dark:text-white w-[10%]">
               <span 
-                :class="service.statut ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'" 
+                :class="service.statut ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'"
                 class="px-2 py-1 rounded-full text-xs font-medium"
               >
                 {{ service.statut ? 'Actif' : 'Inactif' }}
               </span>
             </td>
-            <td class="p-3 text-right space-x-2 whitespace-nowrap">
-              <div class="flex justify-end gap-2">
+            <td class="p-3 text-right w-[10%]">
+              <div class="flex justify-end gap-1">
                 <!-- Voir -->
-                <div class="relative group">
-                  <NuxtLink :to="`/collect/viewAdmin/${service.id}`" class="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors">
+                <div class="relative group flex items-center justify-center w-8 h-8 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+                  <NuxtLink :to="`/collect/viewAdmin/${service.id}`" class="p-1 text-blue-600">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -123,8 +123,8 @@
                 </div>
 
                 <!-- Éditer -->
-                <div class="relative group">
-                  <NuxtLink :to="`/collect/edit/${service.id}`" class="p-2 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-md transition-colors">
+                <div class="relative group flex items-center justify-center w-8 h-8 rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors">
+                  <NuxtLink :to="`/collect/edit/${service.id}`" class="p-1 text-yellow-600">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                     </svg>
@@ -135,11 +135,11 @@
                 </div>
 
                 <!-- Activer/Désactiver -->
-                <div class="relative group">
+                <div class="relative group flex items-center justify-center w-8 h-8 rounded-md "
+                   :class="service.is_active ? 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20' : 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'">
                   <button 
                     @click="toggleServiceStatus(service)" 
-                    :class="service.is_active ? 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20' : 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'"
-                    class="p-2 rounded-md transition-colors"
+                    class="p-1"
                   >
                     <svg v-if="service.is_active" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -154,8 +154,8 @@
                 </div>
 
                 <!-- Supprimer -->
-                <div class="relative group">
-                  <button @click="deleteService(service.id)" class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors">
+                <div class="relative group flex items-center justify-center w-8 h-8 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                  <button @click="deleteService(service.id)" class="p-1 text-red-600">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                     </svg>
@@ -213,10 +213,10 @@
         </div>
 
         <!-- Actions -->
-        <div class="flex justify-end gap-3 pt-3 border-t dark:border-gray-700">
+        <div class="flex justify-end gap-2 pt-3 border-t dark:border-gray-700">
           <!-- Voir -->
-          <div class="relative group">
-            <NuxtLink :to="`/collect/viewAdmin/${service.id}`" class="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors">
+          <div class="relative group flex items-center justify-center w-9 h-9 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+            <NuxtLink :to="`/collect/viewAdmin/${service.id}`" class="p-1 text-blue-600">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -228,8 +228,8 @@
           </div>
 
           <!-- Éditer -->
-          <div class="relative group">
-            <NuxtLink :to="`/collect/edit/${service.id}`" class="p-2 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-md transition-colors">
+          <div class="relative group flex items-center justify-center w-9 h-9 rounded-md hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors">
+            <NuxtLink :to="`/collect/edit/${service.id}`" class="p-1 text-yellow-600">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
               </svg>
@@ -240,11 +240,11 @@
           </div>
 
           <!-- Activer/Désactiver -->
-          <div class="relative group">
+          <div class="relative group flex items-center justify-center w-9 h-9 rounded-md"
+             :class="service.is_active ? 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20' : 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'">
             <button 
               @click="toggleServiceStatus(service)" 
-              :class="service.is_active ? 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20' : 'text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20'"
-              class="p-2 rounded-md transition-colors"
+              class="p-1"
             >
               <svg v-if="service.is_active" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -259,8 +259,8 @@
           </div>
 
           <!-- Supprimer -->
-          <div class="relative group">
-            <button @click="deleteService(service.id)" class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors">
+          <div class="relative group flex items-center justify-center w-9 h-9 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+            <button @click="deleteService(service.id)" class="p-1 text-red-600">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
               </svg>

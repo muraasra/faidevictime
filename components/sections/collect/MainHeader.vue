@@ -70,10 +70,11 @@ onUnmounted(() => {
 <template>
   <header
     :class="[
-      'fixed top-0 z-20 w-full transition-all duration-300 ease-in-out',
+      'fixed top-0 z-20 transition-all duration-300 ease-in-out',
       isVisible ? 'translate-y-0' : '-translate-y-full',
       'py-2 px-4 sm:px-6 flex items-center justify-between',
-      'border-b dark:bg-zinc-900 dark:border-b-zinc-700 bg-white border-b-gray-200 shadow-sm'
+      'border-b dark:bg-zinc-900 dark:border-b-zinc-700 bg-white border-b-gray-200 shadow-sm',
+      'md:left-[200px] md:w-[calc(100%-200px)]'
     ]"
   >
     <!-- Logo et bouton menu mobile -->
@@ -217,5 +218,13 @@ input:focus {
 /* Ajout d'un espace pour compenser la barre de navigation fixe */
 :deep(body) {
   padding-top: 4rem;
+}
+
+/* Ajustement pour le header sur desktop */
+@media (min-width: 768px) {
+  header {
+    left: 200px;
+    width: calc(100% - 200px);
+  }
 }
 </style>
