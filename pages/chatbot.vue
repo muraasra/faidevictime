@@ -20,10 +20,44 @@
             <label class="dark:text-white">Votre situation <span class="required">*</span></label>
             <select v-model="formData.situation_type" required class="dark:bg-zinc-700 dark:text-white dark:border-gray-600">
               <option value="">Sélectionnez le type de situation</option>
-              <option value="urgence">Situation d'urgence</option>
-              <option value="harcelement">Harcèlement</option>
-              <option value="violence">Violence</option>
-              <option value="autre">Autre situation</option>
+              
+              <!-- Situation d'urgence -->
+              <optgroup label="Situation d'urgence">
+                <option value="urgence_agression">Agression physique (coups, blessures physiques)</option>
+                <option value="urgence_meurtre">Tentative de meurtre ou menace grave</option>
+                <option value="urgence_blessure">Blessures graves nécessitant des soins urgents</option>
+              </optgroup>
+
+              <!-- Harcèlement -->
+              <optgroup label="Harcèlement">
+                <option value="harcelement_moral">Harcèlement moral (intimidation, humiliation)</option>
+                <option value="harcelement_scolaire">Harcèlement scolaire (violences verbales ou physiques)</option>
+                <option value="harcelement_pro">Harcèlement professionnel (pression abusive, critiques dévalorisantes)</option>
+                <option value="harcelement_cyber">Cyberharcèlement (menaces, insultes en ligne)</option>
+              </optgroup>
+
+              <!-- Violence -->
+              <optgroup label="Violence">
+                <option value="violence_physique">Violence physique (coups, strangulation, brûlures)</option>
+                <option value="violence_psycho">Violence psychologique (manipulation, isolement)</option>
+                <option value="violence_verbale">Violence verbale (insultes, menaces)</option>
+                <option value="violence_economique">Violence économique (privation de ressources financières)</option>
+              </optgroup>
+
+              <!-- Violence sexuelle -->
+              <optgroup label="Violence sexuelle">
+                <option value="violence_sexuelle_agression">Agression sexuelle (attouchements non consentis)</option>
+                <option value="violence_sexuelle_viol">Viol (rapport imposé par la force)</option>
+                <option value="violence_sexuelle_exploitation">Exploitation sexuelle (coercition pour des actes sexuels)</option>
+                <option value="violence_sexuelle_cyber">Cyberviolence sexuelle (diffusion d'images intimes sans consentement)</option>
+              </optgroup>
+
+              <!-- Autre situation -->
+              <optgroup label="Autre situation">
+                <option value="autre_abandon">Abandon ou négligence (privation de soins ou d'un environnement sûr)</option>
+                <option value="autre_discrimination">Discrimination (traitement injuste basé sur l'origine, le sexe, etc.)</option>
+                <option value="autre_exploitation">Exploitation (travail forcé, abus de pouvoir)</option>
+              </optgroup>
             </select>
           </div>
 
