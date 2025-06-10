@@ -333,9 +333,29 @@ type Service = {
   statut: boolean
 }
 
+interface User {
+  id: number
+  username: string
+}
+const user = ref<User | null>(null)
+// Fonction pour restaurer l'utilisateur
+function restoreUser() {
+  if (process.client) {
+    const storedUser = localStorage.getItem('user')
+    if (storedUser) {
+      user.value = JSON.parse(storedUser)
+      console.log('Session restaurée avec succès')
+      return true
+    }
+  }
+  return false
+}
+// Restaurer l'utilisateur au démarrage
+if (process.client) {
+  restoreUser()
+}
 // Authentification
-const auth = useAuthStore()
-const userId = auth.user?.id
+const userId = user.value?.id
 
 // Appel API
 const { data: services } = await useApi<Service[]>('https://wilfriedtayou.pythonanywhere.com/api/question-transversale/', {
@@ -374,6 +394,12 @@ function getCategoryLabel(category: string): string {
 // Filtrer les services
 const filteredServices = computed(() => {
   let filtered = services.value || []
+
+  // Filtre par auteur
+  if (user.value?.username !== 'admin' && user.value?.username !== 'tayou') {
+    filtered = filtered.filter(service => service.author === user.value?.id)
+  }
+
   // Filtre par recherche
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
