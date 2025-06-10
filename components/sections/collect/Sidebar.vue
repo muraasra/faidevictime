@@ -31,7 +31,7 @@ const handleScroll = () => {
     <!-- Logo -->
     <div class="flex items-center justify-center mb-8">
       <NuxtLink href="/" class="text-2xl font-extrabold text-emerald-600">
-        Victi<span class="text-gray-800 dark:text-white">Safe</span>
+        Child<span class="text-gray-800 dark:text-white">Safe</span>
       </NuxtLink>
     </div>
 
