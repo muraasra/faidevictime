@@ -110,7 +110,7 @@ onUnmounted(() => {
 
       <!-- Logo -->
       <NuxtLink to="/" class="flex items-center space-x-2">
-        <span class="text-xl font-bold text-emerald-600">VictiSafe</span>
+        <span class="text-xl font-bold text-emerald-600">ChildSafe</span>
       </NuxtLink>
     </div>
 

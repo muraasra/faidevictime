@@ -25,7 +25,7 @@ const isOpen = ref(false);
           @click="isOpen = false"
         >
           <img src="/ico.png" width="32" alt="logo" class="w-8 h-8 rounded-full">
-          <span class="text-lg font-bold text-gray-900 dark:text-white">VictiSafe</span>
+          <span class="text-lg font-bold text-gray-900 dark:text-white">ChildSafe</span>
         </NuxtLink>
         <UButton
           color="gray"

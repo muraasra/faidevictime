@@ -81,7 +81,7 @@ const navLinks = [
                             <img src="/ico.png" width="40" alt="avatar"
                                 class="w-10 h-10 rounded-full border-2 border-white dark:border-zinc-700 object-cover">
                         </span>
-                        <span class="text-lg text-gray-700 dark:text-white">VictiSafe</span>
+                        <span class="text-lg text-gray-700 dark:text-white">ChildSafe</span>
                     </NuxtLink>
                 </div>
 
