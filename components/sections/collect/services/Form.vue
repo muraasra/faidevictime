@@ -116,7 +116,27 @@
                 </label>
               </div>
             </div>
+             <!-- Input number -->
+            <div v-else-if="question.type === 'tel'">
+              <input
+                type="tel"
+                v-model="form.transversales[question.key]"
+                class="input w-full"
+                :class="{'border-red-500': errors[question.key]}"
+                @blur="validateField(question.key, form.transversales[question.key])"
+              />
+            </div>
 
+            <div v-else-if="question.type === 'number'">
+              <input
+                type="number"
+                min="0"
+                v-model="form.transversales[question.key]"
+                class="input w-full"
+                :class="{'border-red-500': errors[question.key]}"
+                @blur="validateField(question.key, form.transversales[question.key])"
+              />
+            </div>
             <!-- Input simple -->
             <div v-else>
               <input
@@ -238,15 +258,15 @@
             <!-- Specific checkbox multiple -->
             <div v-if="question.type === 'checkbox'">
               <div class="flex flex-col space-y-2">
-                <label v-for="option in question.options" :key="option" class="inline-flex items-center">
+                <label v-for="option in question.options" :key="option.label" class="inline-flex items-center">
                   <input
                     type="checkbox"
-                    :value="option"
+                    :value="option.value"
                     v-model="form.specifiques[question.key]"
                     class="mr-2"
                     @change="validateField(question.key, form.specifiques[question.key])"
                   />
-                  {{ option }}
+                  {{ option.label }}
                 </label>
               </div>
             </div>
@@ -299,7 +319,8 @@
                 Hommes
               </label>
               <input
-                type="number"
+                type="number" 
+                min="0"
                 v-model="form.specifiques[`${question.key}_hommes`]"
                 class="input w-full"
                 :class="{'border-red-500': errors[`${question.key}_hommes`]}"
@@ -322,6 +343,7 @@
             <div v-else-if="question.type === 'number'">
               <input
                 type="number"
+                min="0"
                 v-model="form.specifiques[question.key]"
                 class="input w-full"
                 :class="{'border-red-500': errors[question.key]}"
@@ -445,7 +467,7 @@ type CategoryQuestions = {
   'Appui psychosocial': BaseQuestion[];
   'Police / Sécurité': BaseQuestion[];
   'Assistance juridique': BaseQuestion[];
-  // 'Hébergement': BaseQuestion[];
+
   'Réinsertion économique': BaseQuestion[];
   [key: string]: BaseQuestion[]; // Pour l'accès dynamique
 };
@@ -739,7 +761,7 @@ const fillCoordinates = () => {
 };
 
 const isLoading = ref<boolean>(false);
-const categories = ref<string[]>(['Soins médicaux', 'Appui psychosocial','Police / Sécurité','Assistance juridique','Hébergement','Réinsertion économique']);
+const categories = ref<string[]>(['Soins médicaux', 'Appui psychosocial','Police / Sécurité','Assistance juridique','Réinsertion économique']);
 
 const getInputType = (type: string): string => {
   switch (type) {

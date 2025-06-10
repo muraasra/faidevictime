@@ -2,11 +2,11 @@ export const generalQuestions = [
   { key: 'nom_structure', label: 'Nom de la structure', type: 'text', required: true },
   { key: 'fonction_repondant', label: 'Fonction du répondant', type: 'text', required: true },
   { key: 'nom_repondant', label: 'Nom du répondant', type: 'text', required: true },
-  { key: 'telephone_repondant', label: 'Téléphone du répondant', type: 'text', required: true },
+  { key: 'telephone_repondant', label: 'Téléphone du répondant', type: 'tel', required: true },
   { key: 'latitude', label: 'Latitude', type: 'latitude' },
   { key: 'longitude', label: 'Longitude', type: 'longitude' },
   { key: 'email', label: 'Adresse email', type: 'email', required: true },
-  { key: 'site_web', label: 'Site web', type: 'url', required: true },
+  { key: 'site_web', label: 'Site web', type: 'url' },
   { 
     key: 'langues_parlees',
     label: 'Langues parlées',
@@ -22,7 +22,7 @@ export const generalQuestions = [
   { key: 'heures_ouverture', label: 'Heure d\'ouverture', type: 'time', required: true },
   { 
     key: 'gratuit',
-    label: 'Gratuité du service',
+    label: 'Type de prise en charge',
     type: 'radio',
     options: ['Gratuit', 'Payant partiellement', 'Payant totalement'],
     required: true
