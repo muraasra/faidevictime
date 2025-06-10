@@ -490,6 +490,7 @@ type CategoryQuestions = {
   'Police / Sécurité': BaseQuestion[];
   'Assistance juridique': BaseQuestion[];
   'Santé mentale': BaseQuestion[];
+  'Hébergement': BaseQuestion[];
   'Réinsertion économique': BaseQuestion[];
   [key: string]: BaseQuestion[]; // Pour l'accès dynamique
 };
@@ -783,7 +784,7 @@ const fillCoordinates = () => {
 };
 
 const isLoading = ref<boolean>(false);
-const categories = ref<string[]>(['Soins médicaux', 'Appui psychosocial','Police / Sécurité','Assistance juridique','Santé mentale','Réinsertion économique']);
+const categories = ref<string[]>(['Soins médicaux', 'Appui psychosocial','Police / Sécurité','Assistance juridique','Santé mentale','Hébergement','Réinsertion économique']);
 
 const getInputType = (type: string): string => {
   switch (type) {
@@ -948,7 +949,7 @@ const submitForm = async () => {
 
     console.log('Sending formData:', JSON.stringify(formData, null, 2)); // Log formData
 
-    const response = await fetch('https://wilfriedtayou.pythonanywhere.com/api/submit-form/', {
+    const response = await fetch('http://127.0.0.1:8000/api/submit-form/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

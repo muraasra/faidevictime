@@ -336,7 +336,7 @@ export const specificQuestions = {
     { key: 'formes_enfants', label: 'Personnes formées sur les violences envers les enfants' , type:'homme_femme'},
     { key: 'formes_vbg', label: 'Personnes formées sur les VBG / EAS ', type:'homme_femme' },
     { key: 'formes_formation', label: 'Personnes formées comme agents des services de formation professionnelle', type:'homme_femme' },
-      { key: 'formes_entreprenariat', label: 'Personnes formées sur l\'entrepreneuriat ', type:'homme_femme' },
+    { key: 'formes_entreprenariat', label: 'Personnes formées sur l\'entrepreneuriat ', type:'homme_femme' },
     { key: 'formes_compta', label: 'Personnes formées en comptabilité de base (Hommes)', type:'homme_femme' },
   
     // Mécanismes EAS/HS

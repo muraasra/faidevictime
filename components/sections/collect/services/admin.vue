@@ -32,6 +32,7 @@
           <option value="assistance_juridique">Assistance juridique</option>
           <option value="sante_mentale">Santé mentale</option>
           <option value="reinsertion_economique">Réinsertion économique</option>
+          <option value="hebergement">Hébergement</option>
         </select>
       </div>
 
@@ -386,7 +387,8 @@ function getCategoryLabel(category: string): string {
     police_securite: 'Police / Sécurité',
     assistance_juridique: 'Assistance juridique',
     sante_mentale: 'Santé mentale',
-    reinsertion_economique: 'Réinsertion économique'
+    reinsertion_economique: 'Réinsertion économique',
+    hebergement : 'Hébergement'
   }
   return categories[category] || category
 }
