@@ -432,6 +432,28 @@ const selectedCategory = ref<string>('');
 const currentStep = ref<number>(1);
 const questionsPerStep = 10;
 
+
+interface User {
+  id: number
+  username: string
+}
+const user = ref<User | null>(null)
+// Fonction pour restaurer l'utilisateur
+function restoreUser() {
+  if (process.client) {
+    const storedUser = sessionStorage.getItem('user')
+    if (storedUser) {
+      user.value = JSON.parse(storedUser)
+      console.log('Session restaurée avec succès')
+      return true
+    }
+  }
+  return false
+}
+// Restaurer l'utilisateur au démarrage
+if (process.client) {
+  restoreUser()
+}
 // Notification system
 const notification = reactive({
   show: false,
@@ -522,7 +544,7 @@ const form = reactive<FormData>({
     jours_ouverture: [],
     heures_ouverture: "",
     gratuit: [],
-    author: auth.user?.id ?? null
+    author: user.value?.id ?? null
   },
   specifiques: {
     medicaments_disponibles: [],
