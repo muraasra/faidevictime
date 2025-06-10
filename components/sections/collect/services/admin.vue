@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-6xl mx-auto p-4">
+  <div class="max-w-6xl mx-auto">
     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
       <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Mes services enregistrés</h1>
       <NuxtLink to="/collect/addroot" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded transition-colors w-full sm:w-auto text-center">

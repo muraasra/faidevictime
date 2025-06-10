@@ -8,7 +8,6 @@
     >
       <p>{{ toastMessage }}</p>
     </div>
-
     <div class="main-content flex flex-col md:flex-row justify-between gap-12 mx-auto max-w-screen-xl mt-6">
       <!-- Left Section -->
       <div class="left-section flex-1 max-w-lg text-white">

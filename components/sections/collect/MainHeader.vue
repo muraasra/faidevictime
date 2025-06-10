@@ -96,7 +96,7 @@ onUnmounted(() => {
 <template>
   <header
     :class="[
-      'fixed top-0 z-20 transition-all duration-300 ease-in-out',
+      'w-full fixed top-0 z-20 transition-all duration-300 ease-in-out',
       isVisible ? 'translate-y-0' : '-translate-y-full',
       'py-2 px-4 sm:px-6 flex items-center justify-between',
       'border-b dark:bg-zinc-900 dark:border-b-zinc-700 bg-white border-b-gray-200 shadow-sm',
@@ -135,7 +135,7 @@ onUnmounted(() => {
       </button>
 
       <!-- Logo -->
-      <NuxtLink to="/" class="flex items-center space-x-2">
+      <NuxtLink to="/" class="flex items-center space-x-8">
         <span class="text-xl font-bold text-emerald-600">ChildSafe</span>
       </NuxtLink>
     </div>
@@ -147,7 +147,7 @@ onUnmounted(() => {
     </nav>
 
     <!-- Section utilisateur et thème -->
-    <div class="flex items-center gap-x-4">
+    <div class="flex items-center gap-x-8" style="position: top-right;">
       <ThemeSwitcher class="hidden sm:block" />
       
       <!-- Profil utilisateur -->
@@ -186,23 +186,12 @@ onUnmounted(() => {
     <!-- Menu mobile -->
     <div 
       v-show="isMobileMenuOpen"
-      class="absolute top-full left-0 right-0 bg-white dark:bg-zinc-900 border-b dark:border-b-zinc-700 shadow-lg md:hidden transform transition-transform ease-in-out duration-300"
+      class="absolute top-full left-0 right-50 bg-white dark:bg-zinc-900 border-b dark:border-b-zinc-700 shadow-lg md:hidden transform transition-transform ease-in-out duration-300"
     >
-      <div class="px-4 py-3 space-y-4">
-        <!-- Profil utilisateur mobile -->
-        <div class="flex items-center gap-x-3 p-4 bg-gray-50 dark:bg-zinc-800 rounded-lg">
-          <div class="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center text-lg font-medium">
-            {{ userInitials }}
-          </div>
-          <div class="flex flex-col">
-            <span class="font-medium text-gray-900 dark:text-gray-100">{{ auth.user?.username }}</span>
-            <span class="text-sm text-gray-500 dark:text-gray-400">{{ auth.user?.username ? 'Utilisateur' : 'Invité' }}</span>
-          </div>
-        </div>
-
+      <div class="px-4">
         <!-- Navigation mobile -->
         <nav class="space-y-1">
-          <ThemeSwitcher class="block sm:hidden mb-4" />
+          <ThemeSwitcher class="block sm:hidden" />
           <MobileNavigation />
           <SectionsCollectMobileNavigation/>
         </nav>

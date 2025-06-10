@@ -489,7 +489,7 @@ type CategoryQuestions = {
   'Appui psychosocial': BaseQuestion[];
   'Police / Sécurité': BaseQuestion[];
   'Assistance juridique': BaseQuestion[];
-
+  'Santé mentale': BaseQuestion[];
   'Réinsertion économique': BaseQuestion[];
   [key: string]: BaseQuestion[]; // Pour l'accès dynamique
 };
@@ -783,7 +783,7 @@ const fillCoordinates = () => {
 };
 
 const isLoading = ref<boolean>(false);
-const categories = ref<string[]>(['Soins médicaux', 'Appui psychosocial','Police / Sécurité','Assistance juridique','Réinsertion économique']);
+const categories = ref<string[]>(['Soins médicaux', 'Appui psychosocial','Police / Sécurité','Assistance juridique','Santé mentale','Réinsertion économique']);
 
 const getInputType = (type: string): string => {
   switch (type) {
