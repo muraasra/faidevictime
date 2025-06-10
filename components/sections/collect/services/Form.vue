@@ -441,7 +441,7 @@ const user = ref<User | null>(null)
 // Fonction pour restaurer l'utilisateur
 function restoreUser() {
   if (process.client) {
-    const storedUser = sessionStorage.getItem('user')
+    const storedUser = localStorage.getItem('user')
     if (storedUser) {
       user.value = JSON.parse(storedUser)
       console.log('Session restaurée avec succès')
