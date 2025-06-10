@@ -329,6 +329,7 @@ type Service = {
   assistance_juridique: any | null
   sante_mentale: any | null
   reinsertion_economique: any | null
+  hebergement: any | null
   author: number | null
   is_active: boolean
   statut: boolean
@@ -518,6 +519,7 @@ function getServiceCategory(service: Service): string {
   if (service.assistance_juridique) return 'Assistance juridique';
   if (service.sante_mentale) return 'Santé mentale';
   if (service.reinsertion_economique) return 'Réinsertion économique';
+  if (service.hebergement) return 'Hébergement';
   return 'Non spécifié';
 }
 function showSuccessPopup(message: string) {
