@@ -3,6 +3,31 @@ import ThemeSwitcher from "~/components/elements/ThemeSwitcher.vue";
 import { NAVIGATION_ITEMS } from "~/constants/index";
 import { ref, computed, onMounted, onUnmounted } from "vue";
 
+interface User {
+  id: number
+  username: string
+}
+
+const user = ref<User | null>(null)
+
+// Fonction pour restaurer l'utilisateur
+function restoreUser() {
+  if (process.client) {
+    const storedUser = sessionStorage.getItem('user')
+    if (storedUser) {
+      user.value = JSON.parse(storedUser)
+      console.log('Session restaurée avec succès')
+      return true
+    }
+  }
+  return false
+}
+
+// Restaurer l'utilisateur au démarrage
+if (process.client) {
+  restoreUser()
+}
+
 // État du menu mobile
 const isMobileMenuOpen = ref(false);
 const isScrolled = ref(false);
@@ -40,7 +65,8 @@ function handleLogout() {
 
 // Computed pour le nom d'utilisateur formaté
 const userInitials = computed(() => {
-  const username = auth.user?.username || '';
+  const username = user.value?.username || '';
+  // const username = auth.user?.username || '';
   return username.slice(0, 2).toUpperCase();
 });
 
@@ -134,10 +160,12 @@ onUnmounted(() => {
         <!-- Info utilisateur -->
         <div class="hidden sm:flex flex-col">
           <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
-            {{ auth.user?.username }}
+            {{ user?.username }}
+            <!-- {{ auth.user?.username }} -->
           </span>
           <span class="text-xs text-gray-500 dark:text-gray-400">
-            {{ auth.user?.username ? 'Utilisateur' : 'Invité' }}
+            <!-- {{ auth.user?.username ? 'Utilisateur' : 'Invité' }} -->
+            {{ user?.username ? 'Utilisateur' : 'Invité' }}
           </span>
         </div>
 

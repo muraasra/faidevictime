@@ -21,4 +21,27 @@ onMounted(() => {
     setTimeout(() => loading.value = false,400) // petit délai pour l'effet visuel
   })
 })
+
+
+interface User {
+  id: number
+  username: string
+}
+const user = ref<User | null>(null)
+// Fonction pour restaurer l'utilisateur
+function restoreUser() {
+  if (process.client) {
+    const storedUser = sessionStorage.getItem('user')
+    if (storedUser) {
+      user.value = JSON.parse(storedUser)
+      console.log('Session restaurée avec succès')
+      return true
+    }
+  }
+  return false
+}
+// Restaurer l'utilisateur au démarrage
+if (process.client) {
+  restoreUser()
+}
 </script>
