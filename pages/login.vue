@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, nextTick } from 'vue';
+import { ref, computed, nextTick, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 
@@ -26,7 +26,7 @@ type LoginResponse = {
 
 const usernameError = computed(() => {
   if (!usernameTouched.value) return '';
-  if (!username.value) return 'Nom d’utilisateur requis';
+  if (!username.value) return 'Nom d\'utilisateur requis';
   return '';
 });
 
@@ -48,17 +48,43 @@ const handleSubmit = async () => {
     return;
   }
 
+  // Vérifier la connexion internet
+  if (!navigator.onLine) {
+    error.value = 'Pas de connexion internet. Veuillez vérifier votre connexion.';
+    loading.value = false;
+    return;
+  }
+
   try {
+    // Ajouter un timeout pour la requête
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 secondes timeout
+
     const { data, error: fetchError } = await useFetch<LoginResponse>('https://wilfriedtayou.pythonanywhere.com/api/token/', {
       method: 'POST',
       body: {
         username: username.value,
         password: password.value
       },
-      server: false
+      server: false,
+      signal: controller.signal
     });
 
-    if (fetchError.value || !data.value?.access) {
+    clearTimeout(timeoutId);
+
+    if (fetchError.value) {
+      if (fetchError.value.name === 'AbortError') {
+        error.value = 'La connexion a pris trop de temps. Veuillez réessayer.';
+      } else if (!navigator.onLine) {
+        error.value = 'La connexion internet a été perdue. Veuillez vérifier votre connexion.';
+      } else {
+        error.value = 'Identifiants incorrects';
+      }
+      loading.value = false;
+      return;
+    }
+
+    if (!data.value?.access) {
       error.value = 'Identifiants incorrects';
       loading.value = false;
       return;
@@ -74,11 +100,42 @@ const handleSubmit = async () => {
     router.push('/collect/dash');
   } catch (err) {
     console.error(err);
-    error.value = 'Erreur lors de la connexion';
+    if (err instanceof Error) {
+      if (err.name === 'AbortError') {
+        error.value = 'La connexion a pris trop de temps. Veuillez réessayer.';
+      } else if (!navigator.onLine) {
+        error.value = 'La connexion internet a été perdue. Veuillez vérifier votre connexion.';
+      } else {
+        error.value = 'Erreur lors de la connexion';
+      }
+    } else {
+      error.value = 'Erreur lors de la connexion';
+    }
   } finally {
     loading.value = false;
   }
 };
+
+// Ajouter un écouteur pour les changements de connexion
+onMounted(() => {
+  window.addEventListener('online', () => {
+    if (error.value.includes('connexion internet')) {
+      error.value = '';
+    }
+  });
+  
+  window.addEventListener('offline', () => {
+    if (loading.value) {
+      error.value = 'La connexion internet a été perdue. Veuillez vérifier votre connexion.';
+      loading.value = false;
+    }
+  });
+});
+
+onUnmounted(() => {
+  window.removeEventListener('online', () => {});
+  window.removeEventListener('offline', () => {});
+});
 </script>
 
 <template>
@@ -101,7 +158,7 @@ const handleSubmit = async () => {
       <div class="w-[320px] md:w-[420px] lg:w-[480px] p-6 border shadow-xl rounded-md bg-white dark:bg-zinc-900 relative">
         <h2 class="text-center text-2xl font-semibold text-black dark:text-white">Connexion</h2>
         <p class="text-center text-sm text-gray-500 dark:text-gray-300 mb-6">
-          Veuillez entrer votre nom d’utilisateur et mot de passe
+          Veuillez entrer votre nom d'utilisateur et mot de passe
         </p>
 
         <form @submit.prevent="handleSubmit" class="space-y-4">
