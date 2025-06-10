@@ -949,7 +949,7 @@ const submitForm = async () => {
 
     console.log('Sending formData:', JSON.stringify(formData, null, 2)); // Log formData
 
-    const response = await fetch('http://127.0.0.1:8000/api/submit-form/', {
+    const response = await fetch('https://wilfriedtayou.pythonanywhere.com/api/submit-form/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
