@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-zinc-900">
+  <div class="py-12 px-4 mt-12 min-h-screen bg-gray-50 dark:bg-zinc-900">
     <!-- En-tête -->
-    <div class="bg-white dark:bg-zinc-800 shadow">
-      <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white dark:bg-zinc-800 shadow rounded-lg px-9">
+      <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 ">
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Collecte des demandes</h1>
         <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
           Visualisez et gérez toutes les demandes d'assistance reçues

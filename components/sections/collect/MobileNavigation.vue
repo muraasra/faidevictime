@@ -19,15 +19,7 @@ const isOpen = ref(false);
     <div class="flex flex-col h-full bg-white dark:bg-zinc-900">
       <!-- En-tête -->
       <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-zinc-700">
-        <NuxtLink 
-          href="/" 
-          class="flex items-center gap-2"
-          @click="isOpen = false"
-        >
-          <img src="/ico.png" width="32" alt="logo" class="w-8 h-8 rounded-full">
-          <span class="text-lg font-bold text-gray-900 dark:text-white">ChildSafe</span>
-        </NuxtLink>
-        <UButton
+        <!-- <UButton
           color="gray"
           variant="ghost"
           size="sm"
@@ -36,7 +28,7 @@ const isOpen = ref(false);
           square
           padded
           @click="isOpen = false"
-        />
+        /> -->
       </div>
 
       <!-- Navigation -->
@@ -80,17 +72,6 @@ const isOpen = ref(false);
       <!-- Pied de page -->
       <div class="p-4 border-t border-gray-200 dark:border-zinc-700">
         <div class="flex items-center justify-between">
-          <ElementsThemeSwitcher />
-          <UButton
-            color="red"
-            variant="ghost"
-            size="sm"
-            class="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300"
-            @click="isOpen = false"
-          >
-            <UIcon name="i-heroicons-arrow-right-on-rectangle" class="w-5 h-5 mr-2" />
-            Déconnexion
-          </UButton>
         </div>
       </div>
     </div>
