@@ -4,24 +4,24 @@ export const NAVIGATION_ITEMS = [
   [
     {
       name: "Dashboard",
-      link: "/",
+      link: "/collect/dash",
       icon: "i-heroicons-rectangle-group",
     },
-    {
-      name: "Services",
-      link: "/collect/root",
-      icon: "i-heroicons-squares-plus",
-    },
+    // {
+    //   name: "Services",
+    //   link: "/collect/root",
+    //   icon: "i-heroicons-squares-plus",
+    // },
     {
       name: "Services Admin",
       link: "/collect/dash",
       icon: "i-heroicons-squares-plus",
     },
-    {
-      name: "Demandes",
-      link: "/collect/list",
-      icon: "i-heroicons-squares-plus",
-    }
+    // {
+    //   name: "Demandes",
+    //   link: "/collect/list",
+    //   icon: "i-heroicons-squares-plus",
+    // }
     // {
     //   name: "Order Lists",
     //   link: "/order-lists",

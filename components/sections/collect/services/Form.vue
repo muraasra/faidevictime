@@ -84,11 +84,11 @@
               <div class="flex items-center gap-2">
                 <input
                   v-model="form.transversales[question.key]"
-                  type="text"
+                  type="number"
                   class="input w-full"
                   :class="{'border-red-500': errors[question.key]}"
                   :placeholder="'Entrez ' + question.label"
-                  readonly
+                  
                   @blur="validateField(question.key, form.transversales[question.key])"
                 />
                 <button
@@ -924,12 +924,14 @@ const validateForm = (): boolean => {
 const submitForm = async () => {
   // Validate the entire form before submitting
   if (!validateForm()) {
-     // validateForm will now populate the errors object
-     showNotification('Veuillez corriger les erreurs dans le formulaire', 'error');
+    showNotification('Veuillez corriger les erreurs dans le formulaire', 'error');
     return;
   }
 
   isLoading.value = true;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 secondes timeout
+
   try {
     const formData = {
       transversales: { ...form.transversales },
@@ -937,39 +939,34 @@ const submitForm = async () => {
       categorie: selectedCategory.value
     };
 
-    // Ajouter les réponses sauvegardées de toutes les catégories
-    Object.keys(form.reponsesByCategory).forEach(category => {
-      if (category !== selectedCategory.value) {
-        formData.specifiques = {
-          ...formData.specifiques,
-          ...form.reponsesByCategory[category]
-        };
-      }
-    });
-
-    console.log('Sending formData:', JSON.stringify(formData, null, 2)); // Log formData
-
     const response = await fetch('https://wilfriedtayou.pythonanywhere.com/api/submit-form/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${auth.token}`
       },
-      body: JSON.stringify(formData)
+      body: JSON.stringify(formData),
+      signal: controller.signal
     });
 
     if (!response.ok) {
-      const errorData = await response.json(); // Read the error response body
-      console.error('Backend error response:', errorData); // Log the error response
-      throw new Error(`Erreur HTTP ${response.status}: ${response.statusText}`);
+      throw new Error(`Erreur HTTP ${response.status}`);
     }
 
     showNotification('Formulaire envoyé avec succès!', 'success');
     resetForm();
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Une erreur est survenue';
-    showNotification(`Erreur lors de l'envoi du formulaire: ${errorMessage}`, 'error');
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        showNotification('Le délai d\'attente a été dépassé. Veuillez réessayer.', 'error');
+      } else {
+        showNotification(`Erreur lors de l'envoi du formulaire: ${error.message}`, 'error');
+      }
+    } else {
+      showNotification('Une erreur inattendue est survenue', 'error');
+    }
   } finally {
+    clearTimeout(timeoutId);
     isLoading.value = false;
   }
 };
