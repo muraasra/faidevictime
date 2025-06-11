@@ -3,8 +3,8 @@ export const generalQuestions = [
   { key: 'fonction_repondant', label: 'Fonction du répondant', type: 'text', required: true },
   { key: 'nom_repondant', label: 'Nom du répondant', type: 'text', required: true },
   { key: 'telephone_repondant', label: 'Téléphone du répondant', type: 'tel', required: true },
-  { key: 'latitude', label: 'Latitude', type: 'latitude' },
-  { key: 'longitude', label: 'Longitude', type: 'longitude' },
+  { key: 'latitude', label: 'Latitude', type: 'latitude', required: true  },
+  { key: 'longitude', label: 'Longitude', type: 'longitude', required: true  },
   { key: 'email', label: 'Adresse email', type: 'email', required: true },
   { key: 'site_web', label: 'Site web', type: 'url' },
   { 

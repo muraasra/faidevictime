@@ -666,4 +666,47 @@ function showSuccessPopup(message: string) {
     setTimeout(() => document.body.removeChild(successPopup), 500);
   }, 3000);
 }
+
+const canProceedToNextStep = (): boolean => {
+  // For step 2, check if category is selected
+  if (currentStep.value === 2 && !selectedCategory.value) {
+    return false;
+  }
+  
+  // Validate current step questions
+  let currentQuestions: BaseQuestion[] = [];
+  
+  if (currentStep.value === 1) {
+    currentQuestions = getQuestionsForStep(1);
+    // Vérifier spécifiquement la longitude et latitude
+    if (!form.transversales.longitude || !form.transversales.latitude) {
+      errors.longitude = !form.transversales.longitude ? "La longitude est requise" : "";
+      errors.latitude = !form.transversales.latitude ? "La latitude est requise" : "";
+      return false;
+    }
+  } else if (currentStep.value === 2) {
+    currentQuestions = getQuestionsForStep(2);
+  } else if (currentStep.value >= 3) {
+    currentQuestions = getSpecificQuestionsForStep(currentStep.value - 2);
+  }
+  
+  // Check required fields for current step
+  for (const question of currentQuestions) {
+    if (question.required) {
+      let value;
+      if (currentStep.value <= 2) {
+        value = form.transversales[question.key];
+      } else {
+        value = form.specifiques[question.key];
+      }
+      
+      if (value === "" || value === null || value === undefined || 
+          (Array.isArray(value) && value.length === 0)) {
+        return false;
+      }
+    }
+  }
+  
+  return true;
+};
 </script>

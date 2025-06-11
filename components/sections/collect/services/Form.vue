@@ -696,6 +696,12 @@ const canProceedToNextStep = (): boolean => {
   
   if (currentStep.value === 1) {
     currentQuestions = getQuestionsForStep(1);
+    // Vérifier spécifiquement la longitude et latitude
+    if (!form.transversales.longitude || !form.transversales.latitude) {
+      errors.longitude = !form.transversales.longitude ? "La longitude est requise" : "";
+      errors.latitude = !form.transversales.latitude ? "La latitude est requise" : "";
+      return false;
+    }
   } else if (currentStep.value === 2) {
     currentQuestions = getQuestionsForStep(2);
   } else if (currentStep.value >= 3) {
