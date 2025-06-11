@@ -19,6 +19,16 @@
         />
       </div>
 
+      <!-- Filtre par auteur -->
+      <div class="col-span-1" v-if="user?.username === 'admin' || user?.username === 'tayou' || user?.username === 'Judith'">
+        <input
+          type="text"
+          v-model="authorFilter"
+          placeholder="Rechercher par enquêteur..."
+          class="w-full px-4 py-2 rounded-lg border dark:border-gray-600 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+        />
+      </div>
+
       <!-- Filtre par catégorie -->
       <div class="col-span-1">
         <select
@@ -60,6 +70,13 @@
         <button @click="searchQuery = ''" class="ml-1 hover:text-emerald-600">&times;</button>
       </span>
       <span
+        v-if="authorFilter && (user?.username === 'admin' || user?.username === 'tayou' || user?.username === 'Judith')"
+        class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
+      >
+        Enquêteur: "{{ authorFilter }}"
+        <button @click="authorFilter = ''" class="ml-1 hover:text-orange-600">&times;</button>
+      </span>
+      <span
         v-if="categoryFilter"
         class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
       >
@@ -86,6 +103,7 @@
             <th class="p-3 text-left font-semibold whitespace-nowrap w-1/6">Téléphone</th>
             <th class="p-3 text-left font-semibold whitespace-nowrap w-[15%]">Catégorie</th>
             <th class="p-3 text-left font-semibold whitespace-nowrap w-[10%]">Statut</th>
+            <th class="p-3 text-left font-semibold whitespace-nowrap w-[10%]" v-if="user?.username === 'admin' || user?.username === 'tayou' || user?.username === 'Judith'">Enquêteur</th>
             <th class="p-3 text-right font-semibold whitespace-nowrap w-[10%]">Actions</th>
           </tr>
         </thead>
@@ -107,6 +125,10 @@
               >
                 {{ service.statut ? 'Actif' : 'Inactif' }}
               </span>
+            </td>
+            <td class="p-3 text-gray-800 dark:text-white w-[10%]" v-if="user?.username === 'admin' || user?.username === 'tayou' || user?.username === 'Judith'">
+              <span v-if="authorNames[service.author || 0]">{{ authorNames[service.author || 0] }}</span>
+              <span v-else class="text-gray-400">Chargement...</span>
             </td>
             <td class="p-3 text-right w-[10%]">
               <div class="flex justify-end gap-1">
@@ -211,6 +233,10 @@
             <span class="font-medium text-gray-600 dark:text-gray-400 w-20">Catégorie:</span>
             <span class="text-emerald-600 dark:text-emerald-400 font-medium">{{ getServiceCategory(service) }}</span>
           </div>
+          <div class="flex items-center text-sm" v-if="user?.username === 'admin' || user?.username === 'tayou' || user?.username === 'Judith'">
+            <span class="font-medium text-gray-600 dark:text-gray-400 w-20">Enquêteur:</span>
+            <span class="text-gray-800 dark:text-white">{{ authorNames[service.author || 0] || 'Chargement...' }}</span>
+          </div>
         </div>
 
         <!-- Actions -->
@@ -308,7 +334,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 
 // Typage
@@ -339,7 +365,20 @@ interface User {
   id: number
   username: string
 }
+
+interface Author {
+  id: number
+  username: string
+  email: string
+  last_name: string
+  author_services: any[]
+}
+
 const user = ref<User | null>(null)
+const authors = ref<Record<number, Author>>({})
+const authorNames = ref<Record<number, string>>({})
+const isLoadingAuthors = ref(false)
+
 // Fonction pour restaurer l'utilisateur
 function restoreUser() {
   if (process.client) {
@@ -352,11 +391,14 @@ function restoreUser() {
   }
   return false
 }
+
 // Restaurer l'utilisateur au démarrage
 if (process.client) {
   restoreUser()
 }
+
 // Authentification
+const auth = useAuthStore()
 const userId = user.value?.id
 
 // Appel API
@@ -374,32 +416,90 @@ function capitalize(text: string): string {
 const searchQuery = ref('')
 const categoryFilter = ref('')
 const statusFilter = ref('')
+const authorFilter = ref('')
+
+const CACHE_DURATION = 1000 * 60 * 60 * 24 * 3; // 3 jours
+
+// Fonction pour obtenir le nom de l'auteur
+async function getAuthorName(authorId: number | null): Promise<string> {
+  if (!authorId) return 'Non spécifié'
+  
+  // Vérifier d'abord dans authorNames
+  if (authorNames.value[authorId]) {
+    return authorNames.value[authorId]
+  }
+  
+  // Vérifier le cache local
+  const cachedData = localStorage.getItem(`author_${authorId}`)
+  if (cachedData) {
+    const { name, timestamp } = JSON.parse(cachedData)
+    if (Date.now() - timestamp < CACHE_DURATION) {
+      authorNames.value[authorId] = name
+      return name
+    }
+  }
+
+  try {
+    const response = await fetch(`https://wilfriedtayou.pythonanywhere.com/api/user/${authorId}`)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    const data: Author = await response.json()
+    const authorName = data.last_name || data.username
+    
+    // Mettre à jour le cache
+    localStorage.setItem(`author_${authorId}`, JSON.stringify({
+      name: authorName,
+      timestamp: Date.now()
+    }))
+    
+    authorNames.value[authorId] = authorName
+    return authorName
+  } catch (error) {
+    console.error('Erreur lors de la récupération du nom de l\'auteur:', error)
+    return 'Erreur'
+  }
+}
+
+// Fonction pour charger tous les auteurs
+async function loadAllAuthors() {
+  if (!services.value || isLoadingAuthors.value) return
+  
+  isLoadingAuthors.value = true
+  try {
+    const uniqueAuthors = new Set(services.value.map(service => service.author).filter(Boolean))
+    const loadPromises = Array.from(uniqueAuthors).map(authorId => {
+      if (authorId && !authorNames.value[authorId]) {
+        return getAuthorName(authorId)
+      }
+      return Promise.resolve()
+    })
+    await Promise.all(loadPromises)
+  } catch (error) {
+    console.error('Erreur lors du chargement des auteurs:', error)
+  } finally {
+    isLoadingAuthors.value = false
+  }
+}
+
+// Charger les auteurs quand les services sont disponibles
+watch(() => services.value, (newServices) => {
+  if (newServices && (user.value?.username === 'admin' || user.value?.username === 'tayou' || user.value?.username === 'Judith')) {
+    loadAllAuthors()
+  }
+}, { immediate: true })
 
 // Computed pour vérifier si des filtres sont actifs
 const hasActiveFilters = computed(() => {
-  return searchQuery.value || categoryFilter.value || statusFilter.value !== ''
+  return searchQuery.value || categoryFilter.value || statusFilter.value !== '' || authorFilter.value !== ''
 })
-
-// Fonction pour obtenir le label d'une catégorie
-function getCategoryLabel(category: string): string {
-  const categories: { [key: string]: string } = {
-    soins_medicaux: 'Soins médicaux',
-    appui_psychosocial: 'Appui psychosocial',
-    police_securite: 'Police / Sécurité',
-    assistance_juridique: 'Assistance juridique',
-    sante_mentale: 'Santé mentale',
-    reinsertion_economique: 'Réinsertion économique',
-    hebergement : 'Hébergement'
-  }
-  return categories[category] || category
-}
 
 // Filtrer les services
 const filteredServices = computed(() => {
   let filtered = services.value || []
 
   // Filtre par auteur
-  if (user.value?.username !== 'admin' && user.value?.username !== 'tayou') {
+  if (user.value?.username !== 'admin' && user.value?.username !== 'tayou' && user.value?.username !== 'Judith') {
     filtered = filtered.filter(service => service.author === user.value?.id)
   }
 
@@ -412,6 +512,15 @@ const filteredServices = computed(() => {
       service.fonction_repondant.toLowerCase().includes(query) ||
       service.telephone_repondant.includes(query)
     )
+  }
+
+  // Filtre par auteur (pour admin et tayou)
+  if (authorFilter.value && (user.value?.username === 'admin' || user.value?.username === 'tayou')) {
+    const query = authorFilter.value.toLowerCase()
+    filtered = filtered.filter(service => {
+      const authorName = authorNames.value[service.author || 0] || ''
+      return authorName.toLowerCase().includes(query)
+    })
   }
 
   // Filtre par catégorie
@@ -522,6 +631,20 @@ function getServiceCategory(service: Service): string {
   if (service.hebergement) return 'Hébergement';
   return 'Non spécifié';
 }
+
+function getCategoryLabel(category: string): string {
+  const labels: Record<string, string> = {
+    'soins_medicaux': 'Soins médicaux',
+    'appui_psychosocial': 'Appui psychosocial',
+    'police_securite': 'Police / Sécurité',
+    'assistance_juridique': 'Assistance juridique',
+    'sante_mentale': 'Santé mentale',
+    'reinsertion_economique': 'Réinsertion économique',
+    'hebergement': 'Hébergement'
+  }
+  return labels[category] || 'Non spécifié'
+}
+
 function showSuccessPopup(message: string) {
   // Display a success popup to the user
   const successPopup = document.createElement('div');
