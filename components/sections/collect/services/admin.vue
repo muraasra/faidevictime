@@ -92,6 +92,11 @@
       </span>
     </div>
 
+    <!-- Compteur de services -->
+    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+      {{ filteredServices.length }} service{{ filteredServices.length > 1 ? 's' : '' }} trouvé{{ filteredServices.length > 1 ? 's' : '' }}
+    </div>
+
     <!-- Vue Desktop/Tablet - Table classique -->
     <div class="hidden md:block overflow-x-auto mt-6 rounded-md shadow">
       <table class="min-w-full bg-white dark:bg-zinc-900 text-sm">
