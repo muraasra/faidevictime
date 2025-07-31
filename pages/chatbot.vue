@@ -202,7 +202,7 @@ const handleSubmit = async () => {
   isSubmitting.value = true
   try {
     // On soumet toujours au backend d'abord
-    const response = await fetch('https://wilfriedtayou.pythonanywhere.com/assistance/requests/', {
+    const response = await fetch('http://127.0.0.1:8001/assistance/requests/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -1,41 +1,20 @@
-<!-- <template>
-  <ChatInterface />
-</template>
-
-<script setup lang="ts">
-import ChatInterface from '~/components/chat/ChatInterface.vue'
-</script>
-
-<style>
-/* Styles globaux pour le chat */
-:root {
-  --primary-color: #28a745;
-  --primary-hover: #218838;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-}
-</style>  -->
 <template>
-  <div class="min-h-screen bg-gray-100 flex flex-col md:flex-row">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col md:flex-row transition-colors duration-300">
     <!-- Sidebar Desktop -->
-    <div class="hidden md:flex md:w-72 bg-white shadow-lg flex-col sidebar">
-      <div class="p-4 border-b border-gray-200">
-        <h1 class="text-xl font-bold text-gray-800 flex items-center">
-          <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="hidden md:flex md:w-80 bg-white dark:bg-gray-800 shadow-xl flex-col sidebar">
+      <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center">
+          <svg class="w-7 h-7 mr-3 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
           </svg>
           Soutien Moral
         </h1>
       </div>
       
-      <div class="flex-1 overflow-y-auto p-4">
+      <div class="flex-1 overflow-y-auto p-6">
         <button 
           @click="startNewChat" 
-          class="w-full mb-4 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg"
+          class="w-full mb-6 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-5 py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl focus:ring-2 focus:ring-green-500 focus:outline-none"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -43,131 +22,203 @@ body {
           Nouvelle Conversation
         </button>
         
-        <div class="space-y-3">
-          <div v-if="conversations.length === 0 && !isLoading" class="text-center py-4">
-            <p class="text-sm text-gray-500">Aucune conversation</p>
+        <div class="space-y-4">
+          <div v-if="isLoadingConversations" class="space-y-3">
+            <div v-for="n in 3" :key="n" class="animate-pulse">
+              <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+              <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+            </div>
+          </div>
+          <div v-else-if="conversations && conversations.length === 0" class="text-center py-6">
+            <p class="text-sm text-gray-500 dark:text-gray-400">Aucune conversation</p>
           </div>
           <div 
-            v-for="conv in conversations" 
+            v-for="conv in sortedConversations" 
             :key="conv.id"
             @click="selectConversation(conv.id)"
-            class="p-3 rounded-lg cursor-pointer transition-all duration-200 border-l-4 hover:shadow-md"
-            :class="{ 
-              'bg-green-50 border-green-500 shadow-md': currentConversationId === conv.id,
-              'bg-white border-transparent hover:bg-gray-50 hover:border-gray-300': currentConversationId !== conv.id 
-            }"
+            :class="[
+              'p-4 rounded-xl cursor-pointer transition-all duration-300 border-l-4 hover:shadow-lg flex items-center justify-between group',
+              { 'fade-out': conv.id === removedConversationId },
+              currentConversationId === conv.id ? 'bg-green-50 dark:bg-green-900/50 border-green-500 shadow-md' : 'bg-white dark:bg-gray-800 border-transparent hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300'
+            ]"
           >
-            <h3 class="font-medium text-gray-800 text-sm">{{ conv.title || 'Nouvelle conversation' }}</h3>
-            <p class="text-xs text-gray-500 mt-1">{{ formatDate(conv.created_at) }}</p>
+            <div class="flex-1 min-w-0 flex items-center gap-3">
+              <h3 class="font-semibold text-gray-800 dark:text-gray-100 text-base truncate">{{ conv.title || 'Nouvelle conversation' }}</h3>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ formatDate(conv.created_at) }}</p>
+              <span v-if="conv.status === 'ephemere' && conv.expire_at" class="ml-2 px-2.5 py-1 text-xs rounded-full bg-yellow-200 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 font-semibold">
+                {{ getRemainingTime(conv.expire_at) }}
+              </span>
+            </div>
+            <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button 
+                @click.stop="() => { currentConversationId !== conv.id ? selectConversation(conv.id) : null; openEphemereModal(); }"
+                class="text-yellow-500 dark:text-yellow-400 hover:text-yellow-600 dark:hover:text-yellow-300 p-1.5 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                title="Rendre éphémère"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+              <button 
+                @click.stop="openDeleteModal(conv.id)"
+                class="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 p-1.5 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500"
+                title="Supprimer"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v2H9V4a1 1 0 011-1z" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Zone de Chat Principale -->
-    <div class="flex-1 flex flex-col bg-white h-screen">
+    <div class="flex-1 flex flex-col bg-white dark:bg-gray-800 h-screen">
       <!-- En-tête du Chat avec Menu Mobile -->
-      <div class="bg-white border-b border-gray-200 px-4 py-4 shadow-sm flex-shrink-0">
+      <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 shadow-sm flex-shrink-0">
         <div class="flex items-center justify-between">
-          <!-- Menu Mobile -->
-      <button 
-        @click="showMobileMenu = !showMobileMenu"
-            class="md:hidden p-2 rounded-lg hover:bg-gray-100"
-      >
-            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
-      </button>
+          <button 
+            @click="showMobileMenu = !showMobileMenu"
+            class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+          >
+            <svg class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
 
-          <div class="flex-1 ml-4 md:ml-0">
-            <h2 class="text-lg font-semibold text-gray-800">
+          <button @click="$router.push('/')" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 mr-3 focus:outline-none focus:ring-2 focus:ring-blue-500" title="Retour au site principal">
+            <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 2v6m0 0h4m-4 0a2 2 0 01-2-2v-4a2 2 0 012-2h4a2 2 0 012 2v4a2 2 0 01-2 2z" />
+            </svg>
+          </button>
+          <div class="flex-1 ml-2 md:ml-0">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
               {{ currentConversationId ? getCurrentConversationTitle() : 'Nouvelle Conversation' }}
+              <span v-if="currentConversationId && conversations.find(c => c.id === currentConversationId && c.status === 'ephemere')" class="ml-2 px-2.5 py-1 text-xs bg-yellow-200 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 rounded-full">éphémère</span>
             </h2>
-            <p class="text-sm text-gray-500 mt-1">
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
               {{ currentConversationId ? `${messages.length} messages` : 'Commencez une nouvelle conversation' }}
             </p>
           </div>
 
-          <div v-if="currentConversationId" class="hidden md:flex items-center bg-green-100 px-3 py-1 rounded-full">
-            <div class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-            <span class="text-sm font-medium text-green-700">En ligne</span>
-          </div>
-        </div>
-    </div>
-
-      <!-- Menu Mobile -->
-    <div 
-      v-if="showMobileMenu" 
-        class="md:hidden fixed inset-0 z-50 flex"
-    >
-      <div class="fixed inset-0 bg-black bg-opacity-50" @click="showMobileMenu = false"></div>
-      <div class="relative w-80 bg-white shadow-xl max-w-[85vw] flex flex-col">
-        <div class="p-4 border-b border-gray-200 flex items-center justify-between">
-          <h1 class="text-lg font-bold text-gray-800">Soutien Moral</h1>
-          <button @click="showMobileMenu = false" class="p-2 hover:bg-gray-100 rounded-lg">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
-        
-        <div class="flex-1 overflow-y-auto p-4">
+          <div v-if="currentConversationId" class="flex items-center gap-3">
             <button 
-              @click="() => { startNewChat(); showMobileMenu = false; }" 
-              class="w-full mb-4 bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+              @click="openDeleteModal(currentConversationId)"
+              class="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500"
+              title="Supprimer la conversation"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v2H9V4a1 1 0 011-1z" />
               </svg>
-              Nouvelle Conversation
             </button>
-          
-          <div class="space-y-3">
-            <div v-if="conversations.length === 0 && !isLoading" class="text-center py-4">
-              <p class="text-sm text-gray-500">Aucune conversation</p>
-            </div>
-            <div 
-              v-for="conv in conversations" 
-              :key="conv.id"
-                @click="() => { selectConversation(conv.id); showMobileMenu = false; }"
-              class="p-3 rounded-lg cursor-pointer transition-all border-l-4"
-              :class="{ 
-                'bg-green-50 border-green-500': currentConversationId === conv.id,
-                'bg-white border-transparent hover:bg-gray-50': currentConversationId !== conv.id 
-              }"
+            <button 
+              @click="openEphemereModal"
+              class="bg-yellow-100 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800 text-yellow-800 dark:text-yellow-200 px-4 py-1.5 rounded-full text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              title="Rendre éphémère"
             >
-              <h3 class="font-medium text-gray-800 text-sm">{{ conv.title || 'Nouvelle conversation' }}</h3>
-              <p class="text-xs text-gray-500 mt-1">{{ formatDate(conv.created_at) }}</p>
+              Rendre éphémère
+            </button>
+            <button 
+              @click="toggleDarkMode"
+              class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              title="Basculer le mode sombre"
+            >
+              <svg v-if="isDarkMode" class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              <svg v-else class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            </button>
+            <div class="hidden md:flex items-center bg-green-100 dark:bg-green-900 px-4 py-1.5 rounded-full">
+              <div class="w-2.5 h-2.5 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+              <span class="text-sm font-medium text-green-700 dark:text-green-300">En ligne</span>
             </div>
           </div>
         </div>
       </div>
-    </div>
+
+      <!-- Menu Mobile -->
+      <div 
+        v-if="showMobileMenu" 
+        class="md:hidden fixed inset-0 z-50 flex"
+      >
+        <div class="fixed inset-0 bg-black bg-opacity-60" @click="showMobileMenu = false"></div>
+        <div class="relative w-80 bg-white dark:bg-gray-800 shadow-2xl max-w-[85vw] flex flex-col">
+          <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <h1 class="text-lg font-bold text-gray-800 dark:text-gray-100">Soutien Moral</h1>
+            <button @click="showMobileMenu = false" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500">
+              <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="flex-1 overflow-y-auto p-6">
+            <button 
+              @click="() => { startNewChat(); showMobileMenu = false; }" 
+              class="w-full mb-6 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-5 py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Nouvelle Conversation
+            </button>
+          
+            <div class="space-y-4">
+              <div v-if="isLoadingConversations" class="space-y-3">
+                <div v-for="n in 3" :key="n" class="animate-pulse">
+                  <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+                  <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                </div>
+              </div>
+              <div v-else-if="conversations && conversations.length === 0" class="text-center py-6">
+                <p class="text-sm text-gray-500 dark:text-gray-400">Aucune conversation</p>
+              </div>
+              <div 
+                v-for="conv in sortedConversations" 
+                :key="conv.id"
+                @click="() => { selectConversation(conv.id); showMobileMenu = false; }"
+                class="p-4 rounded-xl cursor-pointer transition-all border-l-4"
+                :class="{ 
+                  'bg-green-50 dark:bg-green-900/50 border-green-500': currentConversationId === conv.id,
+                  'bg-white dark:bg-gray-800 border-transparent hover:bg-gray-50 dark:hover:bg-gray-700': currentConversationId !== conv.id 
+                }"
+              >
+                <h3 class="font-semibold text-gray-800 dark:text-gray-100 text-base">{{ conv.title || 'Nouvelle conversation' }}</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ formatDate(conv.created_at) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Zone des Messages -->
       <div 
         ref="messagesContainer"
-        class="flex-1 overflow-y-auto p-4 bg-gray-50"
+        class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-gray-900 messages-container"
         @scroll="handleScroll"
       >
         <!-- Message de Bienvenue -->
-        <div v-if="messages.length === 0" class="flex items-center justify-center h-full">
-          <div class="text-center py-8">
+        <div v-if="messages && messages.length === 0" class="flex items-center justify-center h-full">
+          <div class="text-center py-10">
             <div class="max-w-md mx-auto">
-              <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-20 h-20 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-10 h-10 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                 </svg>
               </div>
-              <h3 class="text-xl font-semibold text-gray-800 mb-3">Bonjour ! 👋</h3>
-              <p class="text-gray-600 leading-relaxed">
+              <h3 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Bonjour ! 👋</h3>
+              <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
                 Je suis votre assistant de soutien moral. N'hésitez pas à partager ce qui vous préoccupe, 
                 je suis là pour vous écouter et vous accompagner.
               </p>
-              <div class="mt-6">
+              <div class="mt-8">
                 <button 
                   @click="messageInput?.focus()"
-                  class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                  class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-8 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-500"
                 >
                   Démarrer une conversation
                 </button>
@@ -177,7 +228,7 @@ body {
         </div>
 
         <!-- Messages -->
-        <div v-else class="space-y-4">
+        <div v-else class="space-y-6">
           <div 
             v-for="(message, index) in messages" 
             :key="message.id || index"
@@ -187,30 +238,30 @@ body {
             <!-- Message du Bot -->
             <div 
               v-if="message.sender === 'assistant'"
-              class="flex items-start space-x-2 max-w-[85%]"
+              class="flex items-start space-x-3 max-w-[80%]"
             >
-              <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                 </svg>
               </div>
-              <div class="bg-white rounded-2xl px-3 py-2 shadow-md border border-gray-100">
-                <p class="text-gray-800 leading-relaxed whitespace-pre-wrap">{{ message.content }}</p>
-                <p class="text-xs text-gray-400 mt-2">{{ formatTime(message.created_at) }}</p>
+              <div class="flex-1">
+                <MarkdownMessage :markdown="message.content" @option-selected="handleOptionSelected" />
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">{{ formatTime(message.created_at) }}</p>
               </div>
             </div>
 
             <!-- Message de l'Utilisateur -->
             <div 
               v-else
-              class="flex items-start space-x-2 max-w-[85%]"
+              class="flex items-start space-x-3 max-w-[80%]"
             >
-              <div class="bg-green-600 rounded-2xl px-3 py-2 shadow-md">
+              <div class="bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 rounded-2xl px-4 py-3 shadow-md">
                 <p class="text-white leading-relaxed whitespace-pre-wrap">{{ message.content }}</p>
                 <p class="text-green-100 text-xs mt-2 text-right">{{ formatTime(message.created_at) }}</p>
               </div>
-              <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-10 h-10 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                 </svg>
               </div>
@@ -219,67 +270,180 @@ body {
         </div>
 
         <!-- Animation de Chargement -->
-        <div v-if="isLoading" class="flex justify-start mt-4">
-          <div class="flex items-start space-x-2 max-w-2xl">
-            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div v-if="isLoading" class="flex justify-start mt-6">
+          <div class="flex items-start space-x-3 max-w-2xl">
+            <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
               </svg>
             </div>
-            <div class="bg-white rounded-2xl px-3 py-2 shadow-md border border-gray-100">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl px-4 py-3 shadow-md border border-gray-100 dark:border-gray-700">
               <div class="flex space-x-2">
-                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s;"></div>
-                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+                <div class="w-2.5 h-2.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce"></div>
+                <div class="w-2.5 h-2.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.1s;"></div>
+                <div class="w-2.5 h-2.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- Bouton Scroll to Bottom -->
+        <button 
+          v-if="showScrollButton" 
+          @click="scrollToBottom" 
+          class="fixed bottom-24 right-6 md:right-8 p-3 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+          </svg>
+        </button>
       </div>
 
       <!-- Zone de Saisie -->
-      <div class="bg-white border-t border-gray-200 p-4 flex-shrink-0" ref="inputArea">
+      <div class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-6 flex-shrink-0" ref="inputArea">
         <div class="max-w-4xl mx-auto">
-          <div class="flex items-end space-x-2">
-            <div class="flex-1">
+          <div class="flex items-end space-x-3">
+            <div class="flex-1 relative">
               <textarea
                 v-model="newMessage"
                 @keydown.enter.prevent="handleEnterKey"
                 placeholder="Tapez votre message ici..."
                 rows="1"
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none text-gray-800 placeholder-gray-500"
-                :disabled="isLoading"
+                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl resize-none focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 bg-white dark:bg-gray-700"
+                :disabled="isLoading || isRecording"
                 ref="messageInput"
                 @input="adjustTextareaHeight"
               ></textarea>
+              <button
+                v-if="isSpeechSupported"
+                @click="toggleRecording"
+                class="absolute right-2 bottom-2 p-2 rounded-full"
+                :class="isRecording ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'"
+                title="Enregistrement vocal"
+              >
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path v-if="!isRecording" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5 a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
             <button
               @click="sendMessage"
-              :disabled="!newMessage.trim() || isLoading"
-              class="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-md hover:shadow-lg"
+              :disabled="!newMessage.trim() || isLoading || isRecording"
+              class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-5 py-3 rounded-xl transition-all duration-300 flex items-center space-x-2 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <span v-if="!isLoading">Envoyer</span>
               <span v-else>Envoi...</span>
-              <svg v-if="!isLoading" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg v-if="!isLoading" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
               </svg>
-              <svg v-else class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <svg v-else class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             </button>
           </div>
+          <p v-if="isRecording" class="text-sm text-red-500 dark:text-red-400 mt-2 animate-pulse">Enregistrement en cours...</p>
         </div>
+      </div>
+    </div>
+
+    <!-- Modal Éphémère -->
+    <div v-if="showEphemereModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-sm shadow-2xl animate-modal-pop">
+        <div class="flex items-center mb-4">
+          <svg class="w-8 h-8 text-yellow-400 dark:text-yellow-300 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" />
+          </svg>
+          <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Durée d'éphémérité</h3>
+        </div>
+        <div class="flex items-center gap-3 mb-6">
+          <input 
+            type="number" 
+            v-model="ephemereDuration" 
+            min="1" 
+            class="w-20 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100" 
+          />
+          <select 
+            v-model="ephemereUnit" 
+            class="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
+          >
+            <option value="minutes">Minutes</option>
+            <option value="heures">Heures</option>
+            <option value="jours">Jours</option>
+          </select>
+        </div>
+        <div class="flex gap-3 justify-end">
+          <button 
+            @click="closeEphemereModal" 
+            class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 transition focus:outline-none focus:ring-2 focus:ring-gray-500"
+          >
+            Annuler
+          </button>
+          <button 
+            @click="confirmEphemere" 
+            class="px-4 py-2 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white transition flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Valider
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Suppression -->
+    <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-sm shadow-2xl animate-modal-pop">
+        <div class="flex items-center mb-4">
+          <svg class="w-8 h-8 text-red-500 dark:text-red-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <h3 class="text-xl font-semibold text-red-600 dark:text-red-400">Supprimer la conversation ?</h3>
+        </div>
+        <p class="text-gray-600 dark:text-gray-300 mb-6">Cette action est irréversible. Voulez-vous vraiment supprimer cette conversation ?</p>
+        <div class="flex gap-3 justify-end">
+          <button 
+            @click="closeDeleteModal" 
+            class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 transition focus:outline-none focus:ring-2 focus:ring-gray-500"
+          >
+            Annuler
+          </button>
+          <button 
+            @click="confirmDelete" 
+            class="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white transition flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div v-if="toastMessage" class="fixed bottom-4 right-4 z-50">
+      <div class="bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-toast-in">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <span>{{ toastMessage }}</span>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useChatStore } from '~/stores/chat'
+import MarkdownMessage from '~/components/chat/MarkdownMessage.vue'
+
+definePageMeta({ layout: 'chat' })
 
 // Configuration
-const API_BASE = 'https://wilfriedtayou.pythonanywhere.com/chatbot'
+const API_BASE = 'http://localhost:8001'
 
 // État réactif
 const conversations = ref([])
@@ -287,42 +451,146 @@ const currentConversationId = ref(null)
 const messages = ref([])
 const newMessage = ref('')
 const isLoading = ref(false)
+const isLoadingConversations = ref(false)
 const showMobileMenu = ref(false)
 const messagesContainer = ref(null)
 const messageInput = ref(null)
 const inputArea = ref(null)
-const inputHeight = ref(160)
 const showScrollButton = ref(false)
+const showEphemereModal = ref(false)
+const ephemereDuration = ref(60)
+const ephemereUnit = ref('minutes')
+const showDeleteModal = ref(false)
+const conversationToDelete = ref(null)
+const removedConversationId = ref(null)
+const toastMessage = ref(null)
+const isDarkMode = ref(false)
+if (typeof window !== 'undefined') {
+  isDarkMode.value = localStorage.getItem('theme') === 'dark'
+}
+const isSpeechSupported = ref(false)
+if (typeof window !== 'undefined') {
+  isSpeechSupported.value = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window
+}
+const isRecording = ref(false)
+const recognition = ref(null)
+
+// Mapping des catégories attendues par le backend
+const cat_map = {
+  'juridique': 'assistance_juridique',
+  'assistance juridique': 'assistance_juridique',
+  'hébergement': 'hebergement',
+  'hebergement': 'hebergement',
+  'psychologique': 'sante_mentale',
+  'santé mentale': 'sante_mentale',
+  'sante mentale': 'sante_mentale',
+  'santé': 'soins_medicaux',
+  'sante': 'soins_medicaux',
+  'médical': 'soins_medicaux',
+  'medical': 'soins_medicaux',
+  'soins médicaux': 'soins_medicaux',
+  'soins medicaux': 'soins_medicaux',
+  'police': 'police_securite',
+  'sécurité': 'police_securite',
+  'securite': 'police_securite',
+  'appui psychosocial': 'appui_psychosocial',
+  'réinsertion économique': 'reinsertion_economique',
+  'reinsertion economique': 'reinsertion_economique'
+}
 
 const chatStore = useChatStore()
 
-// Charger les conversations au démarrage
+// Computed
+const sortedConversations = computed(() => {
+  const now = new Date()
+  return [...conversations.value]
+    .filter(conv => !conv.expire_at || new Date(conv.expire_at) > now)
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+})
+
+// Dark Mode
+const toggleDarkMode = () => {
+  isDarkMode.value = !isDarkMode.value
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('theme', isDarkMode.value ? 'dark' : 'light')
+  }
+  document.documentElement.classList.toggle('dark', isDarkMode.value)
+}
+
+// Speech Recognition
+const setupSpeechRecognition = () => {
+  if (isSpeechSupported.value) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+    recognition.value = new SpeechRecognition()
+    recognition.value.lang = 'fr-FR'
+    recognition.value.interimResults = true
+    recognition.value.continuous = false
+
+    recognition.value.onresult = (event) => {
+      const transcript = Array.from(event.results)
+        .map(result => result[0].transcript)
+        .join('')
+      newMessage.value = transcript
+      adjustTextareaHeight()
+    }
+
+    recognition.value.onend = () => {
+      if (isRecording.value) {
+        recognition.value.start()
+      }
+    }
+
+    recognition.value.onerror = (event) => {
+      console.error('Speech recognition error:', event.error)
+      showToast('Erreur lors de l\'enregistrement vocal.')
+      isRecording.value = false
+    }
+  }
+}
+
+const toggleRecording = () => {
+  if (!isSpeechSupported.value) return
+  if (isRecording.value) {
+    recognition.value.stop()
+    isRecording.value = false
+    if (newMessage.value.trim()) {
+      sendMessage()
+    }
+  } else {
+    recognition.value.start()
+    isRecording.value = true
+    newMessage.value = ''
+    adjustTextareaHeight()
+  }
+}
+
+// Lifecycle Hooks
 onMounted(async () => {
+  if (typeof window !== 'undefined') {
+    isDarkMode.value = localStorage.getItem('theme') === 'dark'
+    isSpeechSupported.value = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window
+  }
+  document.documentElement.classList.toggle('dark', isDarkMode.value)
   await loadConversations()
   calculateInputHeight()
   window.addEventListener('resize', calculateInputHeight)
+  setupSpeechRecognition()
 
-  // Si nous avons des données dans le store, les utiliser
   if (chatStore.currentConversationId) {
     currentConversationId.value = chatStore.currentConversationId
     if (chatStore.initialMessage) {
-      // Ajouter le message initial à l'affichage uniquement
       messages.value.push({
         id: Date.now().toString(),
         sender: 'user',
         content: chatStore.initialMessage,
         created_at: new Date().toISOString()
       })
-      // Afficher l'indicateur de chargement
       isLoading.value = true
       scrollToBottom()
-      
-      // Attendre la réponse de l'assistant
       try {
-        const response = await $fetch(`${API_BASE}/chat/${currentConversationId.value}/`, {
+        const response = await $fetch(`${API_BASE}/chat/conversations/${currentConversationId.value}/`, {
           credentials: 'include'
         })
-        
         if (Array.isArray(response.messages)) {
           messages.value = response.messages
         }
@@ -333,16 +601,18 @@ onMounted(async () => {
         scrollToBottom()
       }
     }
-    // Nettoyer le store
     chatStore.clearConversationData()
   }
 })
 
 onUnmounted(() => {
   window.removeEventListener('resize', calculateInputHeight)
+  if (recognition.value) {
+    recognition.value.stop()
+  }
 })
 
-// Gérer le scroll pour afficher/masquer le bouton
+// Scroll Handling
 const handleScroll = () => {
   if (messagesContainer.value) {
     const { scrollTop, scrollHeight, clientHeight } = messagesContainer.value
@@ -350,16 +620,27 @@ const handleScroll = () => {
   }
 }
 
-// Calculer la hauteur de la zone de saisie pour le responsive
-const calculateInputHeight = () => {
+const scrollToBottom = () => {
   nextTick(() => {
-    if (inputArea.value) {
-      inputHeight.value = inputArea.value.offsetHeight + 80 // +80 pour l'en-tête
+    if (messagesContainer.value) {
+      messagesContainer.value.scrollTo({
+        top: messagesContainer.value.scrollHeight,
+        behavior: 'smooth'
+      })
+      showScrollButton.value = false
     }
   })
 }
 
-// Ajuster la hauteur du textarea automatiquement
+const calculateInputHeight = () => {
+  nextTick(() => {
+    if (inputArea.value) {
+      inputArea.value.style.height = 'auto'
+      inputArea.value.style.height = inputArea.value.scrollHeight + 'px'
+    }
+  })
+}
+
 const adjustTextareaHeight = () => {
   nextTick(() => {
     if (messageInput.value) {
@@ -370,7 +651,7 @@ const adjustTextareaHeight = () => {
   })
 }
 
-// Fonctions utilitaires
+// Utility Functions
 const formatDate = (dateString) => {
   try {
     const date = new Date(dateString)
@@ -403,68 +684,62 @@ const formatTime = (dateString) => {
   }
 }
 
-const scrollToBottom = () => {
-  nextTick(() => {
-    if (messagesContainer.value) {
-      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
-      showScrollButton.value = false
-    }
-  })
-}
-
 const getCurrentConversationTitle = () => {
   const current = conversations.value.find(c => c.id === currentConversationId.value)
   return current ? current.title : 'Conversation'
 }
 
-// Gestion du textarea
-const handleEnterKey = (event) => {
-  if (event.shiftKey) {
-    // Shift + Enter = nouvelle ligne
-    return;
-  }
-  
-  // Empêcher le comportement par défaut
-  event.preventDefault();
-  
-  // Envoyer le message
-  sendMessage(newMessage.value.trim(), event);
+const getRemainingTime = (expireAt) => {
+  const now = new Date()
+  const expire = new Date(expireAt)
+  let diff = Math.max(0, Math.floor((expire - now) / 1000))
+  if (diff <= 0) return 'Expiré'
+  const days = Math.floor(diff / 86400)
+  diff %= 86400
+  const hours = Math.floor(diff / 3600)
+  diff %= 3600
+  const minutes = Math.floor(diff / 60)
+  if (days > 0) return `${days}j ${hours}h`
+  if (hours > 0) return `${hours}h ${minutes}min`
+  return `${minutes} min`
 }
 
-// Fonctions API
+// API Functions
 const loadConversations = async () => {
+  isLoadingConversations.value = true
   try {
-    const response = await $fetch(`${API_BASE}/chat/`, {
+    const response = await $fetch(`${API_BASE}/chat/conversations/`, {
       credentials: 'include'
     })
-    // Gérer différents formats de réponse de l'API
-    if (Array.isArray(response)) {
-      conversations.value = response
-    } else if (response && Array.isArray(response.data)) {
-      conversations.value = response.data
-    } else if (response && response.conversations) {
-      conversations.value = Array.isArray(response.conversations) ? response.conversations : []
-    } else {
-      conversations.value = []
-    }
-    console.log('Conversations chargées:', conversations.value)
+    conversations.value = Array.isArray(response) ? response :
+                         Array.isArray(response.data) ? response.data :
+                         Array.isArray(response.conversations) ? response.conversations : []
   } catch (error) {
     console.error('Erreur chargement conversations:', error)
     conversations.value = []
+    showToast('Erreur lors du chargement des conversations.')
+  } finally {
+    isLoadingConversations.value = false
   }
 }
 
 const loadConversation = async (id) => {
+  isLoading.value = true
   try {
-    const data = await $fetch(`${API_BASE}/chat/${id}/`, {
+    const data = await $fetch(`${API_BASE}/chat/conversations/${id}/`, {
       credentials: 'include'
     })
     messages.value = Array.isArray(data.messages) ? data.messages : []
+    if (messages.value.length > 1) {
+      messages.value.splice(1, 1)
+    }
     scrollToBottom()
   } catch (error) {
     console.error('Erreur chargement conversation:', error)
     messages.value = []
-    alert('Erreur lors du chargement de la conversation')
+    showToast('Erreur lors du chargement de la conversation.')
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -476,6 +751,7 @@ const startNewChat = () => {
     messageInput.value.style.height = 'auto'
     calculateInputHeight()
   }
+  showToast('Nouvelle conversation démarrée.')
 }
 
 const selectConversation = async (id) => {
@@ -484,15 +760,9 @@ const selectConversation = async (id) => {
   await loadConversation(id)
 }
 
-const sendMessage = async (messageText = newMessage.value.trim(), event = null) => {
-  // Empêcher le comportement par défaut si c'est un événement
-  if (event && event.preventDefault) {
-    event.preventDefault();
-  }
+const sendMessage = async (messageText = newMessage.value.trim()) => {
+  if (!messageText || isLoading.value || isRecording.value) return
 
-  if (!messageText || isLoading.value) return;
-
-  // Afficher immédiatement le message utilisateur
   const userMessage = {
     sender: 'user',
     content: messageText,
@@ -500,184 +770,298 @@ const sendMessage = async (messageText = newMessage.value.trim(), event = null) 
   }
   messages.value.push(userMessage)
   scrollToBottom()
-
   isLoading.value = true
   newMessage.value = ''
   
-  // Réinitialiser la hauteur du textarea
   if (messageInput.value) {
     messageInput.value.style.height = 'auto'
     calculateInputHeight()
   }
 
   try {
-    let response;
-
+    let response
     if (currentConversationId.value) {
-      // Ajouter à conversation existante
-      response = await $fetch(`${API_BASE}/chat/${currentConversationId.value}/`, {
+      response = await $fetch(`${API_BASE}/chat/conversations/${currentConversationId.value}/`, {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ message: messageText }),
         credentials: 'include'
-      });
-
-      // Recharger la conversation pour avoir tous les messages
-      const updatedConv = await $fetch(`${API_BASE}/chat/${currentConversationId.value}/`, {
+      })
+      const updatedConv = await $fetch(`${API_BASE}/chat/conversations/${currentConversationId.value}/`, {
         credentials: 'include',
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
-      
-      messages.value = Array.isArray(updatedConv.messages) ? updatedConv.messages : [];
+        headers: { 'Accept': 'application/json' }
+      })
+      messages.value = Array.isArray(updatedConv.messages) ? updatedConv.messages : []
     } else {
-      // Créer nouvelle conversation
-      response = await $fetch(`${API_BASE}/chat/`, {
+      response = await $fetch(`${API_BASE}/chat/conversations/`, {
         method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ 
           message: messageText,
           situation_type: chatStore.situationType,
           first_name: chatStore.firstName
         }),
         credentials: 'include'
-      });
-      
-      // Définir l'ID de la conversation courante
-      if (response.id) {
-        currentConversationId.value = response.id;
-      } else if (response.conversation_id) {
-        currentConversationId.value = response.conversation_id;
-      }
-
-      // Mettre à jour les messages
-      if (Array.isArray(response.messages)) {
-        messages.value = response.messages;
-      }
-
-      // Recharger TOUTES les conversations pour mettre à jour la sidebar
-      await loadConversations();
+      })
+      const convId = response.id || response.conversation_id
+      currentConversationId.value = convId
+      await $fetch(`${API_BASE}/chat/conversations/${convId}/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ message: messageText }),
+        credentials: 'include'
+      })
+      await loadConversation(convId)
+      await loadConversations()
+      nextTick(() => {
+        if (!conversations.value.find(c => c.id === currentConversationId.value) && conversations.value.length > 0) {
+          currentConversationId.value = conversations.value[0].id
+        } else {
+          currentConversationId.value = convId
+        }
+      })
     }
-
-    scrollToBottom();
-
+    scrollToBottom()
+    showToast('Message envoyé.')
   } catch (error) {
-    console.error('Erreur envoi message:', error);
-
-    // Retirer le message utilisateur en cas d'erreur
-    messages.value.pop();
-
-    let errorMessage = 'Erreur lors de l\'envoi du message.';
+    console.error('Erreur envoi message:', error)
+    messages.value.pop()
+    let errorMessage = 'Erreur lors de l\'envoi du message.'
+    if (error.data?.detail) errorMessage = error.data.detail
+    else if (error.status === 500) errorMessage = 'Erreur interne du chatbot.'
+    else if (error.status === 401) errorMessage = 'Session expirée.'
+    else if (error.status === 403) errorMessage = 'Accès refusé.'
+    else if (error.status === 404) errorMessage = 'Service non trouvé.'
+    else if (error.status === 0) errorMessage = 'Erreur de connexion.'
     
-    // Gestion plus détaillée des erreurs
-    if (error.data?.detail) {
-      errorMessage = error.data.detail;
-    } else if (error.status === 500) {
-      errorMessage = 'Erreur interne du chatbot. Veuillez réessayer dans quelques instants.';
-    } else if (error.status === 401) {
-      errorMessage = 'Session expirée. Veuillez vous reconnecter.';
-    } else if (error.status === 403) {
-      errorMessage = 'Accès refusé. Veuillez vérifier vos permissions.';
-    } else if (error.status === 404) {
-      errorMessage = 'Service non trouvé. Veuillez réessayer.';
-    } else if (error.status === 0) {
-      errorMessage = 'Erreur de connexion. Veuillez vérifier votre connexion internet.';
-    }
-
-    // Afficher l'erreur dans l'interface plutôt qu'une alerte
     messages.value.push({
       sender: 'assistant',
       content: `⚠️ ${errorMessage}`,
       created_at: new Date().toISOString()
-    });
-
-    newMessage.value = messageText; // Restaurer le message
+    })
+    newMessage.value = messageText
+    showToast(errorMessage)
   } finally {
-    isLoading.value = false;
-
-    // Remettre le focus sur l'input
-    nextTick(() => {
-      if (messageInput.value) {
-        messageInput.value.focus();
-      }
-    });
+    isLoading.value = false
+    nextTick(() => messageInput.value?.focus())
   }
+}
+
+const deleteConversation = async (id) => {
+  if (!id || id === 'null' || id === null) return
+  try {
+    await $fetch(`${API_BASE}/chat/conversations/${id}/`, {
+      method: 'DELETE',
+      credentials: 'include'
+    })
+    if (currentConversationId.value === id) {
+      currentConversationId.value = null
+      messages.value = []
+    }
+    await loadConversations()
+    showToast('Conversation supprimée.')
+  } catch (error) {
+    showToast('Erreur lors de la suppression.')
+  }
+}
+
+const makeEphemere = async (id, expire_in) => {
+  try {
+    await $fetch(`${API_BASE}/chat/conversations/${id}/`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'ephemere', expire_in }),
+      credentials: 'include'
+    })
+    await loadConversation(id)
+    await loadConversations()
+    showToast('Conversation rendue éphémère.')
+  } catch (error) {
+    showToast('Erreur lors du passage en éphémère.')
+  }
+}
+
+const openEphemereModal = () => {
+  ephemereDuration.value = 60
+  ephemereUnit.value = 'minutes'
+  showEphemereModal.value = true
+}
+
+const closeEphemereModal = () => {
+  showEphemereModal.value = false
+}
+
+const confirmEphemere = async () => {
+  let expire_in = ephemereDuration.value
+  if (ephemereUnit.value === 'heures') expire_in *= 60
+  if (ephemereUnit.value === 'jours') expire_in *= 60 * 24
+  removedConversationId.value = currentConversationId.value
+  await new Promise(resolve => setTimeout(resolve, 350))
+  await makeEphemere(currentConversationId.value, expire_in)
+  closeEphemereModal()
+  removedConversationId.value = null
+}
+
+const openDeleteModal = (id) => {
+  conversationToDelete.value = id
+  showDeleteModal.value = true
+}
+
+const closeDeleteModal = () => {
+  showDeleteModal.value = false
+  conversationToDelete.value = null
+}
+
+const confirmDelete = async () => {
+  if (!conversationToDelete.value) return
+  const id = conversationToDelete.value
+  if (!id || id === 'null' || id === null) return
+  removedConversationId.value = id
+  closeDeleteModal()
+  await new Promise(resolve => setTimeout(resolve, 350))
+  await deleteConversation(id)
+  removedConversationId.value = null
+}
+
+const showToast = (message) => {
+  toastMessage.value = message
+  setTimeout(() => {
+    toastMessage.value = null
+  }, 3000)
+}
+
+const handleEnterKey = (event) => {
+  if (event.shiftKey) return
+  event.preventDefault()
+  sendMessage()
+}
+
+async function handleOptionSelected(value) {
+  let messageText = value
+  const regions = ['Adamaoua', 'Ouest']
+  const categories = Object.keys(cat_map)
+  
+  if (regions.includes(value)) {
+    messageText = `Je suis dans la région de : ${value}`
+  } else if (categories.includes(value)) {
+    // Utilise la valeur attendue par le backend
+    const backendCat = cat_map[value]
+    messageText = `Je souhaite signaler une situation de : ${backendCat}`
+  }
+
+  // Utiliser la fonction sendMessage existante au lieu de faire un appel API séparé
+  await sendMessage(messageText)
 }
 </script>
 
 <style scoped>
 /* Animations */
 @keyframes bounce {
-  0%, 80%, 100% {
-    transform: scale(0);
-  }
-  40% {
-    transform: scale(1);
-  }
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
 }
 
 .animate-bounce {
   animation: bounce 1.4s infinite ease-in-out;
 }
 
-/* Scrollbar personnalisée */
+@keyframes modal-pop {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-modal-pop {
+  animation: modal-pop 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+@keyframes toast-in {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.animate-toast-in {
+  animation: toast-in 0.3s ease-out forwards;
+}
+
+@keyframes fadeOutScale {
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+    height: 0;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.fade-out {
+  animation: fadeOutScale 0.35s forwards;
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
   background: #f1f5f9;
 }
+.dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+}
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
+  background: #94a3b8;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #6b7280;
 }
 
-/* Ajout du scroll pour la sidebar */
+/* Sidebar */
 .sidebar {
   overflow-y: auto;
   max-height: 100vh;
 }
 
-/* Ajustements pour mobile */
+/* Mobile Adjustments */
 @media (max-width: 768px) {
-  .max-w-85 {
-    max-width: 85%;
+  .sidebar {
+    position: fixed;
+    top: 0;
+    z-index: 40;
+    width: 100vw;
+    max-width: 100vw;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
-  
-  /* Ajuster la hauteur de la zone de messages pour éviter le chevauchement avec le clavier */
+
   .messages-container {
-    height: calc(100vh - 180px);
+    height: calc(100vh - 200px);
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
   }
-  
-  /* Ajuster la zone de saisie pour mobile */
+
   .input-area {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     background: white;
-    padding: 1rem;
+    padding: 1.5rem;
     border-top: 1px solid #e5e7eb;
   }
-}
+  .dark .input-area {
+    background: #1f2937;
+    border-top: 1px solid #374151;
+  }
 
-/* Empêcher le zoom sur les inputs sur mobile */
-@media screen and (max-width: 768px) {
   input, textarea {
     font-size: 16px !important;
   }
+}
+
+/* Dark Mode */
+.dark {
+  color-scheme: dark;
 }
 </style>
