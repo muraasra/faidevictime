@@ -445,6 +445,7 @@ import MarkdownMessage from '~/components/chat/MarkdownMessage.vue'
 definePageMeta({ layout: 'chat' })
 
 // Configuration
+// const API_BASE = 'https://wilfriedtayou.pythonanywhere.com/'
 const API_BASE = 'https://wilfriedtayou.pythonanywhere.com/'
 
 // État réactif
@@ -798,10 +799,17 @@ const selectConversation = async (id) => {
 }
 
 const sendMessage = async (messageInput = null) => {
+  // Protection contre les appels multiples
+  if (isLoading.value) {
+    console.log('Envoi déjà en cours, ignoré')
+    return
+  }
+  
   // Extraction du message selon le type d'appareil
   let messageText = ''
   
   if (typeof messageInput === 'string') {
+    // Cas des options (mobile et PC)
     messageText = messageInput.trim()
   } else if (messageInput && typeof messageInput === 'object') {
     // Sur mobile, l'événement peut avoir une structure différente
@@ -813,6 +821,7 @@ const sendMessage = async (messageInput = null) => {
       messageText = newMessage.value.trim()
     }
   } else {
+    // Sur ordinateur (messageInput est null) ou fallback mobile
     messageText = newMessage.value.trim()
   }
   
@@ -834,28 +843,82 @@ const sendMessage = async (messageInput = null) => {
   messages.value.push(userMessage)
   scrollToBottom()
   isLoading.value = true
+  
+  // Timeout de sécurité pour éviter les blocages
+  const safetyTimeout = setTimeout(() => {
+    if (isLoading.value) {
+      console.warn('Timeout de sécurité: réinitialisation forcée')
+      resetLoadingState()
+      showToast('Problème de connexion détecté. Réessayez.')
+    }
+  }, 35000) // 35 secondes
+  
+  // Vider le message seulement après l'avoir extrait
   newMessage.value = ''
   
-  if (messageInput.value) {
+  // Ajuster la hauteur du textarea (fonctionne sur mobile et PC)
+  if (messageInput && messageInput.value) {
     messageInput.value.style.height = 'auto'
     calculateInputHeight()
   }
 
   try {
     let response
-    if (currentConversationId.value) {
-      response = await $fetch(`${API_BASE}/chat/conversations/${currentConversationId.value}/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ message: messageText }),
-        credentials: 'include'
-      })
-      const updatedConv = await $fetch(`${API_BASE}/chat/conversations/${currentConversationId.value}/`, {
+    
+    // Test de connectivité simple
+    console.log('🔍 Test de connectivité vers:', API_BASE)
+    try {
+      const testResponse = await $fetch(`${API_BASE}`, {
+        method: 'GET',
         credentials: 'include',
-        headers: { 'Accept': 'application/json' }
+        timeout: 10000 // 10 secondes pour le test
       })
-      messages.value = cleanInvalidMessages(Array.isArray(updatedConv.messages) ? updatedConv.messages : [])
+      console.log('✅ Connectivité OK')
+    } catch (testError) {
+      console.error('❌ Problème de connectivité:', testError)
+      throw new Error('Impossible de se connecter au serveur. Vérifiez votre connexion internet.')
+    }
+    
+    // Timeout plus long pour l'API qui peut être lente
+    // Désactiver temporairement le timeout si l'API est lente
+    const useTimeout = false // Mettre à true pour réactiver les timeouts
+    const timeoutPromise = useTimeout ? new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Timeout: La requête a pris trop de temps')), 60000) // 60 secondes
+    }) : null
+    
+    if (currentConversationId.value) {
+      // Conversation existante - Version simplifiée
+      console.log('📤 Envoi vers conversation existante:', currentConversationId.value)
+      response = useTimeout ? 
+        await Promise.race([
+          $fetch(`${API_BASE}/chat/conversations/${currentConversationId.value}/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ message: messageText }),
+            credentials: 'include'
+          }),
+          timeoutPromise
+        ]) :
+        await $fetch(`${API_BASE}/chat/conversations/${currentConversationId.value}/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ message: messageText }),
+          credentials: 'include'
+        })
+      console.log('✅ Réponse reçue:', response)
+      
+      // Ajouter le message de l'assistant si disponible
+      if (response && (response.response || response.reply)) {
+        const assistantMessage = response.response || response.reply
+        messages.value.push({
+          sender: 'assistant',
+          content: assistantMessage,
+          created_at: new Date().toISOString()
+        })
+      }
     } else {
+      // Nouvelle conversation - Version complète
+      console.log('🆕 Création d\'une nouvelle conversation...')
       response = await $fetch(`${API_BASE}/chat/conversations/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -866,15 +929,39 @@ const sendMessage = async (messageInput = null) => {
         }),
         credentials: 'include'
       })
+      console.log('✅ Nouvelle conversation créée:', response)
       const convId = response.id || response.conversation_id
       currentConversationId.value = convId
-      await $fetch(`${API_BASE}/chat/conversations/${convId}/`, {
+      
+      // Deuxième envoi pour avoir la réponse immédiate
+      console.log('📤 Deuxième envoi pour réponse immédiate...')
+      const secondResponse = await $fetch(`${API_BASE}/chat/conversations/${convId}/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ message: messageText }),
         credentials: 'include'
       })
-      await loadConversation(convId)
+      console.log('✅ Réponse immédiate reçue:', secondResponse)
+      
+      // Ajouter le message de l'assistant si disponible
+      if (secondResponse && (secondResponse.response || secondResponse.reply)) {
+        const assistantMessage = secondResponse.response || secondResponse.reply
+        console.log('📝 Ajout du message assistant:', assistantMessage)
+        console.log('📊 Messages avant ajout:', messages.value.length)
+        
+        messages.value.push({
+          sender: 'assistant',
+          content: assistantMessage,
+          created_at: new Date().toISOString()
+        })
+        
+        console.log('📊 Messages après ajout:', messages.value.length)
+        console.log('📋 Contenu des messages:', messages.value)
+      } else {
+        console.log('❌ Pas de réponse assistant dans secondResponse:', secondResponse)
+      }
+      
+      // Charger les conversations mises à jour
       await loadConversations()
       nextTick(() => {
         if (!conversations.value.find(c => c.id === currentConversationId.value) && conversations.value.length > 0) {
@@ -887,15 +974,30 @@ const sendMessage = async (messageInput = null) => {
     scrollToBottom()
     showToast('Message envoyé.')
   } catch (error) {
-    console.error('Erreur envoi message:', error)
+    console.error('❌ Erreur détaillée:', error)
+    console.error('❌ Type d\'erreur:', typeof error)
+    console.error('❌ Message d\'erreur:', error.message)
+    console.error('❌ Status:', error.status)
+    console.error('❌ Data:', error.data)
+    
     messages.value.pop()
     let errorMessage = 'Erreur lors de l\'envoi du message.'
-    if (error.data?.detail) errorMessage = error.data.detail
-    else if (error.status === 500) errorMessage = 'Erreur interne du chatbot.'
-    else if (error.status === 401) errorMessage = 'Session expirée.'
-    else if (error.status === 403) errorMessage = 'Accès refusé.'
-    else if (error.status === 404) errorMessage = 'Service non trouvé.'
-    else if (error.status === 0) errorMessage = 'Erreur de connexion.'
+    
+    if (error.message && error.message.includes('Timeout')) {
+      errorMessage = 'L\'API prend trop de temps à répondre. Vérifiez votre connexion ou réessayez plus tard.'
+    } else if (error.data?.detail) {
+      errorMessage = error.data.detail
+    } else if (error.status === 500) {
+      errorMessage = 'Erreur interne du chatbot.'
+    } else if (error.status === 401) {
+      errorMessage = 'Session expirée.'
+    } else if (error.status === 403) {
+      errorMessage = 'Accès refusé.'
+    } else if (error.status === 404) {
+      errorMessage = 'Service non trouvé.'
+    } else if (error.status === 0) {
+      errorMessage = 'Erreur de connexion.'
+    }
     
     messages.value.push({
       sender: 'assistant',
@@ -906,8 +1008,8 @@ const sendMessage = async (messageInput = null) => {
     newMessage.value = messageText
     showToast(errorMessage)
   } finally {
-    isLoading.value = false
-    nextTick(() => messageInput.value?.focus())
+    clearTimeout(safetyTimeout)
+    resetLoadingState()
   }
 }
 
@@ -992,6 +1094,14 @@ const showToast = (message) => {
   setTimeout(() => {
     toastMessage.value = null
   }, 3000)
+}
+
+// Reset function for error recovery
+const resetLoadingState = () => {
+  isLoading.value = false
+  if (messageInput.value) {
+    messageInput.value.focus()
+  }
 }
 
 const handleEnterKey = (event) => {
