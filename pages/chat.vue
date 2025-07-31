@@ -579,13 +579,6 @@ onMounted(async () => {
   if (chatStore.currentConversationId) {
     currentConversationId.value = chatStore.currentConversationId
     if (chatStore.initialMessage) {
-      // Validation du message initial
-      if (typeof chatStore.initialMessage !== 'string') {
-        console.error('Message initial invalide:', chatStore.initialMessage)
-        chatStore.clearConversationData()
-        return
-      }
-      
       messages.value.push({
         id: Date.now().toString(),
         sender: 'user',
@@ -662,8 +655,13 @@ const adjustTextareaHeight = () => {
 const cleanInvalidMessages = (messagesArray) => {
   if (!Array.isArray(messagesArray)) return []
   return messagesArray.filter(msg => {
+    // Vérifier que le message a une structure valide
+    if (!msg || typeof msg !== 'object') {
+      console.warn('Message invalide (pas un objet):', msg)
+      return false
+    }
     if (typeof msg.content !== 'string') {
-      console.warn('Message invalide détecté et supprimé:', msg)
+      console.warn('Message invalide (content pas une string):', msg)
       return false
     }
     return true
@@ -780,26 +778,19 @@ const selectConversation = async (id) => {
 }
 
 const sendMessage = async (messageText = newMessage.value.trim()) => {
-  // Validation du type de message
-  if (typeof messageText !== 'string') {
-    console.error('Type de message invalide:', typeof messageText, messageText)
-    showToast('Erreur: type de message invalide')
+  // Validation basique du message
+  if (!messageText || typeof messageText !== 'string' || isLoading.value || isRecording.value) {
+    if (typeof messageText !== 'string') {
+      console.error('Type de message invalide:', typeof messageText, messageText)
+      showToast('Erreur: type de message invalide')
+    }
     return
   }
-  
-  if (!messageText || isLoading.value || isRecording.value) return
 
   const userMessage = {
     sender: 'user',
     content: messageText,
     created_at: new Date().toISOString()
-  }
-  
-  // Validation du message avant ajout
-  if (typeof userMessage.content !== 'string') {
-    console.error('Message utilisateur invalide:', userMessage)
-    showToast('Erreur: message invalide')
-    return
   }
   
   messages.value.push(userMessage)
@@ -873,12 +864,6 @@ const sendMessage = async (messageText = newMessage.value.trim()) => {
       content: `⚠️ ${errorMessage}`,
       created_at: new Date().toISOString()
     })
-    
-    // Validation du message d'erreur
-    if (typeof errorMessage !== 'string') {
-      console.error('Message d\'erreur invalide:', errorMessage)
-      errorMessage = 'Erreur lors de l\'envoi du message.'
-    }
     
     newMessage.value = messageText
     showToast(errorMessage)
@@ -979,8 +964,8 @@ const handleEnterKey = (event) => {
 }
 
 async function handleOptionSelected(value) {
-  // Validation que value est bien une chaîne de caractères
-  if (typeof value !== 'string') {
+  // Validation basique de la valeur
+  if (!value || typeof value !== 'string') {
     console.error('Valeur d\'option invalide:', typeof value, value)
     showToast('Erreur: option invalide')
     return
