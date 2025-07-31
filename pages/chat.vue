@@ -797,7 +797,25 @@ const selectConversation = async (id) => {
   await loadConversation(id)
 }
 
-const sendMessage = async (messageText = newMessage.value.trim()) => {
+const sendMessage = async (messageInput = null) => {
+  // Extraction du message selon le type d'appareil
+  let messageText = ''
+  
+  if (typeof messageInput === 'string') {
+    messageText = messageInput.trim()
+  } else if (messageInput && typeof messageInput === 'object') {
+    // Sur mobile, l'événement peut avoir une structure différente
+    if (messageInput.target && messageInput.target.value) {
+      messageText = messageInput.target.value.trim()
+    } else if (messageInput.detail && typeof messageInput.detail === 'string') {
+      messageText = messageInput.detail.trim()
+    } else {
+      messageText = newMessage.value.trim()
+    }
+  } else {
+    messageText = newMessage.value.trim()
+  }
+  
   // Validation basique du message
   if (!messageText || typeof messageText !== 'string' || isLoading.value || isRecording.value) {
     if (typeof messageText !== 'string') {
@@ -1003,7 +1021,7 @@ async function handleOptionSelected(value) {
     messageText = `Je souhaite signaler une situation de : ${backendCat}`
   }
 
-  // Utiliser la fonction sendMessage existante au lieu de faire un appel API séparé
+  // Utiliser la fonction sendMessage existante avec la chaîne de caractères
   await sendMessage(messageText)
 }
 </script>
