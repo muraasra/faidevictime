@@ -579,6 +579,13 @@ onMounted(async () => {
   if (chatStore.currentConversationId) {
     currentConversationId.value = chatStore.currentConversationId
     if (chatStore.initialMessage) {
+      // Validation du message initial
+      if (typeof chatStore.initialMessage !== 'string') {
+        console.error('Message initial invalide:', chatStore.initialMessage)
+        chatStore.clearConversationData()
+        return
+      }
+      
       messages.value.push({
         id: Date.now().toString(),
         sender: 'user',
@@ -652,6 +659,17 @@ const adjustTextareaHeight = () => {
 }
 
 // Utility Functions
+const cleanInvalidMessages = (messagesArray) => {
+  if (!Array.isArray(messagesArray)) return []
+  return messagesArray.filter(msg => {
+    if (typeof msg.content !== 'string') {
+      console.warn('Message invalide détecté et supprimé:', msg)
+      return false
+    }
+    return true
+  })
+}
+
 const formatDate = (dateString) => {
   try {
     const date = new Date(dateString)
@@ -714,6 +732,7 @@ const loadConversations = async () => {
     conversations.value = Array.isArray(response) ? response :
                          Array.isArray(response.data) ? response.data :
                          Array.isArray(response.conversations) ? response.conversations : []
+    conversations.value = cleanInvalidMessages(conversations.value)
   } catch (error) {
     console.error('Erreur chargement conversations:', error)
     conversations.value = []
@@ -729,7 +748,7 @@ const loadConversation = async (id) => {
     const data = await $fetch(`${API_BASE}/chat/conversations/${id}/`, {
       credentials: 'include'
     })
-    messages.value = Array.isArray(data.messages) ? data.messages : []
+    messages.value = cleanInvalidMessages(Array.isArray(data.messages) ? data.messages : [])
     if (messages.value.length > 1) {
       messages.value.splice(1, 1)
     }
@@ -761,6 +780,13 @@ const selectConversation = async (id) => {
 }
 
 const sendMessage = async (messageText = newMessage.value.trim()) => {
+  // Validation du type de message
+  if (typeof messageText !== 'string') {
+    console.error('Type de message invalide:', typeof messageText, messageText)
+    showToast('Erreur: type de message invalide')
+    return
+  }
+  
   if (!messageText || isLoading.value || isRecording.value) return
 
   const userMessage = {
@@ -768,6 +794,14 @@ const sendMessage = async (messageText = newMessage.value.trim()) => {
     content: messageText,
     created_at: new Date().toISOString()
   }
+  
+  // Validation du message avant ajout
+  if (typeof userMessage.content !== 'string') {
+    console.error('Message utilisateur invalide:', userMessage)
+    showToast('Erreur: message invalide')
+    return
+  }
+  
   messages.value.push(userMessage)
   scrollToBottom()
   isLoading.value = true
@@ -791,7 +825,7 @@ const sendMessage = async (messageText = newMessage.value.trim()) => {
         credentials: 'include',
         headers: { 'Accept': 'application/json' }
       })
-      messages.value = Array.isArray(updatedConv.messages) ? updatedConv.messages : []
+      messages.value = cleanInvalidMessages(Array.isArray(updatedConv.messages) ? updatedConv.messages : [])
     } else {
       response = await $fetch(`${API_BASE}/chat/conversations/`, {
         method: 'POST',
@@ -839,6 +873,13 @@ const sendMessage = async (messageText = newMessage.value.trim()) => {
       content: `⚠️ ${errorMessage}`,
       created_at: new Date().toISOString()
     })
+    
+    // Validation du message d'erreur
+    if (typeof errorMessage !== 'string') {
+      console.error('Message d\'erreur invalide:', errorMessage)
+      errorMessage = 'Erreur lors de l\'envoi du message.'
+    }
+    
     newMessage.value = messageText
     showToast(errorMessage)
   } finally {
@@ -933,10 +974,18 @@ const showToast = (message) => {
 const handleEnterKey = (event) => {
   if (event.shiftKey) return
   event.preventDefault()
+  // S'assurer qu'on n'envoie que le contenu du message, pas l'événement
   sendMessage()
 }
 
 async function handleOptionSelected(value) {
+  // Validation que value est bien une chaîne de caractères
+  if (typeof value !== 'string') {
+    console.error('Valeur d\'option invalide:', typeof value, value)
+    showToast('Erreur: option invalide')
+    return
+  }
+  
   let messageText = value
   const regions = ['Adamaoua', 'Ouest']
   const categories = Object.keys(cat_map)
