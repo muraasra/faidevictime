@@ -443,7 +443,7 @@ import MarkdownMessage from '~/components/chat/MarkdownMessage.vue'
 definePageMeta({ layout: 'chat' })
 
 // Configuration
-const API_BASE = 'http://localhost:8001'
+const API_BASE = 'https://wilfriedtayou.pythonanywhere.com/'
 
 // État réactif
 const conversations = ref([])
