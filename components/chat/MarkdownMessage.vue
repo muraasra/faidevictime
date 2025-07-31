@@ -2,16 +2,16 @@
   <div class="mb-4">
     <!-- Affichage du markdown -->
     <div
-      class="prose prose-green max-w-none mb-4 bg-white border border-gray-100 rounded-2xl shadow-md p-4 transition markdown-message"
+      class="prose prose-green max-w-none mb-4 bg-white border border-gray-100 rounded-2xl shadow-md p-3 md:p-4 transition markdown-message"
       v-html="htmlContent"
     ></div>
     <!-- Affichage des options si présentes -->
-    <div v-if="options.length" class="flex flex-wrap gap-2 mt-2">
+    <div v-if="options.length" class="flex flex-wrap gap-2 md:gap-3 mt-2">
       <button
         v-for="opt in options"
         :key="opt.value"
         @click="onOptionClick(opt.value)"
-        class="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold shadow transition-all duration-150"
+        class="px-3 md:px-4 py-2 md:py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold shadow transition-all duration-150 text-sm md:text-base touch-manipulation min-h-[44px] md:min-h-[40px]"
       >
         {{ opt.text }}
       </button>

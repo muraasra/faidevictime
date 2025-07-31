@@ -77,36 +77,36 @@
     <!-- Zone de Chat Principale -->
     <div class="flex-1 flex flex-col bg-white dark:bg-gray-800 h-screen">
       <!-- En-tête du Chat avec Menu Mobile -->
-      <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 shadow-sm flex-shrink-0">
+      <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-3 md:py-4 shadow-sm flex-shrink-0">
         <div class="flex items-center justify-between">
           <button 
             @click="showMobileMenu = !showMobileMenu"
-            class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+            class="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 touch-manipulation"
           >
             <svg class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
           </button>
 
-          <button @click="$router.push('/')" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 mr-3 focus:outline-none focus:ring-2 focus:ring-blue-500" title="Retour au site principal">
+          <button @click="$router.push('/')" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 mr-2 md:mr-3 focus:outline-none focus:ring-2 focus:ring-blue-500 touch-manipulation" title="Retour au site principal">
             <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 2v6m0 0h4m-4 0a2 2 0 01-2-2v-4a2 2 0 012-2h4a2 2 0 012 2v4a2 2 0 01-2 2z" />
             </svg>
           </button>
-          <div class="flex-1 ml-2 md:ml-0">
-            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+          <div class="flex-1 ml-2 md:ml-0 min-w-0">
+            <h2 class="text-base md:text-lg font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2 truncate">
               {{ currentConversationId ? getCurrentConversationTitle() : 'Nouvelle Conversation' }}
-              <span v-if="currentConversationId && conversations.find(c => c.id === currentConversationId && c.status === 'ephemere')" class="ml-2 px-2.5 py-1 text-xs bg-yellow-200 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 rounded-full">éphémère</span>
+              <span v-if="currentConversationId && conversations.find(c => c.id === currentConversationId && c.status === 'ephemere')" class="ml-2 px-2 py-1 text-xs bg-yellow-200 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 rounded-full flex-shrink-0">éphémère</span>
             </h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1 truncate">
               {{ currentConversationId ? `${messages.length} messages` : 'Commencez une nouvelle conversation' }}
             </p>
           </div>
 
-          <div v-if="currentConversationId" class="flex items-center gap-3">
+          <div v-if="currentConversationId" class="flex items-center gap-2 md:gap-3">
             <button 
               @click="openDeleteModal(currentConversationId)"
-              class="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500"
+              class="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 touch-manipulation"
               title="Supprimer la conversation"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -115,14 +115,15 @@
             </button>
             <button 
               @click="openEphemereModal"
-              class="bg-yellow-100 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800 text-yellow-800 dark:text-yellow-200 px-4 py-1.5 rounded-full text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              class="bg-yellow-100 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800 text-yellow-800 dark:text-yellow-200 px-3 py-1.5 md:px-4 md:py-1.5 rounded-full text-xs md:text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-yellow-500 touch-manipulation"
               title="Rendre éphémère"
             >
-              Rendre éphémère
+              <span class="hidden md:inline">Rendre éphémère</span>
+              <span class="md:hidden">Éphémère</span>
             </button>
             <button 
               @click="toggleDarkMode"
-              class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 touch-manipulation"
               title="Basculer le mode sombre"
             >
               <svg v-if="isDarkMode" class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -198,27 +199,27 @@
       <!-- Zone des Messages -->
       <div 
         ref="messagesContainer"
-        class="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-gray-900 messages-container"
+        class="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50 dark:bg-gray-900 messages-container"
         @scroll="handleScroll"
       >
         <!-- Message de Bienvenue -->
         <div v-if="messages && messages.length === 0" class="flex items-center justify-center h-full">
-          <div class="text-center py-10">
+          <div class="text-center py-8 md:py-10 px-4">
             <div class="max-w-md mx-auto">
-              <div class="w-20 h-20 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg class="w-10 h-10 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-16 h-16 md:w-20 md:h-20 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+                <svg class="w-8 h-8 md:w-10 md:h-10 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                 </svg>
               </div>
-              <h3 class="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Bonjour ! 👋</h3>
-              <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
+              <h3 class="text-xl md:text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-3 md:mb-4">Bonjour ! 👋</h3>
+              <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 leading-relaxed">
                 Je suis votre assistant de soutien moral. N'hésitez pas à partager ce qui vous préoccupe, 
                 je suis là pour vous écouter et vous accompagner.
               </p>
-              <div class="mt-8">
+              <div class="mt-6 md:mt-8">
                 <button 
                   @click="messageInput?.focus()"
-                  class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-8 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-500"
+                  class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 md:px-8 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-500 text-sm md:text-base"
                 >
                   Démarrer une conversation
                 </button>
@@ -228,7 +229,7 @@
         </div>
 
         <!-- Messages -->
-        <div v-else class="space-y-6">
+        <div v-else class="space-y-4 md:space-y-6">
           <div 
             v-for="(message, index) in messages" 
             :key="message.id || index"
@@ -238,30 +239,30 @@
             <!-- Message du Bot -->
             <div 
               v-if="message.sender === 'assistant'"
-              class="flex items-start space-x-3 max-w-[80%]"
+              class="flex items-start space-x-2 md:space-x-3 max-w-[85%] md:max-w-[80%]"
             >
-              <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 md:w-5 md:h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                 </svg>
               </div>
               <div class="flex-1">
                 <MarkdownMessage :markdown="message.content" @option-selected="handleOptionSelected" />
-                <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">{{ formatTime(message.created_at) }}</p>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 md:mt-2">{{ formatTime(message.created_at) }}</p>
               </div>
             </div>
 
             <!-- Message de l'Utilisateur -->
             <div 
               v-else
-              class="flex items-start space-x-3 max-w-[80%]"
+              class="flex items-start space-x-2 md:space-x-3 max-w-[85%] md:max-w-[80%]"
             >
-              <div class="bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 rounded-2xl px-4 py-3 shadow-md">
-                <p class="text-white leading-relaxed whitespace-pre-wrap">{{ message.content }}</p>
-                <p class="text-green-100 text-xs mt-2 text-right">{{ formatTime(message.created_at) }}</p>
+              <div class="bg-gradient-to-r from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 rounded-2xl px-3 md:px-4 py-2 md:py-3 shadow-md">
+                <p class="text-white leading-relaxed whitespace-pre-wrap text-sm md:text-base">{{ message.content }}</p>
+                <p class="text-green-100 text-xs mt-1 md:mt-2 text-right">{{ formatTime(message.created_at) }}</p>
               </div>
-              <div class="w-10 h-10 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center flex-shrink-0">
-                <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="w-8 h-8 md:w-10 md:h-10 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg class="w-4 h-4 md:w-5 md:h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                 </svg>
               </div>
@@ -270,18 +271,18 @@
         </div>
 
         <!-- Animation de Chargement -->
-        <div v-if="isLoading" class="flex justify-start mt-6">
-          <div class="flex items-start space-x-3 max-w-2xl">
-            <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center flex-shrink-0">
-              <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div v-if="isLoading" class="flex justify-start mt-4 md:mt-6">
+          <div class="flex items-start space-x-2 md:space-x-3 max-w-2xl">
+            <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center flex-shrink-0">
+              <svg class="w-4 h-4 md:w-5 md:h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
               </svg>
             </div>
-            <div class="bg-white dark:bg-gray-800 rounded-2xl px-4 py-3 shadow-md border border-gray-100 dark:border-gray-700">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl px-3 md:px-4 py-2 md:py-3 shadow-md border border-gray-100 dark:border-gray-700">
               <div class="flex space-x-2">
-                <div class="w-2.5 h-2.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce"></div>
-                <div class="w-2.5 h-2.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.1s;"></div>
-                <div class="w-2.5 h-2.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+                <div class="w-2 h-2 md:w-2.5 md:h-2.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce"></div>
+                <div class="w-2 h-2 md:w-2.5 md:h-2.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.1s;"></div>
+                <div class="w-2 h-2 md:w-2.5 md:h-2.5 bg-gray-400 dark:bg-gray-500 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
               </div>
             </div>
           </div>
@@ -291,7 +292,7 @@
         <button 
           v-if="showScrollButton" 
           @click="scrollToBottom" 
-          class="fixed bottom-24 right-6 md:right-8 p-3 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500"
+          class="fixed bottom-20 md:bottom-24 right-4 md:right-6 lg:right-8 p-3 bg-green-500 hover:bg-green-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 touch-manipulation"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
@@ -300,16 +301,17 @@
       </div>
 
       <!-- Zone de Saisie -->
-      <div class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-6 flex-shrink-0" ref="inputArea">
+      <div class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 md:p-6 flex-shrink-0" ref="inputArea">
         <div class="max-w-4xl mx-auto">
-          <div class="flex items-end space-x-3">
+          <div class="flex items-end space-x-2 md:space-x-3">
             <div class="flex-1 relative">
               <textarea
                 v-model="newMessage"
                 @keydown.enter.prevent="handleEnterKey"
+                @focus="handleMobileKeyboard"
                 placeholder="Tapez votre message ici..."
                 rows="1"
-                class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl resize-none focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 bg-white dark:bg-gray-700"
+                class="w-full px-4 py-3 md:py-3 border border-gray-300 dark:border-gray-600 rounded-xl md:rounded-xl resize-none focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 bg-white dark:bg-gray-700 text-base md:text-base"
                 :disabled="isLoading || isRecording"
                 ref="messageInput"
                 @input="adjustTextareaHeight"
@@ -317,11 +319,11 @@
               <button
                 v-if="isSpeechSupported"
                 @click="toggleRecording"
-                class="absolute right-2 bottom-2 p-2 rounded-full"
-                :class="isRecording ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'"
+                class="absolute right-2 bottom-2 p-2 md:p-2 rounded-full transition-all duration-200"
+                :class="isRecording ? 'bg-red-500 hover:bg-red-600 scale-110' : 'bg-blue-500 hover:bg-blue-600 hover:scale-105'"
                 title="Enregistrement vocal"
               >
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path v-if="!isRecording" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5 a3 3 0 116 0v6a3 3 0 01-3 3z" />
                   <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -330,20 +332,20 @@
             <button
               @click="sendMessage"
               :disabled="!newMessage.trim() || isLoading || isRecording"
-              class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-5 py-3 rounded-xl transition-all duration-300 flex items-center space-x-2 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-500"
+              class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-3 md:px-5 md:py-3 rounded-xl transition-all duration-300 flex items-center space-x-2 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-500 min-w-[60px] md:min-w-[80px] justify-center"
             >
-              <span v-if="!isLoading">Envoyer</span>
-              <span v-else>Envoi...</span>
-              <svg v-if="!isLoading" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <span v-if="!isLoading" class="hidden md:inline">Envoyer</span>
+              <span v-else class="hidden md:inline">Envoi...</span>
+              <svg v-if="!isLoading" class="w-5 h-5 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
               </svg>
-              <svg v-else class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+              <svg v-else class="w-5 h-5 md:w-5 md:h-5 animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             </button>
           </div>
-          <p v-if="isRecording" class="text-sm text-red-500 dark:text-red-400 mt-2 animate-pulse">Enregistrement en cours...</p>
+          <p v-if="isRecording" class="text-sm text-red-500 dark:text-red-400 mt-2 animate-pulse text-center md:text-left">🎤 Enregistrement en cours...</p>
         </div>
       </div>
     </div>
@@ -564,6 +566,16 @@ const toggleRecording = () => {
   }
 }
 
+// Mobile Keyboard Handling
+const handleMobileKeyboard = () => {
+  if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+    // Délai pour laisser le clavier se déployer
+    setTimeout(() => {
+      scrollToBottom()
+    }, 300)
+  }
+}
+
 // Lifecycle Hooks
 onMounted(async () => {
   if (typeof window !== 'undefined') {
@@ -575,6 +587,13 @@ onMounted(async () => {
   calculateInputHeight()
   window.addEventListener('resize', calculateInputHeight)
   setupSpeechRecognition()
+
+  // Focus automatique sur mobile
+  if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+    nextTick(() => {
+      messageInput.value?.focus()
+    })
+  }
 
   if (chatStore.currentConversationId) {
     currentConversationId.value = chatStore.currentConversationId
@@ -645,7 +664,8 @@ const adjustTextareaHeight = () => {
   nextTick(() => {
     if (messageInput.value) {
       messageInput.value.style.height = 'auto'
-      messageInput.value.style.height = Math.min(messageInput.value.scrollHeight, 120) + 'px'
+      const maxHeight = window.innerWidth <= 768 ? 100 : 120 // Hauteur maximale réduite sur mobile
+      messageInput.value.style.height = Math.min(messageInput.value.scrollHeight, maxHeight) + 'px'
       calculateInputHeight()
     }
   })
@@ -1070,9 +1090,10 @@ async function handleOptionSelected(value) {
   }
 
   .messages-container {
-    height: calc(100vh - 200px);
-    max-height: calc(100vh - 200px);
+    height: calc(100vh - 180px);
+    max-height: calc(100vh - 180px);
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .input-area {
@@ -1081,8 +1102,9 @@ async function handleOptionSelected(value) {
     left: 0;
     right: 0;
     background: white;
-    padding: 1.5rem;
+    padding: 1rem;
     border-top: 1px solid #e5e7eb;
+    z-index: 30;
   }
   .dark .input-area {
     background: #1f2937;
@@ -1091,6 +1113,54 @@ async function handleOptionSelected(value) {
 
   input, textarea {
     font-size: 16px !important;
+    -webkit-appearance: none;
+    border-radius: 12px;
+  }
+
+  /* Amélioration des boutons tactiles */
+  button {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  /* Optimisation du scroll */
+  .messages-container::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .messages-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .messages-container::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.5);
+    border-radius: 2px;
+  }
+
+  /* Amélioration de l'espacement des messages */
+  .space-y-4 > * + * {
+    margin-top: 1rem;
+  }
+
+  /* Optimisation des modales */
+  .animate-modal-pop {
+    animation: modal-pop 0.15s cubic-bezier(0.4,0,0.2,1);
+  }
+}
+
+/* Améliorations tactiles générales */
+.touch-manipulation {
+  touch-action: manipulation;
+}
+
+/* Optimisation des transitions sur mobile */
+@media (max-width: 768px) {
+  * {
+    transition-duration: 0.15s !important;
+  }
+  
+  .transition-all {
+    transition-duration: 0.15s !important;
   }
 }
 
