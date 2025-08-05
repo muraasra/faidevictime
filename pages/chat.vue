@@ -76,8 +76,8 @@
 
     <!-- Zone de Chat Principale -->
     <div class="flex-1 flex flex-col bg-white dark:bg-gray-800 h-screen">
-      <!-- En-tête du Chat avec Menu Mobile -->
-      <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-3 md:py-4 shadow-sm flex-shrink-0">
+      <!-- En-tête du Chat avec Menu Mobile - FIXE sur mobile -->
+      <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-3 md:py-4 shadow-sm flex-shrink-0 mobile-header">
         <div class="flex items-center justify-between">
           <button 
             @click="showMobileMenu = !showMobileMenu"
@@ -141,7 +141,7 @@
         </div>
       </div>
 
-      <!-- Menu Mobile -->
+      <!-- Menu Mobile Amélioré avec Actions Directes -->
       <div 
         v-if="showMobileMenu" 
         class="md:hidden fixed inset-0 z-50 flex"
@@ -181,15 +181,45 @@
               <div 
                 v-for="conv in sortedConversations" 
                 :key="conv.id"
-                @click="() => { selectConversation(conv.id); showMobileMenu = false; }"
-                class="p-4 rounded-xl cursor-pointer transition-all border-l-4"
+                class="p-4 rounded-xl transition-all border-l-4"
                 :class="{ 
                   'bg-green-50 dark:bg-green-900/50 border-green-500': currentConversationId === conv.id,
                   'bg-white dark:bg-gray-800 border-transparent hover:bg-gray-50 dark:hover:bg-gray-700': currentConversationId !== conv.id 
                 }"
               >
-                <h3 class="font-semibold text-gray-800 dark:text-gray-100 text-base">{{ conv.title || 'Nouvelle conversation' }}</h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ formatDate(conv.created_at) }}</p>
+                <!-- Zone cliquable pour sélectionner la conversation -->
+                <div 
+                  @click="() => { selectConversation(conv.id); showMobileMenu = false; }"
+                  class="cursor-pointer mb-3"
+                >
+                  <h3 class="font-semibold text-gray-800 dark:text-gray-100 text-base">{{ conv.title || 'Nouvelle conversation' }}</h3>
+                  <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ formatDate(conv.created_at) }}</p>
+                  <span v-if="conv.status === 'ephemere' && conv.expire_at" class="inline-block mt-2 px-2.5 py-1 text-xs rounded-full bg-yellow-200 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 font-semibold">
+                    {{ getRemainingTime(conv.expire_at) }}
+                  </span>
+                </div>
+                
+                <!-- Actions directes toujours visibles sur mobile -->
+                <div class="flex items-center gap-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+                  <button 
+                    @click="() => { currentConversationId !== conv.id ? selectConversation(conv.id) : null; openEphemereModal(); showMobileMenu = false; }"
+                    class="flex-1 bg-yellow-100 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800 text-yellow-800 dark:text-yellow-200 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Éphémère
+                  </button>
+                  <button 
+                    @click="() => { openDeleteModal(conv.id); showMobileMenu = false; }"
+                    class="flex-1 bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800 text-red-800 dark:text-red-200 px-3 py-2 rounded-lg text-sm font-medium transition flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M1 7h22M10 3h4a1 1 0 011 1v2H9V4a1 1 0 011-1z" />
+                    </svg>
+                    Supprimer
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -359,6 +389,14 @@
           </svg>
           <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Durée d'éphémérité</h3>
         </div>
+        
+        <div class="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+          <p class="text-sm text-yellow-800 dark:text-yellow-200">
+            <strong>Durée minimale : 1 jour</strong><br>
+            La conversation sera automatiquement supprimée après cette période.
+          </p>
+        </div>
+        
         <div class="flex items-center gap-3 mb-6">
           <input 
             type="number" 
@@ -370,11 +408,12 @@
             v-model="ephemereUnit" 
             class="flex-1 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 focus:ring-2 focus:ring-yellow-500 focus:border-transparent outline-none bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
           >
-            <option value="minutes">Minutes</option>
-            <option value="heures">Heures</option>
             <option value="jours">Jours</option>
+            <option value="heures">Heures</option>
+            <option value="minutes">Minutes</option>
           </select>
         </div>
+        
         <div class="flex gap-3 justify-end">
           <button 
             @click="closeEphemereModal" 
@@ -445,8 +484,8 @@ import MarkdownMessage from '~/components/chat/MarkdownMessage.vue'
 definePageMeta({ layout: 'chat' })
 
 // Configuration
-// const API_BASE = 'https://wilfriedtayou.pythonanywhere.com/'
-const API_BASE = 'https://wilfriedtayou.pythonanywhere.com/'
+ const API_BASE = 'https://wilfriedtayou.pythonanywhere.com/'
+//const API_BASE = 'http://localhost:8001/'
 
 // État réactif
 const conversations = ref([])
@@ -1048,8 +1087,8 @@ const makeEphemere = async (id, expire_in) => {
 }
 
 const openEphemereModal = () => {
-  ephemereDuration.value = 60
-  ephemereUnit.value = 'minutes'
+  ephemereDuration.value = 1
+  ephemereUnit.value = 'jours'
   showEphemereModal.value = true
 }
 
@@ -1059,8 +1098,16 @@ const closeEphemereModal = () => {
 
 const confirmEphemere = async () => {
   let expire_in = ephemereDuration.value
+  if (ephemereUnit.value === 'minutes') expire_in *= 1
   if (ephemereUnit.value === 'heures') expire_in *= 60
   if (ephemereUnit.value === 'jours') expire_in *= 60 * 24
+  
+  // Vérification de la durée minimale (1 jour = 1440 minutes)
+  if (expire_in < 1440) {
+    showToast('La durée minimale est de 1 jour.')
+    return
+  }
+  
   removedConversationId.value = currentConversationId.value
   await new Promise(resolve => setTimeout(resolve, 350))
   await makeEphemere(currentConversationId.value, expire_in)
@@ -1206,15 +1253,43 @@ async function handleOptionSelected(value) {
   max-height: 100vh;
 }
 
+/* Dark Mode */
+.dark {
+  color-scheme: dark;
+}
+
 /* Mobile Adjustments */
 @media (max-width: 768px) {
-  .sidebar {
+  /* Navbar mobile fixe */
+  .mobile-header {
     position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    height: 70px;
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .dark .mobile-header {
+    background: #1f2937;
+    border-bottom: 1px solid #374151;
+  }
+
+  /* Ajuster la zone principale pour compenser la navbar fixe */
+  .flex-1.flex.flex-col {
+    margin-top: 70px;
+    height: calc(100vh - 70px);
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 70px; /* Commencer après la navbar fixe */
     z-index: 40;
     width: 100vw;
     max-width: 100vw;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    height: calc(100vh - 70px);
   }
 
   .messages-container {
@@ -1222,6 +1297,7 @@ async function handleOptionSelected(value) {
     max-height: calc(100vh - 180px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    padding-top: 1rem;
   }
 
   .input-area {
@@ -1274,6 +1350,24 @@ async function handleOptionSelected(value) {
   .animate-modal-pop {
     animation: modal-pop 0.15s cubic-bezier(0.4,0,0.2,1);
   }
+
+  /* Amélioration des boutons d'action dans le menu mobile */
+  .flex-1.bg-yellow-100,
+  .flex-1.bg-red-100 {
+    min-height: 44px;
+    font-size: 14px;
+  }
+
+  /* Optimisation de l'affichage des conversations dans le menu mobile */
+  .p-4.rounded-xl {
+    margin-bottom: 0.75rem;
+  }
+
+  /* Amélioration de la lisibilité des actions */
+  .pt-2.border-t {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+  }
 }
 
 /* Améliorations tactiles générales */
@@ -1290,10 +1384,5 @@ async function handleOptionSelected(value) {
   .transition-all {
     transition-duration: 0.15s !important;
   }
-}
-
-/* Dark Mode */
-.dark {
-  color-scheme: dark;
 }
 </style>
