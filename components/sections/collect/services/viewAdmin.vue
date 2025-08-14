@@ -114,6 +114,10 @@
         <ServiceReinsertion :service="service" />
       </template>
 
+      <template v-if="service.hebergement">
+        <ServiceHebergement :service="service" />
+      </template>
+
       <!-- Boutons d'action -->
       <div class="flex flex-col sm:flex-row gap-3 justify-center mt-8">
         <NuxtLink :to="`/collect/dash/`" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded text-center">
@@ -150,6 +154,7 @@ import ServicePolice from './ServicePolice.vue'
 import ServiceJuridique from './ServiceJuridique.vue'
 import ServiceSanteMentale from './ServiceSanteMentale.vue'
 import ServiceReinsertion from './ServiceReinsertion.vue'
+import ServiceHebergement from './ServiceHebergement.vue'
 
 export type Service = {
   id: number
@@ -159,6 +164,7 @@ export type Service = {
   assistance_juridique: any | null
   sante_mentale: any | null
   reinsertion_economique: any | null
+  hebergement: any | null
   nom_structure: string
   fonction_repondant: string
   nom_repondant: string
@@ -243,6 +249,7 @@ function getServiceCategory(service: Service): string {
   if (service.assistance_juridique) return 'Assistance juridique';
   if (service.sante_mentale) return 'Santé mentale';
   if (service.reinsertion_economique) return 'Réinsertion économique';
+  if (service.hebergement) return 'Hébergement';
   return 'Non spécifié';
 }
 </script>
