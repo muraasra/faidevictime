@@ -1,0 +1,424 @@
+{
+  "formations": [
+    {
+      "id": "violences-sexuelles",
+      "title": "Comprendre et prévenir les violences sexuelles",
+      "description": "Apprenez à identifier, prévenir et agir face aux violences sexuelles dans votre communauté.",
+      "icon": "🛡️",
+      "category": "Protection",
+      "duration": "15 min",
+      "sections": [
+        {
+          "id": "introduction",
+          "title": "Introduction",
+          "content": "Les violences sexuelles sont un fléau qui touche de nombreuses personnes au Cameroun et en Afrique. Comprendre ce phénomène est le premier pas vers la prévention et la protection. Ces violences peuvent prendre différentes formes et toucher toute personne, quel que soit l'âge, le genre ou le statut social."
+        },
+        {
+          "id": "definition",
+          "title": "Qu'est-ce que les violences sexuelles ?",
+          "content": "Les violences sexuelles incluent :\n• Le viol et l'agression sexuelle\n• Le harcèlement sexuel\n• L'exploitation sexuelle\n• Les attouchements non consentis\n• Le cyber-harcèlement sexuel\n\nCes actes sont toujours une violation des droits fondamentaux de la personne."
+        },
+        {
+          "id": "signes",
+          "title": "Comment identifier les signes ?",
+          "content": "Signes chez la victime :\n• Changement soudain de comportement\n• Isolement social\n• Troubles du sommeil ou de l'appétit\n• Anxiété ou dépression\n• Évitement de certaines personnes ou lieux\n\nSignes chez l'agresseur :\n• Comportement contrôlant\n• Manque de respect des limites\n• Commentaires inappropriés\n• Isolement de la victime"
+        },
+        {
+          "id": "prevention",
+          "title": "Comment prévenir ?",
+          "content": "Actions de prévention :\n• Éduquer sur le consentement dès le plus jeune âge\n• Promouvoir l'égalité des genres\n• Créer des espaces sûrs de dialogue\n• Former les professionnels (enseignants, soignants)\n• Sensibiliser les communautés\n• Encourager la dénonciation des comportements inappropriés"
+        },
+        {
+          "id": "conseils-pratiques",
+          "title": "Conseils pratiques",
+          "content": "Si vous êtes victime :\n• Parlez à une personne de confiance\n• Conservez les preuves médicales et juridiques\n• Contactez un centre médical pour un examen\n• Rapprochez-vous d'un service juridique\n• Utilisez les services de soutien psychologique\n• Signalez aux autorités si vous vous sentez prêt·e\n\nSi vous êtes témoin :\n• Intervenez de manière sécurisée\n• Soutenez la victime\n• Signalez aux autorités compétentes"
+        },
+        {
+          "id": "ressources",
+          "title": "Ressources et aide",
+          "content": "Services disponibles :\n• Centres médicaux pour examens et soins\n• Services juridiques pour vos droits\n• Soutien psychologique spécialisé\n• Hébergement d'urgence si nécessaire\n• Lignes d'écoute anonymes\n• Groupes de soutien\n\nNuméros d'urgence :\n• Police : 117\n• Gendarmerie : 117\n• Services médicaux d'urgence"
+        },
+        {
+          "id": "message-espoir",
+          "title": "Message d'espoir",
+          "content": "Vous n'êtes pas seul·e. De l'aide existe et vous méritez d'être protégé·e et soutenu·e dans votre parcours de guérison. Chaque pas vers la dénonciation et la recherche d'aide est un acte de courage. La communauté PADUPAC est là pour vous accompagner."
+        }
+      ]
+    },
+    {
+      "id": "violences-domestiques",
+      "title": "Reconnaître et agir contre les violences conjugales",
+      "description": "Identifiez les signes de violence domestique et apprenez les actions à entreprendre pour protéger les victimes.",
+      "icon": "🏠",
+      "category": "Protection",
+      "duration": "20 min",
+      "sections": [
+        {
+          "id": "introduction",
+          "title": "Introduction",
+          "content": "Les violences domestiques détruisent des vies et des familles. Reconnaître les signes et savoir comment réagir peut sauver des vies. Ces violences peuvent être physiques, psychologiques, économiques ou sexuelles, et elles s'aggravent souvent avec le temps si rien n'est fait."
+        },
+        {
+          "id": "types-violences",
+          "title": "Types de violences domestiques",
+          "content": "Violences physiques :\n• Coups, gifles, coups de pied\n• Brûlures, strangulation\n• Utilisation d'armes\n\nViolences psychologiques :\n• Insultes, humiliations\n• Menaces, intimidation\n• Isolement social\n• Contrôle des activités\n\nViolences économiques :\n• Contrôle des finances\n• Interdiction de travailler\n• Privation de ressources\n\nViolences sexuelles :\n• Relations forcées\n• Contrôle de la sexualité"
+        },
+        {
+          "id": "cycle-violence",
+          "title": "Le cycle de la violence",
+          "content": "Phase 1 - Tension :\n• Accumulation de stress\n• Comportement contrôlant\n• Menaces verbales\n\nPhase 2 - Explosion :\n• Violence physique ou psychologique\n• Perte de contrôle\n• Actes violents\n\nPhase 3 - Réconciliation :\n• Excuses et promesses\n• Comportement attentionné\n• Minimisation des faits\n\nCe cycle se répète et s'intensifie avec le temps."
+        },
+        {
+          "id": "impact-enfants",
+          "title": "Impact sur les enfants",
+          "content": "Les enfants témoins de violences sont aussi des victimes :\n• Troubles émotionnels et comportementaux\n• Difficultés scolaires\n• Anxiété et dépression\n• Reproduction des comportements violents\n• Sentiment de culpabilité\n\nProtéger les enfants est une priorité absolue."
+        },
+        {
+          "id": "plan-securite",
+          "title": "Plan de sécurité",
+          "content": "Préparation :\n• Identifiez les signes d'alerte\n• Préparez un sac d'urgence\n• Mémorisez les numéros d'urgence\n• Identifiez des lieux sûrs\n• Gardez des preuves des violences\n\nEn cas d'urgence :\n• Appelez la police (117)\n• Allez dans un lieu sûr\n• Contactez un service d'hébergement\n• Consultez un médecin si blessé·e"
+        },
+        {
+          "id": "aide-disponible",
+          "title": "Aide disponible",
+          "content": "Services d'urgence :\n• Police et gendarmerie : 117\n• Services médicaux d'urgence\n• Hébergement d'urgence\n\nServices de soutien :\n• Assistance juridique\n• Soutien psychologique\n• Aide sociale\n• Groupes de soutien\n• Lignes d'écoute\n\nRessources PADUPAC :\n• Carte des services disponibles\n• Accompagnement personnalisé"
+        },
+        {
+          "id": "message-espoir",
+          "title": "Message d'espoir",
+          "content": "Vous avez le droit de vivre en sécurité et dans la dignité. De nombreuses personnes sont prêtes à vous aider à reconstruire votre vie. Sortir de la violence est possible, et vous n'êtes pas seul·e dans ce parcours."
+        }
+      ]
+    },
+    {
+      "id": "mariages-precoces",
+      "title": "Protéger les enfants des mariages forcés",
+      "description": "Comprenez les dangers du mariage précoce et apprenez à protéger les enfants de votre communauté.",
+      "icon": "👶",
+      "category": "Protection de l'enfance",
+      "duration": "18 min",
+      "sections": [
+        {
+          "id": "introduction",
+          "title": "Introduction",
+          "content": "Le mariage précoce prive les enfants de leur enfance et de leur éducation. Ensemble, nous pouvons protéger nos filles et nos fils. Un mariage avant 18 ans est illégal et dangereux pour l'enfant, quelles que soient les raisons invoquées."
+        },
+        {
+          "id": "definition",
+          "title": "Qu'est-ce qu'un mariage précoce ?",
+          "content": "Le mariage précoce est :\n• Tout mariage avant l'âge de 18 ans\n• Une violation des droits de l'enfant\n• Une pratique illégale au Cameroun\n• Un obstacle au développement de l'enfant\n\nFormes de mariages précoces :\n• Mariages arrangés par les familles\n• Mariages forcés pour des raisons économiques\n• Mariages pour \"honorer\" la famille\n• Mariages pour \"protéger\" l'enfant"
+        },
+        {
+          "id": "consequences",
+          "title": "Conséquences sur l'enfant",
+          "content": "Conséquences physiques :\n• Complications de grossesse précoces\n• Risques accrus lors de l'accouchement\n• Malnutrition et problèmes de santé\n• Mortalité maternelle et infantile\n\nConséquences psychologiques :\n• Dépression et anxiété\n• Perte de l'estime de soi\n• Isolement social\n• Troubles du développement\n\nConséquences sociales :\n• Abandon scolaire\n• Pauvreté intergénérationnelle\n• Perte d'autonomie\n• Violence conjugale précoce"
+        },
+        {
+          "id": "causes",
+          "title": "Pourquoi cela arrive-t-il ?",
+          "content": "Facteurs économiques :\n• Pauvreté des familles\n• Mariage comme source de revenus\n• Coût de l'éducation perçu comme trop élevé\n\nFacteurs culturels :\n• Traditions ancestrales\n• Pression sociale\n• Croyances sur la \"pureté\" des filles\n• Honneur familial\n\nFacteurs sociaux :\n• Manque d'éducation\n• Inégalités de genre\n• Absence de protection légale\n• Impunité des auteurs"
+        },
+        {
+          "id": "prevention",
+          "title": "Comment prévenir ?",
+          "content": "Actions individuelles :\n• Éduquez votre famille sur les dangers\n• Soutenez l'éducation des filles et garçons\n• Refusez les propositions de mariage précoce\n• Signalez les cas aux autorités\n\nActions communautaires :\n• Sensibilisez votre communauté\n• Organisez des discussions publiques\n• Soutenez les alternatives économiques\n• Participez aux campagnes de prévention\n\nActions institutionnelles :\n• Renforcement des lois\n• Application des sanctions\n• Programmes d'éducation\n• Services de protection de l'enfance"
+        },
+        {
+          "id": "aide-victimes",
+          "title": "Aide aux victimes",
+          "content": "Services disponibles :\n• Services de protection de l'enfance\n• Assistance juridique\n• Soutien psychologique\n• Réinsertion scolaire\n• Formation professionnelle\n\nActions à entreprendre :\n• Signaler aux autorités compétentes\n• Demander l'annulation du mariage\n• Obtenir une protection légale\n• Accéder à l'éducation\n• Bénéficier d'un soutien psychologique"
+        },
+        {
+          "id": "message-espoir",
+          "title": "Message d'espoir",
+          "content": "Chaque enfant mérite de grandir, d'apprendre et de choisir son propre avenir. Ensemble, nous pouvons mettre fin aux mariages précoces et offrir à nos enfants un avenir meilleur. L'éducation et la sensibilisation sont nos meilleures armes."
+        }
+      ]
+    },
+    {
+      "id": "mutilations-genitales",
+      "title": "Dire non aux mutilations génitales féminines",
+      "description": "Comprenez les dangers des MGF et apprenez à protéger les filles de votre communauté.",
+      "icon": "🚫",
+      "category": "Santé",
+      "duration": "16 min",
+      "sections": [
+        {
+          "id": "introduction",
+          "title": "Introduction",
+          "content": "Les mutilations génitales féminines sont une violation des droits humains qui cause des souffrances inutiles. L'éducation peut sauver des vies. Cette pratique n'a aucun bénéfice médical et cause de graves complications physiques et psychologiques."
+        },
+        {
+          "id": "definition",
+          "title": "Qu'est-ce que les MGF ?",
+          "content": "Les MGF incluent :\n• L'excision partielle ou totale du clitoris\n• L'excision partielle ou totale des petites lèvres\n• L'infibulation (rétrécissement de l'orifice vaginal)\n• Toute autre lésion des organes génitaux féminins\n\nTypes de MGF :\n• Type I : Excision du prépuce et/ou du clitoris\n• Type II : Excision du clitoris et des petites lèvres\n• Type III : Infibulation\n• Type IV : Autres pratiques nuisibles"
+        },
+        {
+          "id": "consequences",
+          "title": "Conséquences sur la santé",
+          "content": "Conséquences immédiates :\n• Douleurs intenses\n• Hémorragies\n• Infections\n• Choc traumatique\n• Mort dans certains cas\n\nConséquences à long terme :\n• Douleurs chroniques\n• Infections urinaires récurrentes\n• Problèmes menstruels\n• Difficultés lors de l'accouchement\n• Complications obstétricales\n• Troubles psychologiques\n• Problèmes sexuels"
+        },
+        {
+          "id": "mythes",
+          "title": "Mythes et réalités",
+          "content": "Mythe : \"C'est une obligation religieuse\"\nRÉALITÉ : Aucune religion n'exige les MGF\n\nMythe : \"C'est nécessaire pour l'hygiène\"\nRÉALITÉ : Les MGF causent des infections\n\nMythe : \"C'est une tradition culturelle\"\nRÉALITÉ : Les traditions peuvent évoluer\n\nMythe : \"C'est nécessaire pour le mariage\"\nRÉALITÉ : Les hommes préfèrent souvent des femmes non mutilées\n\nMythe : \"C'est fait pour le plaisir de l'homme\"\nRÉALITÉ : Cela cause des douleurs pour la femme"
+        },
+        {
+          "id": "prevention",
+          "title": "Comment prévenir ?",
+          "content": "Actions individuelles :\n• Informez-vous sur les dangers\n• Protégez les filles de votre famille\n• Parlez avec les autres parents\n• Refusez la pratique pour vos filles\n\nActions communautaires :\n• Dialogue avec les leaders religieux\n• Sensibilisation des communautés\n• Formation des exciseuses\n• Alternatives culturelles sans mutilation\n\nActions institutionnelles :\n• Application des lois\n• Programmes d'éducation\n• Services de santé\n• Protection des filles"
+        },
+        {
+          "id": "alternatives",
+          "title": "Alternatives culturelles",
+          "content": "Cérémonies alternatives :\n• Rites de passage sans mutilation\n• Célébrations de l'entrée dans l'âge adulte\n• Éducation sur la sexualité et la reproduction\n• Formation sur les droits des femmes\n\nProgrammes de substitution :\n• Formation professionnelle pour les exciseuses\n• Activités génératrices de revenus\n• Éducation communautaire\n• Sensibilisation des hommes"
+        },
+        {
+          "id": "aide-victimes",
+          "title": "Aide aux victimes",
+          "content": "Services médicaux :\n• Soins pour les complications\n• Chirurgie réparatrice si possible\n• Suivi psychologique\n• Conseils en santé reproductive\n\nServices de soutien :\n• Counseling psychologique\n• Groupes de soutien\n• Éducation sur les droits\n• Formation professionnelle\n\nServices juridiques :\n• Protection légale\n• Poursuite des auteurs\n• Réparation pour les victimes"
+        },
+        {
+          "id": "message-espoir",
+          "title": "Message d'espoir",
+          "content": "Protéger l'intégrité physique des filles, c'est protéger leur avenir. Chaque fille mérite de grandir en bonne santé et en sécurité. De nombreuses communautés ont abandonné cette pratique - la vôtre peut aussi faire ce choix courageux."
+        }
+      ]
+    },
+    {
+      "id": "harcelement-scolaire",
+      "title": "Créer un environnement scolaire sûr",
+      "description": "Apprenez à identifier et combattre le harcèlement scolaire pour protéger nos enfants.",
+      "icon": "🎓",
+      "category": "Éducation",
+      "duration": "14 min",
+      "sections": [
+        {
+          "id": "introduction",
+          "title": "Introduction",
+          "content": "L'école doit être un lieu d'apprentissage et d'épanouissement, pas de souffrance. Ensemble, créons des écoles sans violence. Le harcèlement scolaire affecte gravement la confiance en soi et les résultats scolaires des enfants."
+        },
+        {
+          "id": "definition",
+          "title": "Qu'est-ce que le harcèlement ?",
+          "content": "Le harcèlement scolaire est :\n• Un comportement agressif répété\n• Une intention de nuire\n• Un déséquilibre de pouvoir\n• Un impact négatif sur la victime\n\nFormes de harcèlement :\n• Physique : coups, bousculades, vol\n• Verbal : insultes, moqueries, menaces\n• Psychologique : exclusion, rumeurs\n• Cyber-harcèlement : via internet et réseaux sociaux"
+        },
+        {
+          "id": "signes",
+          "title": "Signes d'alerte",
+          "content": "Chez l'enfant harcelé :\n• Refus d'aller à l'école\n• Changement de comportement\n• Baisse des résultats scolaires\n• Isolement social\n• Troubles du sommeil\n• Perte d'appétit\n• Anxiété ou dépression\n\nChez l'enfant harceleur :\n• Comportement agressif\n• Manque d'empathie\n• Besoin de dominer\n• Problèmes de discipline"
+        },
+        {
+          "id": "impact",
+          "title": "Impact du harcèlement",
+          "content": "Sur la victime :\n• Baisse de l'estime de soi\n• Anxiété et dépression\n• Troubles du comportement\n• Échec scolaire\n• Isolement social\n• Idées suicidaires dans les cas graves\n\nSur le harceleur :\n• Comportement antisocial\n• Difficultés relationnelles\n• Problèmes de discipline\n• Risque de délinquance\n\nSur les témoins :\n• Sentiment d'impuissance\n• Peur de devenir victime\n• Normalisation de la violence"
+        },
+        {
+          "id": "prevention",
+          "title": "Prévention à l'école",
+          "content": "Actions de l'école :\n• Programme de prévention\n• Formation des enseignants\n• Surveillance des espaces\n• Règlement clair et appliqué\n• Système de signalement\n• Sanctions appropriées\n\nActions des enseignants :\n• Observation attentive\n• Intervention rapide\n• Communication avec les parents\n• Création d'un climat positif\n• Éducation à l'empathie"
+        },
+        {
+          "id": "role-parents",
+          "title": "Rôle des parents",
+          "content": "Si votre enfant est harcelé :\n• Écoutez sans juger\n• Prenez au sérieux ses plaintes\n• Documentez les incidents\n• Contactez l'école\n• Travaillez avec les enseignants\n• Soutenez votre enfant\n\nSi votre enfant harcèle :\n• Ne minimisez pas le problème\n• Expliquez les conséquences\n• Enseignez l'empathie\n• Imposez des conséquences\n• Cherchez de l'aide si nécessaire"
+        },
+        {
+          "id": "intervention",
+          "title": "Comment intervenir ?",
+          "content": "Pour les témoins :\n• Ne participez pas au harcèlement\n• Soutenez la victime\n• Signalez aux adultes\n• Créez un groupe de soutien\n\nPour les adultes :\n• Intervenez immédiatement\n• Écoutez toutes les parties\n• Appliquez des sanctions\n• Suivez l'évolution\n• Impliquez les parents\n• Offrez un soutien à la victime"
+        },
+        {
+          "id": "ressources",
+          "title": "Ressources et aide",
+          "content": "Services disponibles :\n• Psychologues scolaires\n• Services de médiation\n• Lignes d'écoute\n• Groupes de soutien\n• Formation pour parents\n\nNuméros utiles :\n• Ligne d'écoute enfants : 116\n• Services de protection de l'enfance\n• Centres de santé mentale\n• Associations spécialisées"
+        },
+        {
+          "id": "message-espoir",
+          "title": "Message d'espoir",
+          "content": "Chaque enfant mérite d'aller à l'école en sécurité et avec joie. Ensemble, nous pouvons créer des environnements d'apprentissage positifs où tous les enfants peuvent s'épanouir. L'éducation au respect et à l'empathie est la clé d'un avenir meilleur."
+        }
+      ]
+    },
+    {
+      "id": "violences-culturelles",
+      "title": "Respecter les droits dans toutes les cultures",
+      "description": "Apprenez à concilier traditions culturelles et respect des droits humains fondamentaux.",
+      "icon": "🌍",
+      "category": "Droits humains",
+      "duration": "17 min",
+      "sections": [
+        {
+          "id": "introduction",
+          "title": "Introduction",
+          "content": "Les traditions et la culture ne doivent jamais justifier la violence. Nous pouvons honorer nos valeurs tout en respectant les droits humains. L'évolution culturelle est un signe de force, pas de faiblesse."
+        },
+        {
+          "id": "definition",
+          "title": "Violences culturelles",
+          "content": "Les violences culturelles incluent :\n• Pratiques traditionnelles nuisibles\n• Discrimination basée sur la culture\n• Violation des droits au nom de la tradition\n• Oppression des minorités culturelles\n• Persécution religieuse\n\nExemples :\n• Mutilations génitales féminines\n• Mariages précoces\n• Crimes d'honneur\n• Discrimination de caste\n• Exclusion sociale"
+        },
+        {
+          "id": "droits-universels",
+          "title": "Droits humains universels",
+          "content": "Les droits fondamentaux :\n• Droit à la vie et à la sécurité\n• Droit à l'intégrité physique\n• Droit à l'éducation\n• Droit à la liberté de pensée\n• Droit à l'égalité\n• Droit à la dignité\n\nCes droits s'appliquent à tous, quelle que soit la culture. Aucune tradition ne peut les justifier."
+        },
+        {
+          "id": "evolution-culturelle",
+          "title": "L'évolution culturelle",
+          "content": "Les cultures évoluent naturellement :\n• Adaptation aux nouvelles connaissances\n• Intégration de valeurs universelles\n• Abandon des pratiques nuisibles\n• Préservation de l'identité positive\n\nExemples d'évolution :\n• Abandon de l'esclavage\n• Égalité des genres\n• Protection de l'enfance\n• Respect des minorités\n• Démocratie et participation"
+        },
+        {
+          "id": "dialogue",
+          "title": "Le dialogue intergénérationnel",
+          "content": "Importance du dialogue :\n• Transmission des valeurs positives\n• Discussion sur les pratiques\n• Éducation des jeunes générations\n• Respect mutuel\n• Évolution collective\n\nComment dialoguer :\n• Écouter avec respect\n• Partager les connaissances\n• Expliquer les raisons du changement\n• Impliquer toute la communauté\n• Célébrer les évolutions positives"
+        },
+        {
+          "id": "alternatives",
+          "title": "Alternatives culturelles",
+          "content": "Préserver l'identité sans violence :\n• Rites de passage sans mutilation\n• Célébrations respectueuses des droits\n• Traditions artistiques et culturelles\n• Valeurs morales positives\n• Solidarité communautaire\n\nExemples d'alternatives :\n• Cérémonies d'initiation sans violence\n• Éducation traditionnelle moderne\n• Arts et artisanat traditionnels\n• Musique et danse culturelles\n• Contes et légendes éducatifs"
+        },
+        {
+          "id": "role-leaders",
+          "title": "Rôle des leaders",
+          "content": "Leaders traditionnels :\n• Modifier les pratiques nuisibles\n• Éduquer la communauté\n• Protéger les plus vulnérables\n• Promouvoir l'égalité\n• Faciliter le dialogue\n\nLeaders religieux :\n• Clarifier les enseignements\n• Condamner les violences\n• Promouvoir la paix\n• Protéger les droits\n• Éduquer les fidèles"
+        },
+        {
+          "id": "action-communautaire",
+          "title": "Action communautaire",
+          "content": "Actions individuelles :\n• Éduquer sa famille\n• Refuser les pratiques nuisibles\n• Soutenir les victimes\n• Participer aux discussions\n\nActions collectives :\n• Organiser des sensibilisations\n• Créer des comités de protection\n• Former les jeunes\n• Célébrer les changements positifs\n\nActions institutionnelles :\n• Renforcer les lois\n• Former les professionnels\n• Créer des services de protection\n• Soutenir les réformes"
+        },
+        {
+          "id": "message-espoir",
+          "title": "Message d'espoir",
+          "content": "Nous pouvons être fiers de notre culture tout en respectant la dignité de chaque personne. L'évolution culturelle est un signe de force, pas de faiblesse. Ensemble, nous pouvons créer des communautés où traditions et droits humains coexistent harmonieusement."
+        }
+      ]
+    },
+    {
+      "id": "prevention-generale",
+      "title": "Prévenir la violence : un engagement de tous",
+      "description": "Découvrez comment chacun peut contribuer à prévenir la violence dans sa communauté.",
+      "icon": "🤝",
+      "category": "Prévention",
+      "duration": "19 min",
+      "sections": [
+        {
+          "id": "introduction",
+          "title": "Introduction",
+          "content": "La prévention de la violence commence par l'éducation, la sensibilisation et l'engagement de toute la communauté. Chaque action de prévention compte et peut sauver des vies. La prévention est plus efficace que la réparation."
+        },
+        {
+          "id": "principe-prevention",
+          "title": "Pourquoi la prévention ?",
+          "content": "Avantages de la prévention :\n• Plus efficace que la réparation\n• Moins coûteuse à long terme\n• Protège avant que le mal soit fait\n• Crée des communautés plus sûres\n• Éduque les générations futures\n\nCoûts de la violence :\n• Détresse humaine\n• Coûts médicaux\n• Perte de productivité\n• Instabilité sociale\n• Transmission intergénérationnelle"
+        },
+        {
+          "id": "education-precoce",
+          "title": "Éducation dès le plus jeune âge",
+          "content": "Fondements de la prévention :\n• Enseigner le respect dès l'enfance\n• Promouvoir l'égalité des genres\n• Développer l'empathie\n• Apprendre la résolution pacifique des conflits\n• Éduquer sur les droits humains\n\nRôle des parents :\n• Modèle de comportement non violent\n• Communication ouverte\n• Éducation à l'empathie\n• Respect des limites\n• Encouragement de l'expression"
+        },
+        {
+          "id": "role-communautaire",
+          "title": "Rôle de la communauté",
+          "content": "Engagement communautaire :\n• Surveillance collective\n• Soutien aux familles\n• Espaces sûrs pour les enfants\n• Programmes d'éducation\n• Services de prévention\n\nActions communautaires :\n• Comités de protection\n• Programmes de mentorat\n• Activités pour les jeunes\n• Sensibilisation publique\n• Formation des leaders"
+        },
+        {
+          "id": "implication-hommes",
+          "title": "Implication des hommes et garçons",
+          "content": "Pourquoi impliquer les hommes :\n• Ils sont souvent les auteurs de violences\n• Ils peuvent être des alliés puissants\n• Ils influencent les autres hommes\n• Ils éduquent les générations futures\n• Ils brisent les stéréotypes\n\nActions pour les hommes :\n• Remettre en question les stéréotypes\n• Promouvoir l'égalité\n• Éduquer les autres hommes\n• Soutenir les victimes\n• Devenir des modèles positifs"
+        },
+        {
+          "id": "environnement-securise",
+          "title": "Créer un environnement sécurisé",
+          "content": "Éléments d'un environnement sûr :\n• Espaces publics bien éclairés\n• Surveillance communautaire\n• Services de sécurité accessibles\n• Éducation sur la sécurité\n• Réponse rapide aux incidents\n\nProtection des vulnérables :\n• Enfants et adolescents\n• Personnes âgées\n• Personnes en situation de handicap\n• Minorités\n• Personnes en situation de précarité"
+        },
+        {
+          "id": "signaux-alerte",
+          "title": "Reconnaître les signaux d'alerte",
+          "content": "Signaux individuels :\n• Comportement agressif\n• Isolement social\n• Consommation excessive d'alcool\n• Problèmes de santé mentale\n• Antécédents de violence\n\nSignaux communautaires :\n• Taux de criminalité élevé\n• Pauvreté généralisée\n• Manque d'éducation\n• Inégalités sociales\n• Absence de services"
+        },
+        {
+          "id": "intervention-precoce",
+          "title": "Intervention précoce",
+          "content": "Stratégies d'intervention :\n• Détection précoce des problèmes\n• Soutien aux familles à risque\n• Programmes de réhabilitation\n• Services de counseling\n• Formation professionnelle\n\nServices nécessaires :\n• Centres de crise\n• Lignes d'écoute\n• Services de médiation\n• Programmes de réhabilitation\n• Soutien psychologique"
+        },
+        {
+          "id": "engagement-long-terme",
+          "title": "Engagement à long terme",
+          "content": "Prévention durable :\n• Politiques publiques cohérentes\n• Financement stable\n• Formation continue\n• Évaluation régulière\n• Adaptation aux changements\n\nIndicateurs de succès :\n• Réduction des incidents\n• Amélioration du bien-être\n• Participation communautaire\n• Accès aux services\n• Éducation et sensibilisation"
+        },
+        {
+          "id": "message-espoir",
+          "title": "Message d'espoir",
+          "content": "Chaque action de prévention compte. Ensemble, nous pouvons créer une société plus sûre et plus juste pour tous. La prévention est un investissement dans l'avenir de nos enfants et de nos communautés. Votre engagement fait la différence."
+        }
+      ]
+    },
+    {
+      "id": "droits-victimes",
+      "title": "Connaître et faire valoir ses droits",
+      "description": "Informez-vous sur vos droits en tant que victime et les recours disponibles.",
+      "icon": "⚖️",
+      "category": "Droits",
+      "duration": "21 min",
+      "sections": [
+        {
+          "id": "introduction",
+          "title": "Introduction",
+          "content": "Toute victime de violence a des droits. Connaître ces droits est essentiel pour obtenir justice et réparation. Vos droits sont inaliénables et vous méritez justice, protection et soutien."
+        },
+        {
+          "id": "droits-fondamentaux",
+          "title": "Droits fondamentaux des victimes",
+          "content": "Droits de base :\n• Droit à la vie et à la sécurité\n• Droit à l'intégrité physique et psychologique\n• Droit à la dignité\n• Droit à la non-discrimination\n• Droit à l'égalité devant la loi\n\nDroits spécifiques aux victimes :\n• Droit à l'information\n• Droit à la protection\n• Droit à la réparation\n• Droit à la participation\n• Droit à la réhabilitation"
+        },
+        {
+          "id": "droits-legaux",
+          "title": "Droits légaux",
+          "content": "Droits dans la procédure judiciaire :\n• Droit d'être informé·e de ses droits\n• Droit à un avocat\n• Droit à la protection de la vie privée\n• Droit de témoigner en sécurité\n• Droit à la réparation du préjudice\n\nDroits face aux autorités :\n• Droit d'être traité·e avec respect\n• Droit à l'information sur l'enquête\n• Droit à la protection contre les représailles\n• Droit à l'assistance\n• Droit à la confidentialité"
+        },
+        {
+          "id": "protection",
+          "title": "Droit à la protection",
+          "content": "Mesures de protection :\n• Protection contre les représailles\n• Mesures d'éloignement de l'agresseur\n• Protection de l'identité\n• Accompagnement sécurisé\n• Hébergement d'urgence\n\nProtection des témoins :\n• Anonymat si nécessaire\n• Protection physique\n• Soutien psychologique\n• Accompagnement juridique\n• Mesures de sécurité"
+        },
+        {
+          "id": "reparation",
+          "title": "Droit à la réparation",
+          "content": "Types de réparation :\n• Réparation matérielle (dommages et intérêts)\n• Réparation morale (excuses publiques)\n• Réparation symbolique (mémorial)\n• Réparation médicale (soins)\n• Réparation psychologique (counseling)\n\nProcédures de réparation :\n• Action civile\n• Médiation\n• Réparation par l'État\n• Fonds d'indemnisation\n• Programmes de réhabilitation"
+        },
+        {
+          "id": "acces-justice",
+          "title": "Accès à la justice",
+          "content": "Barrières à l'accès :\n• Coût des procédures\n• Complexité du système\n• Manque d'information\n• Peur des représailles\n• Stigmatisation sociale\n\nSolutions :\n• Assistance juridique gratuite\n• Simplification des procédures\n• Information accessible\n• Protection des victimes\n• Sensibilisation communautaire"
+        },
+        {
+          "id": "services-disponibles",
+          "title": "Services disponibles",
+          "content": "Services juridiques :\n• Avocats spécialisés\n• Assistance juridique gratuite\n• Cliniques juridiques\n• Services de médiation\n• Accompagnement judiciaire\n\nServices de soutien :\n• Counseling psychologique\n• Groupes de soutien\n• Services médicaux\n• Aide sociale\n• Formation professionnelle"
+        },
+        {
+          "id": "recours",
+          "title": "Recours disponibles",
+          "content": "Recours judiciaires :\n• Plainte pénale\n• Action civile\n• Demande de dommages et intérêts\n• Demande de mesures de protection\n• Recours en appel\n\nRecours administratifs :\n• Plainte auprès des autorités\n• Demande d'aide sociale\n• Demande de protection\n• Recours gracieux\n• Saisine du médiateur"
+        },
+        {
+          "id": "accompagnement",
+          "title": "Accompagnement des victimes",
+          "content": "Types d'accompagnement :\n• Accompagnement juridique\n• Accompagnement psychologique\n• Accompagnement social\n• Accompagnement médical\n• Accompagnement familial\n\nProfessionnels impliqués :\n• Avocats spécialisés\n• Psychologues\n• Assistants sociaux\n• Médecins\n• Agents de police formés"
+        },
+        {
+          "id": "preuves",
+          "title": "Conservation des preuves",
+          "content": "Types de preuves :\n• Certificats médicaux\n• Photos des blessures\n• Témoignages\n• Messages et communications\n• Objets endommagés\n\nConservation :\n• Garder tous les documents\n• Prendre des photos\n• Noter les dates et heures\n• Identifier les témoins\n• Conserver les communications"
+        },
+        {
+          "id": "message-espoir",
+          "title": "Message d'espoir",
+          "content": "Vos droits sont inaliénables. Vous méritez justice, protection et soutien. N'hésitez pas à faire valoir vos droits. De nombreuses personnes et services sont là pour vous accompagner dans votre parcours vers la justice et la guérison."
+        }
+      ]
+    }
+  ]
+}

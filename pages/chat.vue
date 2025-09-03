@@ -343,25 +343,25 @@
               v-if="message.sender === 'assistant'"
               class="flex items-start space-x-2 md:space-x-3 max-w-[85%] md:max-w-[80%]"
             >
-              <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center flex-shrink-0">
+              <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center flex-shrink-0 self-start">
                 <svg class="w-4 h-4 md:w-5 md:h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                 </svg>
               </div>
               <div class="flex-1">
                 <MarkdownMessage :markdown="message.content" @option-selected="handleOptionSelected" />
-                <div class="flex items-center gap-2 mt-1 md:mt-2">
-                  <p class="text-xs text-gray-400 dark:text-gray-500">{{ formatTime(message.created_at) }}</p>
+                <div class="flex items-center gap-1 mt-1 md:mt-2 whitespace-nowrap">
                   <button 
                     v-if="isTtsSupported"
                     @click="speakMessage(message.content)"
-                    class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
+                    class="inline-flex items-center justify-center w-4 h-4 shrink-0 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     title="Lire ce message"
                   >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-3 h-3 align-middle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5l7 7-7 7V5z" />
                     </svg>
                   </button>
+                  <span class="text-xs text-gray-400 dark:text-gray-500 leading-none align-middle">{{ formatTime(message.created_at) }}</span>
                 </div>
               </div>
             </div>
@@ -415,7 +415,7 @@
       </div>
 
       <!-- Zone de Saisie -->
-      <div class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 md:p-6 flex-shrink-0" ref="inputArea">
+      <div class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 md:p-6 flex-shrink-0 input-area" ref="inputArea">
         <div class="max-w-4xl mx-auto">
           <div class="flex items-end space-x-2 md:space-x-3">
             <div class="flex-1 relative">
@@ -1634,7 +1634,7 @@ async function handleOptionSelected(value) {
   /* Ajuster la zone principale pour compenser la navbar fixe */
   .flex-1.flex.flex-col {
     margin-top: 70px;
-    height: calc(100vh - 70px);
+    height: calc(100dvh - 70px);
   }
 
   .sidebar {
@@ -1648,8 +1648,8 @@ async function handleOptionSelected(value) {
   }
 
   .messages-container {
-    height: calc(100vh - 180px);
-    max-height: calc(100vh - 180px);
+    height: calc(100dvh - 180px);
+    max-height: calc(100dvh - 180px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding-top: 1rem;
@@ -1675,6 +1675,11 @@ async function handleOptionSelected(value) {
     -webkit-appearance: none;
     appearance: none;
     border-radius: 12px;
+  }
+  html, body, #__nuxt, #__layout {
+    height: 100dvh;
+    overflow: hidden;
+    overscroll-behavior: none;
   }
 
   /* Amélioration des boutons tactiles */
