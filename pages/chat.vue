@@ -103,7 +103,7 @@
             </p>
           </div>
 
-          <div v-if="currentConversationId" class="flex items-center gap-2 md:gap-3">
+          <div class="flex items-center gap-2 md:gap-3">
             <button 
               @click="openDeleteModal(currentConversationId)"
               class="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 touch-manipulation"
@@ -133,10 +133,82 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
               </svg>
             </button>
+            <!-- Settings Menu Trigger -->
+            <div class="relative">
+              <button
+                @click="showSettingsMenu = !showSettingsMenu"
+                class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                title="Paramètres"
+              >
+                <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0a1.724 1.724 0 002.573.98c.826-.48 1.86.254 1.55 1.15a1.724 1.724 0 001.11 2.2c.9.3.9 1.58 0 1.88a1.724 1.724 0 00-1.11 2.2c.31.896-.724 1.63-1.55 1.151a1.724 1.724 0 00-2.573.98c-.299.921-1.603.921-1.902 0a1.724 1.724 0 00-2.573-.98c-.826.479-1.86-.255-1.55-1.151a1.724 1.724 0 00-1.11-2.2c-.9-.3-.9-1.58 0-1.88a1.724 1.724 0 001.11-2.2c-.31-.896.724-1.63 1.55-1.15.98.57 2.214.03 2.573-.98zM12 8v4m0 4h.01"/>
+                </svg>
+              </button>
+              <!-- Settings Dropdown -->
+              <div v-if="showSettingsMenu" class="absolute right-0 mt-2 w-80 max-w-[90vw] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl z-50 p-4">
+                <div class="flex items-center justify-between mb-3">
+                  <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-100">Paramètres</h3>
+                  <button @click="showSettingsMenu = false" class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                </div>
+                <div class="space-y-4">
+                  <div class="grid grid-cols-1 gap-3">
+                    <label class="text-xs text-gray-500 dark:text-gray-400">Lecture automatique des réponses</label>
+                    <button @click="toggleAutoRead" class="px-3 py-2 rounded-lg text-sm" :class="autoReadResponses ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'">{{ autoReadResponses ? 'Activée' : 'Désactivée' }}</button>
+                  </div>
+                  <div class="grid grid-cols-1 gap-3">
+                    <label class="text-xs text-gray-500 dark:text-gray-400">Auto-envoi après dictée</label>
+                    <button @click="autoSendOnFinal = !autoSendOnFinal; persistVoiceSettings()" class="px-3 py-2 rounded-lg text-sm" :class="autoSendOnFinal ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'">{{ autoSendOnFinal ? 'Activé' : 'Désactivé' }}</button>
+                  </div>
+                  <div v-if="isTtsSupported" class="grid grid-cols-1 gap-2">
+                    <label class="text-xs text-gray-500 dark:text-gray-400">Voix</label>
+                    <select v-model="selectedVoiceName" @change="persistVoiceSettings(); if (isReading) stopSpeaking()" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm text-gray-800 dark:text-gray-100">
+                      <option v-for="v in filteredVoices" :key="v.name + v.lang" :value="v.name">{{ v.name }} ({{ v.lang }})</option>
+                    </select>
+                  </div>
+                  <div v-if="isTtsSupported" class="grid grid-cols-2 gap-3">
+                    <div>
+                      <label class="text-xs text-gray-500 dark:text-gray-400">Genre</label>
+                      <select v-model="ttsGender" @change="persistVoiceSettings()" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm text-gray-800 dark:text-gray-100">
+                        <option value="auto">Auto</option>
+                        <option value="female">Féminine</option>
+                        <option value="male">Masculine</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="text-xs text-gray-500 dark:text-gray-400">Vitesse</label>
+                      <input type="range" min="0.7" max="1.3" step="0.05" v-model.number="ttsRate" @change="persistVoiceSettings()" class="w-full" />
+                      <div class="text-[10px] text-gray-500 dark:text-gray-400">{{ ttsRate.toFixed(2) }}</div>
+                    </div>
+                    <div>
+                      <label class="text-xs text-gray-500 dark:text-gray-400">Tonalité</label>
+                      <input type="range" min="0.8" max="1.2" step="0.05" v-model.number="ttsPitch" @change="persistVoiceSettings()" class="w-full" />
+                      <div class="text-[10px] text-gray-500 dark:text-gray-400">{{ ttsPitch.toFixed(2) }}</div>
+                    </div>
+                  </div>
+                  <div v-if="isTtsSupported" class="flex items-center gap-2">
+                    <button @click="speakText('Bonjour, ceci est un test de voix.')" class="px-3 py-2 rounded-lg bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-sm">Tester</button>
+                    <button v-if="isReading" @click="stopSpeaking" class="px-3 py-2 rounded-lg bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 text-sm">Arrêter</button>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="hidden md:flex items-center bg-green-100 dark:bg-green-900 px-4 py-1.5 rounded-full">
               <div class="w-2.5 h-2.5 bg-green-500 rounded-full mr-2 animate-pulse"></div>
               <span class="text-sm font-medium text-green-700 dark:text-green-300">En ligne</span>
             </div>
+            <!-- Stop speaking button shown while TTS is active -->
+            <button
+              v-if="isTtsSupported && isReading"
+              @click="stopSpeaking"
+              class="p-2 rounded-full bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800 text-red-700 dark:text-red-300 focus:outline-none focus:ring-2 focus:ring-red-500"
+              title="Arrêter la lecture"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6h12v12H6z" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>
@@ -278,7 +350,19 @@
               </div>
               <div class="flex-1">
                 <MarkdownMessage :markdown="message.content" @option-selected="handleOptionSelected" />
-                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 md:mt-2">{{ formatTime(message.created_at) }}</p>
+                <div class="flex items-center gap-2 mt-1 md:mt-2">
+                  <p class="text-xs text-gray-400 dark:text-gray-500">{{ formatTime(message.created_at) }}</p>
+                  <button 
+                    v-if="isTtsSupported"
+                    @click="speakMessage(message.content)"
+                    class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
+                    title="Lire ce message"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5l7 7-7 7V5z" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -346,18 +430,29 @@
                 ref="messageInput"
                 @input="adjustTextareaHeight"
               ></textarea>
-              <button
-                v-if="isSpeechSupported"
-                @click="toggleRecording"
-                class="absolute right-2 bottom-2 p-2 md:p-2 rounded-full transition-all duration-200"
-                :class="isRecording ? 'bg-red-500 hover:bg-red-600 scale-110' : 'bg-blue-500 hover:bg-blue-600 hover:scale-105'"
-                title="Enregistrement vocal"
-              >
-                <svg class="w-5 h-5 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path v-if="!isRecording" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5 a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                  <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+              <div v-if="isSpeechSupported" class="absolute right-2 bottom-2 flex flex-col gap-1">
+                <button
+                  @click="toggleRecording"
+                  class="p-2 md:p-2 rounded-full transition-all duration-200"
+                  :class="isRecording ? 'bg-red-500 hover:bg-red-600 scale-110 animate-pulse' : 'bg-blue-500 hover:bg-blue-600 hover:scale-105'"
+                  :title="isRecording ? 'Arrêter l\'enregistrement' : 'Commencer l\'enregistrement vocal'"
+                >
+                  <svg class="w-5 h-5 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path v-if="!isRecording" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5 a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+                <button
+                  @click="autoSendOnFinal = !autoSendOnFinal"
+                  class="p-1 rounded-full transition-all duration-200 text-xs"
+                  :class="autoSendOnFinal ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-600'"
+                  :title="autoSendOnFinal ? 'Envoi automatique activé' : 'Envoi automatique désactivé'"
+                >
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                </button>
+              </div>
             </div>
             <button
               @click="sendMessage"
@@ -375,7 +470,18 @@
               </svg>
             </button>
           </div>
-          <p v-if="isRecording" class="text-sm text-red-500 dark:text-red-400 mt-2 animate-pulse text-center md:text-left">🎤 Enregistrement en cours...</p>
+          <div v-if="isRecording" class="mt-2 flex items-center gap-2 text-sm text-red-500 dark:text-red-400 animate-pulse">
+            <div class="flex space-x-1">
+              <div class="w-2 h-2 bg-red-500 rounded-full animate-bounce"></div>
+              <div class="w-2 h-2 bg-red-500 rounded-full animate-bounce" style="animation-delay: 0.1s;"></div>
+              <div class="w-2 h-2 bg-red-500 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+            </div>
+            <span>🎤 Enregistrement en cours... Parlez maintenant</span>
+          </div>
+          <div v-if="autoSendOnFinal && isRecording" class="mt-1 text-xs text-green-600 dark:text-green-400 text-center md:text-left">
+            ✓ Envoi automatique activé
+          </div>
+          <!-- TTS quick controls removed in favor of header settings menu -->
         </div>
       </div>
     </div>
@@ -516,6 +622,18 @@ if (typeof window !== 'undefined') {
 }
 const isRecording = ref(false)
 const recognition = ref(null)
+const autoSendOnFinal = ref(true)
+// Text-to-Speech (TTS)
+const isTtsSupported = ref(false)
+const autoReadResponses = ref(true)
+const isReading = ref(false)
+const currentUtterance = ref(null)
+const ttsVoices = ref([])
+const showSettingsMenu = ref(false)
+const selectedVoiceName = ref('')
+const ttsGender = ref('auto') // 'auto' | 'female' | 'male'
+const ttsRate = ref(1)
+const ttsPitch = ref(1)
 
 // Mapping des catégories attendues par le backend
 const cat_map = {
@@ -559,6 +677,142 @@ const toggleDarkMode = () => {
   document.documentElement.classList.toggle('dark', isDarkMode.value)
 }
 
+// -------- Text-to-Speech (TTS) --------
+const setupSpeechSynthesis = () => {
+  if (typeof window === 'undefined') return
+  isTtsSupported.value = 'speechSynthesis' in window
+  if (!isTtsSupported.value) return
+  const synth = window.speechSynthesis
+
+  const loadVoices = () => {
+    ttsVoices.value = synth.getVoices()
+  }
+  loadVoices()
+  if (typeof synth.onvoiceschanged !== 'undefined') {
+    synth.onvoiceschanged = loadVoices
+  }
+}
+
+const filteredVoices = computed(() => {
+  if (!ttsVoices.value) return []
+  let voices = ttsVoices.value
+  // Filtrer par langue FR en priorité pour l'UX
+  const french = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('fr'))
+  voices = french.length ? french : voices
+  // Filtrer par genre si possible (certains navigateurs n'exposent pas le genre)
+  if (ttsGender.value !== 'auto') {
+    voices = voices.filter(v => {
+      const name = (v.name || '').toLowerCase()
+      if (ttsGender.value === 'female') {
+        return name.includes('fem') || name.includes('woman') || name.includes('female') || name.includes('amy') || name.includes('julie')
+      }
+      return name.includes('masc') || name.includes('man') || name.includes('male') || name.includes('paul') || name.includes('thomas')
+    })
+  }
+  return voices
+})
+
+const getSelectedVoice = () => {
+  if (!filteredVoices.value || filteredVoices.value.length === 0) return null
+  if (selectedVoiceName.value) {
+    const found = ttsVoices.value.find(v => v.name === selectedVoiceName.value)
+    if (found) return found
+  }
+  return filteredVoices.value[0]
+}
+
+const speakText = (text) => {
+  if (!isTtsSupported.value || !text) return
+  try {
+    // Arrêter l'audio en cours
+    stopSpeaking()
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.lang = 'fr-FR'
+    const voice = getSelectedVoice()
+    if (voice) utterance.voice = voice
+    utterance.rate = ttsRate.value || 1
+    utterance.pitch = ttsPitch.value || 1
+    utterance.onstart = () => { isReading.value = true }
+    utterance.onend = () => { isReading.value = false; currentUtterance.value = null }
+    utterance.onerror = () => { isReading.value = false; currentUtterance.value = null }
+    currentUtterance.value = utterance
+    window.speechSynthesis.speak(utterance)
+  } catch (e) {
+    console.error('TTS error:', e)
+  }
+}
+
+const stopSpeaking = () => {
+  try {
+    if (typeof window !== 'undefined' && window.speechSynthesis && window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel()
+    }
+  } catch {}
+  isReading.value = false
+  currentUtterance.value = null
+}
+
+const toggleAutoRead = () => {
+  autoReadResponses.value = !autoReadResponses.value
+  persistVoiceSettings()
+}
+
+const speakMessage = (content) => {
+  if (!content) return
+  if (isReading.value) {
+    stopSpeaking()
+  }
+  speakText(content)
+}
+
+// ---------- Persistence ----------
+const VOICE_SETTINGS_KEY = 'chat_tts_settings'
+const persistVoiceSettings = () => {
+  try {
+    if (typeof window === 'undefined') return
+    const payload = {
+      autoReadResponses: autoReadResponses.value,
+      autoSendOnFinal: autoSendOnFinal.value,
+      selectedVoiceName: selectedVoiceName.value,
+      ttsGender: ttsGender.value,
+      ttsRate: ttsRate.value,
+      ttsPitch: ttsPitch.value
+    }
+    localStorage.setItem(VOICE_SETTINGS_KEY, JSON.stringify(payload))
+  } catch {}
+}
+
+const loadVoiceSettings = () => {
+  try {
+    if (typeof window === 'undefined') return
+    const raw = localStorage.getItem(VOICE_SETTINGS_KEY)
+    if (!raw) return
+    const parsed = JSON.parse(raw)
+    if (typeof parsed.autoReadResponses === 'boolean') autoReadResponses.value = parsed.autoReadResponses
+    if (typeof parsed.autoSendOnFinal === 'boolean') autoSendOnFinal.value = parsed.autoSendOnFinal
+    if (typeof parsed.selectedVoiceName === 'string') selectedVoiceName.value = parsed.selectedVoiceName
+    if (typeof parsed.ttsGender === 'string') ttsGender.value = parsed.ttsGender
+    if (typeof parsed.ttsRate === 'number') ttsRate.value = parsed.ttsRate
+    if (typeof parsed.ttsPitch === 'number') ttsPitch.value = parsed.ttsPitch
+  } catch {}
+}
+
+// Demander les permissions du microphone
+const requestMicrophonePermission = async () => {
+  try {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      await navigator.mediaDevices.getUserMedia({ audio: true })
+      console.log('✅ Permission microphone accordée')
+      return true
+    }
+    return false
+  } catch (error) {
+    console.error('❌ Permission microphone refusée:', error)
+    showToast('Permission microphone requise pour la reconnaissance vocale.')
+    return false
+  }
+}
+
 // Speech Recognition
 const setupSpeechRecognition = () => {
   if (isSpeechSupported.value) {
@@ -567,42 +821,115 @@ const setupSpeechRecognition = () => {
     recognition.value.lang = 'fr-FR'
     recognition.value.interimResults = true
     recognition.value.continuous = false
+    recognition.value.maxAlternatives = 1
+
+    recognition.value.onstart = () => {
+      console.log('🎤 Reconnaissance vocale démarrée')
+      isRecording.value = true
+      showToast('🎤 Écoute en cours...')
+    }
 
     recognition.value.onresult = (event) => {
-      const transcript = Array.from(event.results)
-        .map(result => result[0].transcript)
-        .join('')
-      newMessage.value = transcript
+      let interimTranscript = ''
+      let finalTranscript = ''
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript
+        } else {
+          interimTranscript += transcript
+        }
+      }
+
+      // Afficher le texte en temps réel
+      newMessage.value = finalTranscript + interimTranscript
       adjustTextareaHeight()
+
+      // Envoi automatique quand la phrase est finalisée
+      if (finalTranscript.trim() && autoSendOnFinal.value) {
+        console.log('📝 Phrase finalisée:', finalTranscript)
+        // Petite pause pour laisser le texte final s'afficher
+        setTimeout(() => {
+          if (newMessage.value.trim()) {
+            console.log('📤 Envoi automatique du message vocal')
+            sendMessage()
+          }
+        }, 500)
+      }
     }
 
     recognition.value.onend = () => {
-      if (isRecording.value) {
-        recognition.value.start()
+      console.log('🎤 Reconnaissance vocale terminée')
+      isRecording.value = false
+      if (newMessage.value.trim() && !autoSendOnFinal.value) {
+        showToast('Message vocal prêt. Cliquez sur Envoyer.')
       }
     }
 
     recognition.value.onerror = (event) => {
-      console.error('Speech recognition error:', event.error)
-      showToast('Erreur lors de l\'enregistrement vocal.')
+      console.error('❌ Erreur reconnaissance vocale:', event.error)
       isRecording.value = false
+      
+      let errorMessage = 'Erreur lors de l\'enregistrement vocal.'
+      switch (event.error) {
+        case 'no-speech':
+          errorMessage = 'Aucune parole détectée. Réessayez.'
+          break
+        case 'audio-capture':
+          errorMessage = 'Microphone non accessible. Vérifiez les permissions.'
+          break
+        case 'not-allowed':
+          errorMessage = 'Permission microphone refusée.'
+          break
+        case 'network':
+          errorMessage = 'Erreur réseau. Vérifiez votre connexion.'
+          break
+        case 'language-not-supported':
+          errorMessage = 'Langue française non supportée.'
+          break
+      }
+      showToast(errorMessage)
+    }
+
+    recognition.value.onnomatch = () => {
+      console.log('🎤 Aucune correspondance trouvée')
+      showToast('Parole non reconnue. Réessayez.')
     }
   }
 }
 
-const toggleRecording = () => {
-  if (!isSpeechSupported.value) return
+const toggleRecording = async () => {
+  if (!isSpeechSupported.value) {
+    showToast('Reconnaissance vocale non supportée sur ce navigateur.')
+    return
+  }
+  
   if (isRecording.value) {
+    console.log('🛑 Arrêt de l\'enregistrement')
     recognition.value.stop()
     isRecording.value = false
-    if (newMessage.value.trim()) {
-      sendMessage()
+    if (newMessage.value.trim() && !autoSendOnFinal.value) {
+      showToast('Message vocal prêt. Cliquez sur Envoyer.')
     }
   } else {
-    recognition.value.start()
-    isRecording.value = true
-    newMessage.value = ''
-    adjustTextareaHeight()
+    console.log('🎤 Démarrage de l\'enregistrement')
+    
+    // Demander les permissions du microphone
+    const hasPermission = await requestMicrophonePermission()
+    if (!hasPermission) {
+      return
+    }
+    
+    try {
+      newMessage.value = ''
+      adjustTextareaHeight()
+      recognition.value.start()
+    } catch (error) {
+      console.error('Erreur démarrage reconnaissance:', error)
+      showToast('Erreur lors du démarrage de l\'enregistrement.')
+      isRecording.value = false
+    }
   }
 }
 
@@ -627,6 +954,21 @@ onMounted(async () => {
   calculateInputHeight()
   window.addEventListener('resize', calculateInputHeight)
   setupSpeechRecognition()
+  setupSpeechSynthesis()
+  loadVoiceSettings()
+
+  // Raccourci clavier: Ctrl+Espace pour (dé)marquer l'enregistrement
+  keyHandler = (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.code === 'Space') {
+      e.preventDefault()
+      toggleRecording()
+    }
+    if (e.code === 'Escape' && isReading.value) {
+      e.preventDefault()
+      stopSpeaking()
+    }
+  }
+  window.addEventListener('keydown', keyHandler)
 
   // Focus automatique sur mobile
   if (typeof window !== 'undefined' && window.innerWidth <= 768) {
@@ -664,8 +1006,15 @@ onMounted(async () => {
   }
 })
 
+// Variable pour stocker la référence du gestionnaire de clavier
+let keyHandler = null
+
 onUnmounted(() => {
   window.removeEventListener('resize', calculateInputHeight)
+  // Retirer le raccourci clavier
+  if (keyHandler) {
+    window.removeEventListener('keydown', keyHandler)
+  }
   if (recognition.value) {
     recognition.value.stop()
   }
@@ -954,6 +1303,9 @@ const sendMessage = async (messageInput = null) => {
           content: assistantMessage,
           created_at: new Date().toISOString()
         })
+        if (isTtsSupported.value && autoReadResponses.value) {
+          speakText(assistantMessage)
+        }
       }
     } else {
       // Nouvelle conversation - Version complète
@@ -993,6 +1345,9 @@ const sendMessage = async (messageInput = null) => {
           content: assistantMessage,
           created_at: new Date().toISOString()
         })
+        if (isTtsSupported.value && autoReadResponses.value) {
+          speakText(assistantMessage)
+        }
         
         console.log('📊 Messages après ajout:', messages.value.length)
         console.log('📋 Contenu des messages:', messages.value)
@@ -1318,6 +1673,7 @@ async function handleOptionSelected(value) {
   input, textarea {
     font-size: 16px !important;
     -webkit-appearance: none;
+    appearance: none;
     border-radius: 12px;
   }
 
