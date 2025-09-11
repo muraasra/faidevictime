@@ -103,6 +103,12 @@ onUnmounted(() => {
       'md:left-[200px] md:w-[calc(100%-200px)]'
     ]"
   >
+    <!-- Backdrop mobile -->
+    <div
+      v-show="isMobileMenuOpen"
+      class="fixed inset-0 bg-black/40 md:hidden z-10"
+      @click="isMobileMenuOpen = false"
+    ></div>
     <!-- Logo et bouton menu mobile -->
     <div class="flex items-center gap-x-4">
       <!-- Bouton menu hamburger pour mobile -->
@@ -186,11 +192,11 @@ onUnmounted(() => {
     <!-- Menu mobile -->
     <div 
       v-show="isMobileMenuOpen"
-      class="absolute top-full left-0 right-50 bg-white dark:bg-zinc-900 border-b dark:border-b-zinc-700 shadow-lg md:hidden transform transition-transform ease-in-out duration-300"
+      class="absolute top-full left-0 right-0 bg-white dark:bg-zinc-900 border-b dark:border-b-zinc-700 shadow-lg md:hidden transform transition-transform ease-in-out duration-300 z-20"
     >
       <div class="px-4">
         <!-- Navigation mobile -->
-        <nav class="space-y-1">
+        <nav class="space-y-1 py-4">
           <ThemeSwitcher class="block sm:hidden" />
           <MobileNavigation />
           <SectionsCollectMobileNavigation/>

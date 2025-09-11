@@ -112,7 +112,8 @@
     </div>
 
     <!-- Vue détaillée d'une formation -->
-    <div v-else class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div v-else class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div v-if="showConfetti" class="pointer-events-none fixed inset-0 z-[60]"></div>
       <!-- En-tête de la formation -->
       <div class="mb-8">
         <button 
@@ -148,27 +149,51 @@
         </div>
       </div>
 
-      <!-- Navigation des sections -->
-      <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-        <div class="flex overflow-x-auto space-x-2">
-          <button
-            v-for="(section, index) in selectedFormation.sections"
-            :key="section.id"
-            @click="selectedSection = section.id"
-            :class="[
-              'px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors',
-              selectedSection === section.id
-                ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
-                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-            ]"
-          >
-            {{ index + 1 }}. {{ section.title }}
-          </button>
-        </div>
-      </div>
+      <!-- Wrapper avec sidebar (desktop) -->
+      <div class="grid grid-cols-12 gap-6">
+        <!-- Sidebar latérale (desktop) -->
+        <aside class="hidden md:block col-span-4 lg:col-span-3">
+          <div class="sticky top-24 bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+            <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">Sommaire</h4>
+            <nav class="space-y-1">
+              <button
+                v-for="(section, index) in selectedFormation.sections"
+                :key="section.id"
+                @click="selectedSection = section.id"
+                :class="[
+                  'w-full text-left px-3 py-2 rounded-lg text-sm transition-colors',
+                  selectedSection === section.id
+                    ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                ]"
+              >
+                {{ index + 1 }}. {{ section.title }}
+              </button>
+            </nav>
+          </div>
+        </aside>
 
-      <!-- Contenu de la section -->
-      <div v-if="currentSection" class="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-sm border border-gray-200 dark:border-gray-700">
+        <!-- Navigation des sections (mobile) -->
+        <div class="md:hidden col-span-12 bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700 mb-2">
+          <div class="flex overflow-x-auto space-x-2">
+            <button
+              v-for="(section, index) in selectedFormation.sections"
+              :key="section.id"
+              @click="selectedSection = section.id"
+              :class="[
+                'px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors',
+                selectedSection === section.id
+                  ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+              ]"
+            >
+              {{ index + 1 }}. {{ section.title }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Contenu de la section -->
+        <div v-if="currentSection" class="col-span-12 md:col-span-8 lg:col-span-9 bg-white dark:bg-gray-800 rounded-xl p-8 shadow-sm border border-gray-200 dark:border-gray-700">
         <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6">
           {{ currentSection.title }}
         </h3>
@@ -177,6 +202,27 @@
           <div class="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
             {{ currentSection.content }}
           </div>
+        </div>
+
+        <!-- Quiz (optionnel) -->
+        <div v-if="currentSection.quiz && currentSection.quiz.length" class="mt-8">
+          <h4 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Questions de révision</h4>
+          <div class="space-y-6">
+            <div v-for="(q, qi) in currentSection.quiz" :key="q.id || qi" class="p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30">
+              <p class="font-medium text-gray-800 dark:text-gray-100 mb-3">{{ qi + 1 }}. {{ q.question }}</p>
+              <div class="space-y-2">
+                <label v-for="(choice, ci) in q.choices" :key="ci" class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                  <input type="radio" :name="'q'+qi" :value="ci" v-model="quizAnswers[qi]" class="text-blue-600" />
+                  <span>{{ choice }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 flex items-center gap-3">
+            <button @click="submitQuiz()" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">Vérifier mes réponses</button>
+            <span v-if="quizResult !== null" class="text-sm text-gray-700 dark:text-gray-300">Score: {{ quizResult }}/{{ currentSection.quiz.length }}</span>
+          </div>
+        </div>
         </div>
       </div>
 
@@ -195,16 +241,40 @@
         
         <div v-else></div>
         
-        <button
-          v-if="nextSection"
-          @click="selectedSection = nextSection.id"
-          class="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          {{ nextSection.title }}
-          <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
+        <div class="flex gap-3">
+          <button
+            v-if="nextSection"
+            @click="selectedSection = nextSection.id"
+            class="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            {{ nextSection.title }}
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <button
+            v-else
+            @click="completeFormation()"
+            class="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          >
+            Terminer la formation
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div v-if="isCompleted && nextFormation" class="mt-8 bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-green-200 dark:border-green-700">
+        <h4 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">Bravo ! 🎉 Formation terminée</h4>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">Souhaitez-vous poursuivre avec la prochaine formation recommandée ?</p>
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="font-medium text-gray-800 dark:text-gray-100">{{ nextFormation.title }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ nextFormation.description }}</p>
+          </div>
+          <button @click="selectFormation(nextFormation)" class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">Commencer</button>
+        </div>
       </div>
 
       <!-- Lien vers services -->
@@ -251,6 +321,7 @@ interface Section {
   id: string
   title: string
   content: string
+  quiz?: Array<{ id?: string; question: string; choices: string[]; answer: number }>
 }
 
 interface Formation {
@@ -270,6 +341,10 @@ const selectedSection = ref<string | null>(null)
 const selectedCategory = ref<string | null>(null)
 const formations = ref<Formation[]>([])
 const isLoadingFormations = ref(false)
+const isCompleted = ref(false)
+const showConfetti = ref(false)
+const quizAnswers = ref<Record<number, number>>({})
+const quizResult = ref<number | null>(null)
 
 // Computed
 const categories = computed(() => {
@@ -306,6 +381,19 @@ const nextSection = computed(() => {
   return selectedFormation.value.sections[index + 1]
 })
 
+const progressPercent = computed(() => {
+  if (!selectedFormation.value) return 0
+  const total = selectedFormation.value.sections.length
+  return Math.min(100, Math.round(((currentSectionIndex.value + 1) / total) * 100))
+})
+
+const nextFormation = computed(() => {
+  if (!selectedFormation.value) return null
+  const idx = formations.value.findIndex(f => f.id === selectedFormation.value!.id)
+  if (idx < 0) return null
+  return formations.value[idx + 1] || formations.value[0] || null
+})
+
 // Méthodes
 const toggleDarkMode = () => {
   isDarkMode.value = !isDarkMode.value
@@ -318,6 +406,10 @@ const toggleDarkMode = () => {
 const selectFormation = (formation: Formation) => {
   selectedFormation.value = formation
   selectedSection.value = formation.sections[0]?.id || null
+  isCompleted.value = false
+  showConfetti.value = false
+  quizAnswers.value = {}
+  quizResult.value = null
 }
 
 const loadFormations = async () => {
@@ -347,6 +439,46 @@ onMounted(async () => {
   document.documentElement.classList.toggle('dark', isDarkMode.value)
   await loadFormations()
 })
+
+// Quiz
+const submitQuiz = () => {
+  if (!currentSection.value || !currentSection.value.quiz) return
+  let score = 0
+  currentSection.value.quiz.forEach((q, i) => {
+    if (quizAnswers.value[i] === q.answer) score += 1
+  })
+  quizResult.value = score
+}
+
+// Completion + Confetti
+const completeFormation = () => {
+  isCompleted.value = true
+  launchConfetti()
+}
+
+const launchConfetti = () => {
+  showConfetti.value = true
+  const colors = ['#34d399', '#60a5fa', '#f472b6', '#facc15', '#f87171']
+  const amount = 120
+  for (let i = 0; i < amount; i++) {
+    const piece = document.createElement('div')
+    piece.className = 'confetti-piece'
+    piece.style.position = 'fixed'
+    piece.style.zIndex = '70'
+    piece.style.top = '-10px'
+    piece.style.left = Math.random() * 100 + 'vw'
+    piece.style.width = Math.random() * 8 + 4 + 'px'
+    piece.style.height = Math.random() * 8 + 4 + 'px'
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)]
+    piece.style.opacity = '0.9'
+    piece.style.transform = `rotate(${Math.random() * 360}deg)`
+    piece.style.borderRadius = '2px'
+    piece.style.animation = `confetti-fall ${3 + Math.random() * 2}s linear forwards`
+    document.body.appendChild(piece)
+    setTimeout(() => piece.remove(), 6000)
+  }
+  setTimeout(() => { showConfetti.value = false }, 3500)
+}
 </script>
 
 <style scoped>
@@ -401,5 +533,11 @@ onMounted(async () => {
     width: 100%;
     justify-content: center;
   }
+}
+
+/* Confetti */
+@keyframes confetti-fall {
+  0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0.7; }
 }
 </style>

@@ -343,25 +343,25 @@
               v-if="message.sender === 'assistant'"
               class="flex items-start space-x-2 md:space-x-3 max-w-[85%] md:max-w-[80%]"
             >
-              <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center flex-shrink-0 self-start">
+              <div class="w-8 h-8 md:w-10 md:h-10 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center flex-shrink-0">
                 <svg class="w-4 h-4 md:w-5 md:h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                 </svg>
               </div>
               <div class="flex-1">
                 <MarkdownMessage :markdown="message.content" @option-selected="handleOptionSelected" />
-                <div class="flex items-center gap-1 mt-1 md:mt-2 whitespace-nowrap">
+                <div class="flex items-center gap-2 mt-1 md:mt-2">
+                  <p class="text-xs text-gray-400 dark:text-gray-500">{{ formatTime(message.created_at) }}</p>
                   <button 
                     v-if="isTtsSupported"
                     @click="speakMessage(message.content)"
-                    class="inline-flex items-center justify-center w-4 h-4 shrink-0 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 focus:outline-none"
                     title="Lire ce message"
                   >
-                    <svg class="w-3 h-3 align-middle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5l7 7-7 7V5z" />
                     </svg>
                   </button>
-                  <span class="text-xs text-gray-400 dark:text-gray-500 leading-none align-middle">{{ formatTime(message.created_at) }}</span>
                 </div>
               </div>
             </div>
@@ -415,7 +415,7 @@
       </div>
 
       <!-- Zone de Saisie -->
-      <div class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 md:p-6 flex-shrink-0 input-area" ref="inputArea">
+      <div class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 md:p-6 flex-shrink-0" ref="inputArea">
         <div class="max-w-4xl mx-auto">
           <div class="flex items-end space-x-2 md:space-x-3">
             <div class="flex-1 relative">
@@ -431,17 +431,17 @@
                 @input="adjustTextareaHeight"
               ></textarea>
               <div v-if="isSpeechSupported" class="absolute right-2 bottom-2 flex flex-col gap-1">
-                <button
-                  @click="toggleRecording"
+              <button
+                @click="toggleRecording"
                   class="p-2 md:p-2 rounded-full transition-all duration-200"
                   :class="isRecording ? 'bg-red-500 hover:bg-red-600 scale-110 animate-pulse' : 'bg-blue-500 hover:bg-blue-600 hover:scale-105'"
                   :title="isRecording ? 'Arrêter l\'enregistrement' : 'Commencer l\'enregistrement vocal'"
-                >
-                  <svg class="w-5 h-5 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path v-if="!isRecording" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5 a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                    <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+              >
+                <svg class="w-5 h-5 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path v-if="!isRecording" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5 a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
                 <button
                   @click="autoSendOnFinal = !autoSendOnFinal"
                   class="p-1 rounded-full transition-all duration-200 text-xs"
@@ -475,7 +475,7 @@
               <div class="w-2 h-2 bg-red-500 rounded-full animate-bounce"></div>
               <div class="w-2 h-2 bg-red-500 rounded-full animate-bounce" style="animation-delay: 0.1s;"></div>
               <div class="w-2 h-2 bg-red-500 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
-            </div>
+        </div>
             <span>🎤 Enregistrement en cours... Parlez maintenant</span>
           </div>
           <div v-if="autoSendOnFinal && isRecording" class="mt-1 text-xs text-green-600 dark:text-green-400 text-center md:text-left">
@@ -590,8 +590,8 @@ import MarkdownMessage from '~/components/chat/MarkdownMessage.vue'
 definePageMeta({ layout: 'chat' })
 
 // Configuration
- const API_BASE = 'https://wilfriedtayou.pythonanywhere.com/'
-//const API_BASE = 'http://localhost:8001/'
+ //const API_BASE = 'https://wilfriedtayou.pythonanywhere.com/'
+const API_BASE = 'http://localhost:8001/'
 
 // État réactif
 const conversations = ref([])
@@ -922,8 +922,8 @@ const toggleRecording = async () => {
     }
     
     try {
-      newMessage.value = ''
-      adjustTextareaHeight()
+    newMessage.value = ''
+    adjustTextareaHeight()
       recognition.value.start()
     } catch (error) {
       console.error('Erreur démarrage reconnaissance:', error)
@@ -1634,7 +1634,7 @@ async function handleOptionSelected(value) {
   /* Ajuster la zone principale pour compenser la navbar fixe */
   .flex-1.flex.flex-col {
     margin-top: 70px;
-    height: calc(100dvh - 70px);
+    height: calc(100vh - 70px);
   }
 
   .sidebar {
@@ -1648,8 +1648,8 @@ async function handleOptionSelected(value) {
   }
 
   .messages-container {
-    height: calc(100dvh - 180px);
-    max-height: calc(100dvh - 180px);
+    height: calc(100vh - 180px);
+    max-height: calc(100vh - 180px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding-top: 1rem;
@@ -1675,11 +1675,6 @@ async function handleOptionSelected(value) {
     -webkit-appearance: none;
     appearance: none;
     border-radius: 12px;
-  }
-  html, body, #__nuxt, #__layout {
-    height: 100dvh;
-    overflow: hidden;
-    overscroll-behavior: none;
   }
 
   /* Amélioration des boutons tactiles */

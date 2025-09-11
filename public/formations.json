@@ -3,7 +3,7 @@
     {
       "id": "violences-sexuelles",
       "title": "Comprendre et prévenir les violences sexuelles",
-      "description": "Apprenez à identifier, prévenir et agir face aux violences sexuelles dans votre communauté.",
+      "description": "Apprenez à identifier, prévenir et agir face aux violences sexuelles dans votre communauté. Cette formation propose des explications claires, des exemples concrets tirés du contexte camerounais et d’Afrique francophone, des messages de prévention et des pistes d’action immédiates pour protéger et accompagner les victimes.",
       "icon": "🛡️",
       "category": "Protection",
       "duration": "15 min",
@@ -11,32 +11,51 @@
         {
           "id": "introduction",
           "title": "Introduction",
-          "content": "Les violences sexuelles sont un fléau qui touche de nombreuses personnes au Cameroun et en Afrique. Comprendre ce phénomène est le premier pas vers la prévention et la protection. Ces violences peuvent prendre différentes formes et toucher toute personne, quel que soit l'âge, le genre ou le statut social."
+          "content": "Les violences sexuelles sont un fléau qui touche de nombreuses personnes au Cameroun et en Afrique. Comprendre ce phénomène est le premier pas vers la prévention et la protection. Elles peuvent se produire dans la famille, au sein du couple, à l’école, au travail, en ligne, dans un lieu de culte ou dans l’espace public. Elles détruisent l’estime de soi, la santé physique et psychologique, et créent un silence de peur et de honte.\n\nParler, s’informer et connaître ses droits sont des armes puissantes. Cette formation vous aide à reconnaître les formes de violence, à savoir réagir et à orienter vers les services adaptés (médicaux, juridiques, psychosociaux)."
         },
         {
           "id": "definition",
           "title": "Qu'est-ce que les violences sexuelles ?",
-          "content": "Les violences sexuelles incluent :\n• Le viol et l'agression sexuelle\n• Le harcèlement sexuel\n• L'exploitation sexuelle\n• Les attouchements non consentis\n• Le cyber-harcèlement sexuel\n\nCes actes sont toujours une violation des droits fondamentaux de la personne."
+          "content": "Les violences sexuelles incluent :\n• Le viol et l’agression sexuelle (avec ou sans pénétration)\n• Les attouchements non consentis\n• Le harcèlement sexuel (gestes, paroles, demandes insistantes)\n• L’exploitation sexuelle (échanges forcés, contraintes pour obtenir un avantage)\n• Le cyber-harcèlement sexuel (menaces, diffusion d’images intimes sans consentement)\n\nElles peuvent impliquer la contrainte physique, la pression psychologique, le chantage économique ou social. Ces actes sont toujours une violation des droits fondamentaux de la personne et ne sont jamais la faute de la victime."
         },
         {
           "id": "signes",
           "title": "Comment identifier les signes ?",
-          "content": "Signes chez la victime :\n• Changement soudain de comportement\n• Isolement social\n• Troubles du sommeil ou de l'appétit\n• Anxiété ou dépression\n• Évitement de certaines personnes ou lieux\n\nSignes chez l'agresseur :\n• Comportement contrôlant\n• Manque de respect des limites\n• Commentaires inappropriés\n• Isolement de la victime"
+          "content": "Signes chez la victime :\n• Changement soudain de comportement, tristesse, irritabilité\n• Isolement social, baisse du rendement scolaire ou professionnel\n• Troubles du sommeil, cauchemars, perte d’appétit\n• Anxiété, dépression, crises de panique\n• Évitement de certaines personnes, lieux ou activités\n\nSignes chez l’agresseur :\n• Comportement contrôlant, jalousie excessive\n• Manque de respect des limites et du consentement\n• Commentaires ou gestes inappropriés, sexualisation des interactions\n• Tentatives d’isoler la victime de ses proches"
         },
         {
           "id": "prevention",
           "title": "Comment prévenir ?",
-          "content": "Actions de prévention :\n• Éduquer sur le consentement dès le plus jeune âge\n• Promouvoir l'égalité des genres\n• Créer des espaces sûrs de dialogue\n• Former les professionnels (enseignants, soignants)\n• Sensibiliser les communautés\n• Encourager la dénonciation des comportements inappropriés"
+          "content": "Actions de prévention :\n• Éduquer au consentement dès le plus jeune âge (\"un non est un non\", \"on ne force pas\")\n• Promouvoir l’égalité des genres et déconstruire les stéréotypes\n• Créer des espaces sûrs de dialogue (famille, école, lieux de culte)\n• Former les professionnels (enseignants, soignants, forces de l’ordre) à l’accueil des victimes\n• Sensibiliser dans les communautés (leaders traditionnels et religieux)\n• Encourager le signalement des comportements inappropriés et protéger les témoins"
         },
         {
           "id": "conseils-pratiques",
           "title": "Conseils pratiques",
-          "content": "Si vous êtes victime :\n• Parlez à une personne de confiance\n• Conservez les preuves médicales et juridiques\n• Contactez un centre médical pour un examen\n• Rapprochez-vous d'un service juridique\n• Utilisez les services de soutien psychologique\n• Signalez aux autorités si vous vous sentez prêt·e\n\nSi vous êtes témoin :\n• Intervenez de manière sécurisée\n• Soutenez la victime\n• Signalez aux autorités compétentes"
+          "content": "Si vous êtes victime :\n• Parlez à une personne de confiance (ami·e, parent, professionnel)\n• Évitez de vous laver si vous envisagez une plainte (préserver les preuves)\n• Contactez rapidement un centre médical pour un examen et une prophylaxie si nécessaire\n• Rapprochez-vous d’un service juridique (gratuit si possible) pour connaître vos droits\n• Sollicitez un soutien psychologique (écoute, accompagnement)\n• Signalez aux autorités si vous vous sentez prêt·e, ou demandez un accompagnement\n\nSi vous êtes témoin :\n• Intervenez sans vous mettre en danger (dissuasion, alerte)\n• Soutenez la victime sans jugement, croyez sa parole\n• Signalez aux autorités compétentes et orientez vers les services"
+        },
+        {
+          "id": "cadre-legal",
+          "title": "Cadre légal (repères)",
+          "content": "Le droit camerounais et les engagements internationaux protègent l’intégrité physique et morale. La contrainte, le harcèlement et l’exploitation sexuels sont répréhensibles. Les victimes ont droit à la protection, à l’assistance, à l’information et à la réparation. Renseignez-vous auprès d’un·e juriste local·e pour les procédures, délais et dispositifs de protection applicables."
+        },
+        {
+          "id": "exemples-contextualises",
+          "title": "Exemples contextualisés",
+          "content": "• École: un enseignant exige des faveurs contre des notes (harcèlement/chantage)\n• Lieu de culte: un responsable impose des contacts inappropriés (abus de pouvoir)\n• Réseaux sociaux: menaces de publier des photos intimes (sextorsion)\n• Transport: attouchements dans un bus bondé (agression)\n\nDans tous les cas, la responsabilité est celle de l’auteur, jamais de la victime."
+        },
+        {
+          "id": "quiz",
+          "title": "Quiz rapide",
+          "content": "Vérifiez vos acquis en répondant aux questions dans la page (onglet Questions de révision).",
+          "quiz": [
+            { "question": "Le consentement signifie…", "choices": ["Un accord libre et éclairé", "Un silence", "Un devoir conjugal"], "answer": 0 },
+            { "question": "Partager des images intimes sans accord est…", "choices": ["Toléré en ligne", "Un cyber-harcèlement", "Une blague"], "answer": 1 }
+          ]
         },
         {
           "id": "ressources",
           "title": "Ressources et aide",
-          "content": "Services disponibles :\n• Centres médicaux pour examens et soins\n• Services juridiques pour vos droits\n• Soutien psychologique spécialisé\n• Hébergement d'urgence si nécessaire\n• Lignes d'écoute anonymes\n• Groupes de soutien\n\nNuméros d'urgence :\n• Police : 117\n• Gendarmerie : 117\n• Services médicaux d'urgence"
+          "content": "Services disponibles :\n• Centres médicaux pour examens, soins et prophylaxies\n• Services juridiques (conseil, dépôt de plainte)\n• Soutien psychologique (individuel, groupes de parole)\n• Hébergement d’urgence si nécessaire\n• Lignes d’écoute anonymes et gratuites\n• Organisations de défense des droits des femmes et des enfants\n\nNuméros d’urgence (vérifiez selon votre localité) :\n• Police / Gendarmerie : 117\n• Services médicaux d’urgence\n• Référents locaux (associations, ONG)"
         },
         {
           "id": "message-espoir",
@@ -48,7 +67,7 @@
     {
       "id": "violences-domestiques",
       "title": "Reconnaître et agir contre les violences conjugales",
-      "description": "Identifiez les signes de violence domestique et apprenez les actions à entreprendre pour protéger les victimes.",
+      "description": "Identifiez les signes de violence domestique (physique, psychologique, économique, sexuelle), comprenez le cycle de la violence et apprenez les actions concrètes pour protéger les victimes, y compris les enfants témoins. Des conseils pratiques, des ressources locales et des repères juridiques vous guident pas à pas.",
       "icon": "🏠",
       "category": "Protection",
       "duration": "20 min",
@@ -56,17 +75,36 @@
         {
           "id": "introduction",
           "title": "Introduction",
-          "content": "Les violences domestiques détruisent des vies et des familles. Reconnaître les signes et savoir comment réagir peut sauver des vies. Ces violences peuvent être physiques, psychologiques, économiques ou sexuelles, et elles s'aggravent souvent avec le temps si rien n'est fait."
+          "content": "Les violences domestiques détruisent des vies et des familles. Elles ne se limitent pas aux coups : elles incluent l’humiliation, l’isolement, le contrôle financier, la menace, le viol conjugal. Reconnaître les signes et savoir comment réagir peut sauver des vies. Ces violences s’aggravent souvent avec le temps si rien n’est fait. Il est possible d’en sortir avec de l’aide, un plan de sécurité et un réseau de soutien."
         },
         {
           "id": "types-violences",
           "title": "Types de violences domestiques",
-          "content": "Violences physiques :\n• Coups, gifles, coups de pied\n• Brûlures, strangulation\n• Utilisation d'armes\n\nViolences psychologiques :\n• Insultes, humiliations\n• Menaces, intimidation\n• Isolement social\n• Contrôle des activités\n\nViolences économiques :\n• Contrôle des finances\n• Interdiction de travailler\n• Privation de ressources\n\nViolences sexuelles :\n• Relations forcées\n• Contrôle de la sexualité"
+          "content": "Violences physiques :\n• Coups, gifles, coups de pied\n• Brûlures, strangulation, séquestration\n• Utilisation d’objets/armes\n\nViolences psychologiques :\n• Insultes, humiliations, menaces\n• Isolement social, surveillance, jalousie\n• Dévalorisation, chantage émotionnel\n\nViolences économiques :\n• Contrôle total des finances\n• Interdiction de travailler ou d’étudier\n• Confiscation de documents, privation de ressources\n\nViolences sexuelles :\n• Relations imposées, viol conjugal\n• Contrôle de la sexualité et des grossesses"
         },
         {
           "id": "cycle-violence",
           "title": "Le cycle de la violence",
-          "content": "Phase 1 - Tension :\n• Accumulation de stress\n• Comportement contrôlant\n• Menaces verbales\n\nPhase 2 - Explosion :\n• Violence physique ou psychologique\n• Perte de contrôle\n• Actes violents\n\nPhase 3 - Réconciliation :\n• Excuses et promesses\n• Comportement attentionné\n• Minimisation des faits\n\nCe cycle se répète et s'intensifie avec le temps."
+          "content": "Phase 1 — Tension :\n• Accumulation de stress, irritabilité\n• Contrôle du téléphone, des déplacements\n• Menaces verbales, chantage\n\nPhase 2 — Explosion :\n• Agressions physiques/verbales\n• Destructions d’objets, violences sexuelles\n\nPhase 3 — Réconciliation (\"lune de miel\") :\n• Excuses, cadeaux, promesses de changement\n• Minimisation des faits\n\nLe cycle se répète et s’intensifie. Le reconnaître aide à se protéger et à demander de l’aide."
+        },
+        {
+          "id": "plan-securite-detail",
+          "title": "Plan de sécurité (détails)",
+          "content": "Préparation :\n• Confiez des copies de documents à une personne sûre\n• Cachez un petit téléphone et un peu d’argent\n• Préparez un sac discret (vêtements, clés, médicaments)\n• Identifiez des voisins/lieux de refuge\n\nEn cas d’urgence :\n• Appelez le 117 si possible\n• Utilisez un mot de code avec un proche\n• Fuyez vers un lieu sûr (voisin, famille, commissariat)"
+        },
+        {
+          "id": "cadre-legal-dom",
+          "title": "Repères juridiques et protections",
+          "content": "La loi protège contre les violences au sein du couple et de la famille. Vous pouvez demander des mesures d’éloignement, porter plainte, solliciter une protection pour les enfants, et bénéficier d’assistance juridique. Renseignez-vous localement sur les procédures, associations d’aide et dispositifs d’urgence disponibles."
+        },
+        {
+          "id": "quiz-dom",
+          "title": "Quiz rapide",
+          "content": "Testez vos connaissances :",
+          "quiz": [
+            { "question": "La violence domestique, c’est uniquement les coups ?", "choices": ["Oui", "Non, c’est plus large"], "answer": 1 },
+            { "question": "Le cycle de la violence comprend une phase de…", "choices": ["Réconciliation", "Vacances"], "answer": 0 }
+          ]
         },
         {
           "id": "impact-enfants",
@@ -81,7 +119,7 @@
         {
           "id": "aide-disponible",
           "title": "Aide disponible",
-          "content": "Services d'urgence :\n• Police et gendarmerie : 117\n• Services médicaux d'urgence\n• Hébergement d'urgence\n\nServices de soutien :\n• Assistance juridique\n• Soutien psychologique\n• Aide sociale\n• Groupes de soutien\n• Lignes d'écoute\n\nRessources PADUPAC :\n• Carte des services disponibles\n• Accompagnement personnalisé"
+          "content": "Services d’urgence :\n• Police / Gendarmerie : 117\n• Services médicaux d’urgence\n• Hébergement d’urgence et refuges\n\nServices de soutien :\n• Assistance juridique (aidé·e pour les démarches)\n• Soutien psychologique (écoute, thérapie)\n• Aide sociale (logement, aides)\n• Groupes de parole et de soutien\n• Lignes d’écoute gratuites et anonymes\n\nRessources PADUPAC :\n• Carte des services disponibles\n• Orientation et accompagnement personnalisé"
         },
         {
           "id": "message-espoir",

@@ -3,6 +3,19 @@ const navIsOpen = useState('navIsOpen', () => false)
 const lastScrollY = ref(0)
 const isVisible = ref(true)
 
+// Verrouillage du scroll de la page et gestion clavier (Escape) quand le menu est ouvert
+function lockBodyScroll(locked: boolean): void {
+    if (process.client) {
+        document.body.style.overflow = locked ? 'hidden' : ''
+    }
+}
+
+const handleKeydown = (event: KeyboardEvent) => {
+    if (event.key === 'Escape' && navIsOpen.value) {
+        navIsOpen.value = false
+    }
+}
+
 function toggleNav(event: MouseEvent): void {
     event.preventDefault()
     navIsOpen.value = !navIsOpen.value
@@ -33,11 +46,18 @@ const debouncedScroll = () => {
 
 onMounted(() => {
     window.addEventListener('scroll', debouncedScroll)
+    window.addEventListener('keydown', handleKeydown)
+})
+
+watch(navIsOpen, (isOpen) => {
+    lockBodyScroll(isOpen)
 })
 
 onUnmounted(() => {
     window.removeEventListener('scroll', debouncedScroll)
     clearTimeout(scrollTimeout)
+    window.removeEventListener('keydown', handleKeydown)
+    lockBodyScroll(false)
 })
 
 const navLinks = [
@@ -86,30 +106,56 @@ const navLinks = [
                 </div>
 
                 <!-- Navigation mobile -->
-                <div 
-                    class="fixed inset-0 bg-zinc-800/40 dark:bg-zinc-900/60 lg:hidden transition-opacity duration-300"
-                    :class="navIsOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'"
-                    @click="navIsOpen = false"
-                ></div>
-
-                <div 
-                    class="fixed top-0 bottom-0 left-0 w-[280px] lg:w-auto lg:static bg-white lg:bg-transparent dark:bg-zinc-900 dark:text-white
-                    p-6 lg:p-0 transition-transform duration-300 transform lg:transform-none shadow-lg lg:shadow-none"
-                    :class="navIsOpen ? 'translate-x-0' : '-translate-x-full'"
-                >
-                    <!-- Bouton fermer menu mobile -->
-                    <button 
+                <Teleport to="body">
+                    <div 
+                        class="fixed inset-0 bg-black/60 lg:hidden transition-opacity duration-300 z-[9998]"
+                        :class="navIsOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'"
                         @click="navIsOpen = false"
-                        class="absolute top-5 right-5 w-8 h-8 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white lg:hidden"
-                    >
-                        <span class="sr-only">Fermer menu</span>
-                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                    ></div>
 
-                    <ul class="flex flex-col lg:flex-row items-start lg:items-center gap-4 lg:gap-8 mt-8 lg:mt-0">
-                        <AtomsNavLink v-for="navItem in navLinks" :key="navItem.href" :href="navItem.href" :text="navItem.text" @click="navIsOpen = false" />
+                    <div 
+                        class="fixed top-0 bottom-0 left-0 w-[300px] bg-white dark:bg-zinc-900 dark:text-white p-6 transition-transform duration-300 transform shadow-2xl z-[9999] lg:hidden"
+                        :class="navIsOpen ? 'translate-x-0' : '-translate-x-full'"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="Menu principal"
+                        tabindex="-1"
+                    >
+                        <!-- Bouton fermer menu mobile -->
+                        <button 
+                            @click="navIsOpen = false"
+                            class="absolute top-5 right-5 w-8 h-8 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                        >
+                            <span class="sr-only">Fermer menu</span>
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+
+                        <div class="mt-2 mb-4">
+                            <NuxtLink to="/" class="flex items-center gap-2">
+                                <img src="/ico.png" width="32" alt="avatar" class="w-8 h-8 rounded-full border border-white/60 dark:border-zinc-700 object-cover">
+                                <span class="text-base font-semibold text-gray-800 dark:text-white">ChildSafe</span>
+                            </NuxtLink>
+                        </div>
+
+                        <ul class="flex flex-col items-start gap-3 mt-6">
+                            <AtomsNavLink v-for="navItem in navLinks" :key="navItem.href" :href="navItem.href" :text="navItem.text" @click="navIsOpen = false" />
+                        </ul>
+
+                        <!-- CTA mobile -->
+                        <div class="mt-6">
+                            <AtomsLinkBtn href="/chat" variant="primary" class="w-full justify-center">
+                                Discutez avec nous!
+                            </AtomsLinkBtn>
+                        </div>
+                    </div>
+                </Teleport>
+
+                <!-- Navigation desktop -->
+                <div class="hidden lg:block">
+                    <ul class="flex flex-row items-center gap-8">
+                        <AtomsNavLink v-for="navItem in navLinks" :key="navItem.href" :href="navItem.href" :text="navItem.text" />
                     </ul>
                 </div>
 
@@ -125,7 +171,8 @@ const navLinks = [
                     <button 
                         @click="toggleNav" 
                         class="flex lg:hidden p-2.5 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800 focus:outline-none"
-                        aria-label="Toggle mobile menu"
+                        aria-label="Ouvrir le menu mobile"
+                        :aria-expanded="navIsOpen"
                     >
                         <div class="w-6 h-5 relative flex flex-col justify-between">
                             <span 

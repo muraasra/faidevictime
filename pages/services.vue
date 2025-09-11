@@ -61,6 +61,50 @@
                   <p class="text-gray-600 dark:text-gray-400">Répondant:</p>
                   <p class="font-medium text-gray-800 dark:text-white">{{ selectedService.nom_repondant }}</p>
                 </div>
+                <div v-if="selectedService.fonction_repondant">
+                  <p class="text-gray-600 dark:text-gray-400">Fonction:</p>
+                  <p class="font-medium text-gray-800 dark:text-white">{{ selectedService.fonction_repondant }}</p>
+                </div>
+                <div v-if="selectedService.email">
+                  <p class="text-gray-600 dark:text-gray-400">Email:</p>
+                  <a :href="`mailto:${selectedService.email}`" class="font-medium text-emerald-700 dark:text-emerald-300 hover:underline">{{ selectedService.email }}</a>
+                </div>
+                <div v-if="selectedService.site_web">
+                  <p class="text-gray-600 dark:text-gray-400">Site web:</p>
+                  <a :href="formatWebsiteUrl(selectedService.site_web || '')" target="_blank" rel="noopener" class="font-medium text-emerald-700 dark:text-emerald-300 hover:underline">Visiter</a>
+                </div>
+                <div v-if="selectedService.region">
+                  <p class="text-gray-600 dark:text-gray-400">Région:</p>
+                  <p class="font-medium text-gray-800 dark:text-white">{{ selectedService.region }}</p>
+                </div>
+                <div v-if="selectedService.arrondissement">
+                  <p class="text-gray-600 dark:text-gray-400">Arrondissement:</p>
+                  <p class="font-medium text-gray-800 dark:text-white">{{ selectedService.arrondissement }}</p>
+                </div>
+              </div>
+
+              <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div v-if="selectedService.langues_parlees?.length">
+                  <p class="text-gray-600 dark:text-gray-400 mb-1">Langues parlées:</p>
+                  <div class="flex flex-wrap gap-2">
+                    <span v-for="lang in selectedService.langues_parlees" :key="lang" class="px-2 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">{{ lang }}</span>
+                  </div>
+                </div>
+                <div v-if="selectedService.jours_ouverture?.length || selectedService.heures_ouverture">
+                  <p class="text-gray-600 dark:text-gray-400 mb-1">Horaires:</p>
+                  <div class="text-sm text-gray-800 dark:text-gray-200">
+                    <div v-if="selectedService.jours_ouverture?.length" class="mb-1">
+                      {{ selectedService.jours_ouverture.join(', ') }}
+                    </div>
+                    <div v-if="selectedService.heures_ouverture">
+                      Heures: {{ selectedService.heures_ouverture }}
+                    </div>
+                  </div>
+                </div>
+                <div v-if="selectedService.gratuit !== undefined && selectedService.gratuit !== null">
+                  <p class="text-gray-600 dark:text-gray-400">Tarification:</p>
+                  <p class="font-medium text-gray-800 dark:text-white">{{ typeof selectedService.gratuit === 'string' ? selectedService.gratuit : (selectedService.gratuit ? 'Gratuit' : 'Payant') }}</p>
+                </div>
               </div>
 
               <div class="mt-4 flex gap-3">
@@ -225,6 +269,15 @@ interface Service {
   is_active: boolean;
   telephone_repondant: string;
   nom_repondant: string;
+  fonction_repondant?: string | null;
+  email?: string | null;
+  site_web?: string | null;
+  langues_parlees?: string[] | null;
+  jours_ouverture?: string[] | null;
+  heures_ouverture?: string | null;
+  gratuit?: string | boolean | null;
+  region?: string | null;
+  arrondissement?: string | null;
   distance?: number;
 }
 
@@ -241,6 +294,8 @@ const categories = [
 const services = ref<Service[]>([])
 let map: any
 let markers: any[] = []
+const serviceIdToMarker = new Map<number, any>()
+let clusterGroupRef: any = null
 const auth = useAuthStore()
 
 // Modifier le computed filteredServices
@@ -293,11 +348,7 @@ watch([currentCategory, searchQuery], () => {
     
     if (service) {
       const isVisible = filteredServices.value.some(s => s.id === service.id)
-      if (isVisible) {
-        marker.setStyle({ opacity: 1, fillOpacity: 0.8 })
-      } else {
-        marker.setStyle({ opacity: 0.3, fillOpacity: 0.3 })
-      }
+      marker.setOpacity(isVisible ? 1 : 0.3)
     }
   })
 })
@@ -311,7 +362,18 @@ function selectService(service: Service) {
   if (map && service.latitude && service.longitude) {
     const lat = parseFloat(service.latitude as string)
     const lng = parseFloat(service.longitude as string)
-    map.setView([lat, lng], 13)
+    const targetLatLng = [lat, lng] as [number, number]
+
+    const marker = serviceIdToMarker.get(service.id)
+    if (marker && clusterGroupRef && typeof clusterGroupRef.zoomToShowLayer === 'function') {
+      clusterGroupRef.zoomToShowLayer(marker, () => {
+        map.setView(targetLatLng, 16)
+        try { marker.openTooltip && marker.openTooltip() } catch {}
+      })
+    } else {
+      map.setView(targetLatLng, 16)
+      try { marker && marker.openTooltip && marker.openTooltip() } catch {}
+    }
 
     // Calculer et ajouter la distance si la position de l'utilisateur est disponible
     if (userPosition.value) {
@@ -410,6 +472,14 @@ function formatDistance(distance: number): string {
     return `${Math.round(distance * 1000)} m`
   }
   return `${Math.round(distance)} km`
+}
+
+function formatWebsiteUrl(url: string): string {
+  if (!url) return '#'
+  if (!/^https?:\/\//i.test(url)) {
+    return `https://${url}`
+  }
+  return url
 }
 
 const departements = {
@@ -558,6 +628,10 @@ onMounted(async () => {
     const L = await import('leaflet')
     // Import du CSS de Leaflet
     await import('leaflet/dist/leaflet.css')
+    // Import MarkerCluster plugin et CSS (side effects)
+    await import('leaflet.markercluster')
+    await import('leaflet.markercluster/dist/MarkerCluster.css')
+    await import('leaflet.markercluster/dist/MarkerCluster.Default.css')
     
     // // Vérification du token
     // if (!auth.token) {
@@ -711,8 +785,15 @@ onMounted(async () => {
       return
     }
 
-    // Création d'un groupe de marqueurs pour une meilleure performance
-    const markersGroup = L.default.featureGroup()
+    // Création d'un groupe de clusters pour réduire le fouillis de marqueurs
+    const clusterGroup = (L as any).default.markerClusterGroup({
+      showCoverageOnHover: false,
+      spiderfyOnMaxZoom: true,
+      disableClusteringAtZoom: 14,
+      chunkedLoading: true,
+      maxClusterRadius: 60
+    })
+    clusterGroupRef = clusterGroup
 
     // Ajout des marqueurs pour chaque service
     services.value.forEach((service) => {
@@ -732,7 +813,7 @@ onMounted(async () => {
       const categorie = getServiceCategory(service)
       const { color, icon } = getMarkerColor(categorie)
 
-      // Créer un marqueur personnalisé avec icône
+      // Créer un marqueur personnalisé épuré (icône seulement, nom via tooltip)
       const marker = L.default.divIcon({
         className: 'custom-marker',
         html: `
@@ -740,7 +821,6 @@ onMounted(async () => {
             <div class="marker-icon" style="background-color: ${color}">
               <i class="${icon}"></i>
             </div>
-            <div class="marker-label">${service.nom_structure}</div>
           </div>
         `,
         iconSize: [40, 60],
@@ -752,7 +832,8 @@ onMounted(async () => {
 
       markerInstance.bindTooltip(service.nom_structure, {
         permanent: false,
-        direction: 'top',
+        direction: 'bottom',
+        offset: [0, 6],
         className: 'custom-tooltip'
       })
 
@@ -760,16 +841,65 @@ onMounted(async () => {
         selectService(service)
       })
 
-      markersGroup.addLayer(markerInstance)
+      clusterGroup.addLayer(markerInstance)
       markers.push(markerInstance)
+      serviceIdToMarker.set(service.id, markerInstance)
     })
 
-    // Ajout du groupe de marqueurs à la carte
-    markersGroup.addTo(map)
+    // Ajout du groupe de clusters à la carte
+    clusterGroup.addTo(map)
+
+    // Gestion anti-chevauchement des noms: on n'affiche qu'un sous-ensemble non superposé
+    function updateDeclutteredLabels() {
+      if (!map) return
+      const MIN_PIXEL_DISTANCE = 50
+      const centerPt = map.latLngToLayerPoint(map.getCenter())
+
+      // Candidats: marqueurs réellement visibles (non clusterisés)
+      const visibleMarkers = markers.filter(m => map.hasLayer(m))
+
+      // Trier par proximité du centre pour prioriser un service lorsqu'ils sont proches
+      const sorted = visibleMarkers
+        .map(m => ({
+          m,
+          p: map.latLngToLayerPoint(m.getLatLng()),
+          d2: 0
+        }))
+        .map(x => ({ ...x, d2: Math.pow(x.p.x - centerPt.x, 2) + Math.pow(x.p.y - centerPt.y, 2) }))
+        .sort((a, b) => a.d2 - b.d2)
+
+      const selected: any[] = []
+      sorted.forEach(({ m, p }) => {
+        const tooClose = selected.some(s => {
+          const dx = s.p.x - p.x
+          const dy = s.p.y - p.y
+          return Math.sqrt(dx*dx + dy*dy) < MIN_PIXEL_DISTANCE
+        })
+        if (!tooClose) {
+          selected.push({ m, p })
+        }
+      })
+
+      const selectedSet = new Set(selected.map(s => s.m))
+
+      // Ouvrir les tooltips sélectionnés, fermer les autres
+      visibleMarkers.forEach(m => {
+        try {
+          if (selectedSet.has(m)) {
+            m.openTooltip && m.openTooltip()
+          } else {
+            m.closeTooltip && m.closeTooltip()
+          }
+        } catch {}
+      })
+    }
+
+    map.on('zoomend moveend', updateDeclutteredLabels)
+    updateDeclutteredLabels()
 
     // Ajuster la vue pour montrer tous les marqueurs
     if (markers.length > 0) {
-      map.fitBounds(markersGroup.getBounds(), {
+      map.fitBounds(clusterGroup.getBounds(), {
         padding: [50, 50],
         maxZoom: 12
       })
@@ -821,20 +951,22 @@ const openChat = () => {
 }
 
 .custom-tooltip {
-  background-color: rgba(255, 255, 255, 0.95);
+  background: transparent;
   border: none;
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  white-space: nowrap;
-  margin-top: 10px;
+  border-radius: 0;
+  padding: 0;
+  font-size: 0.70rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: #111827;
+  text-align: center;
+  white-space: normal;
+  max-width: 140px;
 }
 
 .dark .custom-tooltip {
-  background-color: rgba(24, 24, 27, 0.95);
-  color: #fff;
+  background: transparent;
+  color: #e5e7eb;
 }
 
 .leaflet-control-zoom {
@@ -950,26 +1082,11 @@ const openChat = () => {
 }
 
 .marker-label {
-  position: relative;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  white-space: nowrap;
-  text-align: center;
-  max-width: 150px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  z-index: 1;
-  font-weight: 500;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  display: none;
 }
 
 .dark .marker-label {
-  background-color: rgba(31, 41, 55, 0.9);
-  color: white;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  display: none;
 }
 
 .marker-container:hover .marker-icon {

@@ -15,20 +15,21 @@ const isOpen = ref(false);
     <UIcon name="i-heroicons-bars-3" class="w-5 h-5" />
   </UButton>
 
-  <USlideover v-model="isOpen">
+  <USlideover 
+    v-model="isOpen"
+    :overlay="true"
+    :ui="{ overlay: 'bg-black/50', width: 'max-w-xs sm:max-w-sm' }"
+  >
     <div class="flex flex-col h-full bg-white dark:bg-zinc-900">
       <!-- En-tête -->
       <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-zinc-700">
-        <!-- <UButton
-          color="gray"
-          variant="ghost"
-          size="sm"
-          icon="i-heroicons-x-mark-20-solid"
-          class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-          square
-          padded
+        <button 
+          class="p-2 rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800"
+          aria-label="Fermer le menu"
           @click="isOpen = false"
-        /> -->
+        >
+          <UIcon name="i-heroicons-x-mark" class="w-5 h-5" />
+        </button>
       </div>
 
       <!-- Navigation -->
