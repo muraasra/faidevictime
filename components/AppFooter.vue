@@ -8,11 +8,11 @@
                             <img src="/ico.png" width="40" alt="avatar"
                                     class="w-10 h-10 rounded-full border-2 border-white dark:border-gray-400 object-cover">
                         </span>
-                        <span class="text-xl font-bold text-gray-700 dark:text-white">ChildSafe</span>
+                        <span class="text-xl font-bold text-gray-700 dark:text-white">SafePlace</span>
                     </NuxtLink>
 
                     <p class="text-gray-600 dark:text-gray-300 pt-6">
-                        ChildSafe est une plateforme d'assistance aux victimes qui offre un soutien psychologique, 
+                        SafePlace est une plateforme d'assistance aux victimes qui offre un soutien psychologique, 
                         des ressources juridiques et un accompagnement personnalisé pour vous aider à surmonter 
                         les difficultés et retrouver votre bien-être.
                     </p>

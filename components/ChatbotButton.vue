@@ -7,7 +7,7 @@
     <div class="chatbot-content">
       <div v-if="isFullscreen" class="chatbot-header">
         <div class="header-content">
-          <h3 class="text-xl font-semibold text-white mb-1">Bienvenue sur ChildSafe</h3>
+          <h3 class="text-xl font-semibold text-white mb-1">Bienvenue sur SafePlace</h3>
           <p class="text-green-100 text-sm">Notre assistant virtuel est là pour vous accompagner et vous soutenir dans vos démarches</p>
           <p class="text-green-100 text-xs mt-1">Vous n'êtes pas seul(e), nous sommes là pour vous aider</p>
         </div>
