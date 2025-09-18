@@ -221,7 +221,7 @@
         <div class="fixed inset-0 bg-black bg-opacity-60" @click="showMobileMenu = false"></div>
         <div class="relative w-80 bg-white dark:bg-gray-800 shadow-2xl max-w-[85vw] flex flex-col">
           <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-            <h1 class="text-lg font-bold text-gray-800 dark:text-gray-100">Soutien Moral</h1>
+            <h1 class="text-lg font-bold text-gray-800 dark:text-gray-100">Avina</h1>
             <button @click="showMobileMenu = false" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500">
               <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -590,8 +590,8 @@ import MarkdownMessage from '~/components/chat/MarkdownMessage.vue'
 definePageMeta({ layout: 'chat' })
 
 // Configuration
- //const API_BASE = 'https://wilfriedtayou.pythonanywhere.com/'
-const API_BASE = 'http://localhost:8001/'
+ const API_BASE = 'https://wilfriedtayou.pythonanywhere.com/'
+//const API_BASE = 'http://localhost:8001/'
 
 // État réactif
 const conversations = ref([])
