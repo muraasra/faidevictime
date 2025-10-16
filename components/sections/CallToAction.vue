@@ -18,16 +18,16 @@
                 </div>
                 <div class="mx-auto text-center max-w-xl md:max-w-2xl relative">
                     <h2 class="text-gray-800 pt-4 dark:text-white font-bold text-4xl md:text-5xl lg:text-6x">
-                        Agir <span
+                        Agissons <span
                             class="text-transparent bg-clip-text bg-gradient-to-br from-primary to-[#8cd66a]">ensemble </span>
                         pour un avenir sans violence
                     </h2>
                     <p class="text-gray-600 dark:text-gray-300 pt-8 mx-auto max-w-xl">
-                        Rejoignez notre mission pour protéger les droits et la voix de chacun, sans distinction. Contactez-nous pour un accompagnement les violence.
+                        Rejoignez notre mission pour protéger les droits et la voix de chacun, sans distinction. Contactez-nous pour un accompagnement des victimes de violences.
                     </p>
                     <div class="mx-auto max-w-md sm:max-w-xl pt-10">
                         <form action="" class="flex items-center relative gap-x-2">
-                            <input type="email" placeholder="johndoe@gmail.com"
+                            <input type="email" placeholder="wilfriedtayou6@gmail.com"
                                 class="outline-none border-2 border-transparent focus:border-primary bg-body text-gray-600 dark:text-gray-200 rounded-3xl px-6 py-3 w-full">
                             <div
                                 class="sm:inline-flex sm:min-w-max absolute sm:relative top-0.5 right-0.5 sm:top-0 sm:right-0">

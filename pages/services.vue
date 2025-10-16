@@ -1,5 +1,35 @@
 <template>
   <div class="service-page py-12 px-6 md:px-12">
+    <!-- Popup d'introduction -->
+    <div v-if="showIntroPopup" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full mx-4 p-6" @click.stop>
+        <div class="text-center">
+          <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-3">
+            Services d'assistance
+          </h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Cette page vous permet de localiser les services d'assistance aux personnes victimes de violences près de chez vous. 
+            Activez votre localisation pour une aide plus pertinente et personnalisée.
+          </p>
+          <div class="flex gap-3">
+            <button @click="closeIntroPopup" class="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+              Continuer sans localisation
+            </button>
+            <button @click="activateLocation" :disabled="isActivatingLocation" class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+              <div v-if="isActivatingLocation" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <span>{{ isActivatingLocation ? 'Activation...' : 'Activer ma localisation' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="title">
       <AtomsContainer class="relative pt-12">
         <AtomsTitle texte="Services d'assistance aux personnes victimes" />
@@ -11,7 +41,10 @@
 
         <!-- Indicateur de chargement -->
         <div v-if="loading" class="text-center py-4">
-          <p class="text-gray-600 dark:text-gray-400">Chargement des services...</p>
+          <div class="inline-flex items-center gap-2">
+            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+            <p class="text-gray-600 dark:text-gray-400">Chargement des services...</p>
+          </div>
         </div>
 
         <div class="maincontainer flex flex-col lg:flex-row justify-between gap-8 mx-auto max-w-screen-xl mt-6">
@@ -147,8 +180,8 @@
                 </h2>
               </div>
               
-              <!-- Barre de recherche principale -->
-              <div class="flex flex-col gap-4 mb-6">
+              <!-- Barre de recherche et filtres -->
+              <div class="flex flex-col gap-4 mb-6 p-4">
                 <!-- Barre de recherche principale -->
                 <div class="relative">
                   <input
@@ -161,7 +194,18 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                      </span>
+                  </span>
+                </div>
+
+                <!-- Filtre par ville -->
+                <div class="relative">
+                  <select
+                    v-model="selectedCity"
+                    class="w-full px-4 py-3 rounded-lg border dark:border-zinc-600 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  >
+                    <option value="">Toutes les villes</option>
+                    <option v-for="city in availableCities" :key="city" :value="city">{{ city }}</option>
+                  </select>
                 </div>
 
                 <!-- Filtres rapides avec icônes -->
@@ -243,15 +287,22 @@ import { onMounted, ref, computed, nextTick, watch } from 'vue'
 import axios from 'axios' 
 import { useAuthStore } from '@/stores/auth'
 
+// Cache pour les services
+const CACHE_KEY = 'services_cache'
+const CACHE_DURATION = 30 * 60 * 1000 // 30 minutes
+
 const loading = ref(true)
 const error = ref<string | null>(null)
 const mapInitialized = ref(false)
 const selectedService = ref<Service | null>(null)
 const currentCategory = ref('')
 const searchQuery = ref('')
+const selectedCity = ref('')
 const userPosition = ref<[number, number] | null>(null)
 const userMarker = ref<any>(null)
 const userCircle = ref<any>(null)
+const showIntroPopup = ref(false)
+const isActivatingLocation = ref(false)
 
 interface Service {
   id: number;
@@ -298,6 +349,49 @@ const serviceIdToMarker = new Map<number, any>()
 let clusterGroupRef: any = null
 const auth = useAuthStore()
 
+// Fonctions de cache
+const getCachedServices = (): Service[] | null => {
+  try {
+    const cached = localStorage.getItem(CACHE_KEY)
+    if (!cached) return null
+    
+    const { data, timestamp } = JSON.parse(cached)
+    const now = Date.now()
+    
+    if (now - timestamp > CACHE_DURATION) {
+      localStorage.removeItem(CACHE_KEY)
+      return null
+    }
+    
+    return data
+  } catch {
+    return null
+  }
+}
+
+const setCachedServices = (data: Service[]) => {
+  try {
+    const cacheData = {
+      data,
+      timestamp: Date.now()
+    }
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData))
+  } catch {
+    // Ignore cache errors
+  }
+}
+
+// Liste des villes disponibles basée sur les arrondissements des services
+const availableCities = computed(() => {
+  const cities = new Set<string>()
+  services.value.forEach(service => {
+    if (service.arrondissement) {
+      cities.add(service.arrondissement)
+    }
+  })
+  return Array.from(cities).sort()
+})
+
 // Modifier le computed filteredServices
 const filteredServices = computed(() => {
   let filtered = services.value
@@ -305,6 +399,16 @@ const filteredServices = computed(() => {
   // Filtre par catégorie
   if (currentCategory.value) {
     filtered = filtered.filter(service => service[currentCategory.value as keyof Service])
+  }
+
+  // Filtre par ville
+  if (selectedCity.value) {
+    filtered = filtered.filter(service => {
+      if (!service.arrondissement) return false
+      
+      // Utiliser directement le champ arrondissement
+      return service.arrondissement.toLowerCase().includes(selectedCity.value.toLowerCase())
+    })
   }
 
   // Filtre par recherche
@@ -331,13 +435,8 @@ const sortedServices = computed(() => {
 })
 
 // Ajouter le watcher pour les filtres
-watch([currentCategory, searchQuery], () => {
+watch([currentCategory, searchQuery, selectedCity], () => {
   if (!map) return
-
-  // Réinitialiser la vue de la carte si aucun service n'est sélectionné
-  if (!selectedService.value) {
-    map.setView([7.3697, 12.3547], 6)
-  }
 
   // Mettre à jour la visibilité des marqueurs
   markers.forEach(marker => {
@@ -351,7 +450,48 @@ watch([currentCategory, searchQuery], () => {
       marker.setOpacity(isVisible ? 1 : 0.3)
     }
   })
+
+  // Centrer la carte sur les services filtrés
+  centerMapOnFilteredServices()
 })
+
+// Fonction pour centrer la carte sur les services filtrés
+async function centerMapOnFilteredServices() {
+  if (!map || !filteredServices.value.length) return
+
+  const visibleServices = filteredServices.value.filter(service => 
+    service.latitude && service.longitude
+  )
+
+  if (visibleServices.length === 0) return
+
+  if (visibleServices.length === 1) {
+    // Un seul service : centrer dessus avec zoom élevé
+    const service = visibleServices[0]
+    const lat = parseFloat(service.latitude as string)
+    const lng = parseFloat(service.longitude as string)
+    map.setView([lat, lng], 15)
+  } else {
+    // Plusieurs services : ajuster la vue pour tous les voir
+    const bounds = visibleServices.map(service => [
+      parseFloat(service.latitude as string),
+      parseFloat(service.longitude as string)
+    ])
+    
+    // Créer un groupe de marqueurs temporaire pour calculer les bounds
+    const L = await import('leaflet')
+    const group = L.default.featureGroup()
+    
+    bounds.forEach(([lat, lng]) => {
+      group.addLayer(L.default.marker([lat, lng]))
+    })
+    
+    map.fitBounds(group.getBounds(), {
+      padding: [50, 50],
+      maxZoom: 12
+    })
+  }
+}
 
 function filterByCategory(category: string) {
   currentCategory.value = currentCategory.value === category ? '' : category
@@ -535,6 +675,25 @@ function getDepartement(lat: number, lon: number): string {
   return "Non déterminé"
 }
 
+// Fonctions pour le popup d'introduction
+function closeIntroPopup() {
+  showIntroPopup.value = false
+}
+
+async function activateLocation() {
+  isActivatingLocation.value = true
+  try {
+    await getUserLocation()
+    closeIntroPopup()
+  } catch (error) {
+    console.error('Erreur lors de l\'activation de la localisation:', error)
+    // Garder le popup ouvert en cas d'erreur
+    alert('Impossible d\'obtenir votre position. Veuillez vérifier que vous avez autorisé l\'accès à la géolocalisation.')
+  } finally {
+    isActivatingLocation.value = false
+  }
+}
+
 // Modifier la fonction getUserLocation pour mettre à jour l'interface
 async function getUserLocation() {
   try {
@@ -594,7 +753,7 @@ async function getUserLocation() {
     }
   } catch (error) {
     console.error('Erreur de géolocalisation:', error)
-    alert('Impossible d\'obtenir votre position. Veuillez vérifier que vous avez autorisé l\'accès à la géolocalisation.')
+    throw error // Re-throw pour que activateLocation puisse gérer l'erreur
   }
 }
 
@@ -624,6 +783,43 @@ onMounted(async () => {
     loading.value = true
     error.value = null
 
+    // Afficher le popup à chaque actualisation de la page
+    showIntroPopup.value = true
+
+    // Essayer de charger depuis le cache d'abord
+    const cachedServices = getCachedServices()
+    if (cachedServices) {
+      services.value = cachedServices
+      console.log('Services chargés depuis le cache')
+    } else {
+      // Charger depuis l'API si pas de cache
+      const response = await axios.get('https://wilfriedtayou.pythonanywhere.com/api/question-transversale/', {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      if (!response.data) {
+        error.value = 'Pas de données reçues de l\'API'
+        return
+      }
+
+      // Filtrer les services actifs en utilisant uniquement le champ statut
+      services.value = Array.isArray(response.data) 
+        ? response.data.filter((s: Service) => s.statut)
+        : []
+
+      // Mettre en cache les services
+      setCachedServices(services.value)
+      console.log('Services chargés depuis l\'API et mis en cache')
+    }
+
+    if (services.value.length === 0) {
+      error.value = 'Aucun service actif trouvé'
+      return
+    }
+
     // Import Leaflet dynamiquement côté client
     const L = await import('leaflet')
     // Import du CSS de Leaflet
@@ -633,12 +829,6 @@ onMounted(async () => {
     await import('leaflet.markercluster/dist/MarkerCluster.css')
     await import('leaflet.markercluster/dist/MarkerCluster.Default.css')
     
-    // // Vérification du token
-    // if (!auth.token) {
-    //   error.value = 'Erreur d\'authentification. Veuillez vous reconnecter.'
-    //   return
-    // }
-
     // Attendre que le DOM soit prêt
     await nextTick()
     
@@ -761,30 +951,6 @@ onMounted(async () => {
     // Création et ajout de la couche de tuiles initiale
     createTileLayer(currentProviderIndex).addTo(map)
 
-    // Récupération des services actifs
-    const response = await axios.get('https://wilfriedtayou.pythonanywhere.com/api/question-transversale/', {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-        // 'Authorization': `Bearer ${auth.token}`
-      }
-    })
-    
-    if (!response.data) {
-      error.value = 'Pas de données reçues de l\'API'
-      return
-    }
-
-    // Filtrer les services actifs en utilisant uniquement le champ statut
-    services.value = Array.isArray(response.data) 
-      ? response.data.filter((s: Service) => s.statut)
-      : []
-
-    if (services.value.length === 0) {
-      error.value = 'Aucun service actif trouvé'
-      return
-    }
-
     // Création d'un groupe de clusters pour réduire le fouillis de marqueurs
     const clusterGroup = (L as any).default.markerClusterGroup({
       showCoverageOnHover: false,
@@ -849,54 +1015,6 @@ onMounted(async () => {
     // Ajout du groupe de clusters à la carte
     clusterGroup.addTo(map)
 
-    // Gestion anti-chevauchement des noms: on n'affiche qu'un sous-ensemble non superposé
-    function updateDeclutteredLabels() {
-      if (!map) return
-      const MIN_PIXEL_DISTANCE = 50
-      const centerPt = map.latLngToLayerPoint(map.getCenter())
-
-      // Candidats: marqueurs réellement visibles (non clusterisés)
-      const visibleMarkers = markers.filter(m => map.hasLayer(m))
-
-      // Trier par proximité du centre pour prioriser un service lorsqu'ils sont proches
-      const sorted = visibleMarkers
-        .map(m => ({
-          m,
-          p: map.latLngToLayerPoint(m.getLatLng()),
-          d2: 0
-        }))
-        .map(x => ({ ...x, d2: Math.pow(x.p.x - centerPt.x, 2) + Math.pow(x.p.y - centerPt.y, 2) }))
-        .sort((a, b) => a.d2 - b.d2)
-
-      const selected: any[] = []
-      sorted.forEach(({ m, p }) => {
-        const tooClose = selected.some(s => {
-          const dx = s.p.x - p.x
-          const dy = s.p.y - p.y
-          return Math.sqrt(dx*dx + dy*dy) < MIN_PIXEL_DISTANCE
-        })
-        if (!tooClose) {
-          selected.push({ m, p })
-        }
-      })
-
-      const selectedSet = new Set(selected.map(s => s.m))
-
-      // Ouvrir les tooltips sélectionnés, fermer les autres
-      visibleMarkers.forEach(m => {
-        try {
-          if (selectedSet.has(m)) {
-            m.openTooltip && m.openTooltip()
-          } else {
-            m.closeTooltip && m.closeTooltip()
-          }
-        } catch {}
-      })
-    }
-
-    map.on('zoomend moveend', updateDeclutteredLabels)
-    updateDeclutteredLabels()
-
     // Ajuster la vue pour montrer tous les marqueurs
     if (markers.length > 0) {
       map.fitBounds(clusterGroup.getBounds(), {
@@ -905,6 +1023,7 @@ onMounted(async () => {
       })
     }
 
+    // Les noms des services restent visibles en permanence via les tooltips permanents
     mapInitialized.value = true
   } catch (err) {
     console.error("Erreur lors du chargement des services:", err)
@@ -913,23 +1032,6 @@ onMounted(async () => {
     loading.value = false
   }
 })
-
-// Add new refs for chatbot
-const isFullscreen = ref(true)
-
-// Add lifecycle hook to handle fullscreen timing
-onMounted(() => {
-  // After 3 seconds, minimize the chatbot
-  setTimeout(() => {
-    isFullscreen.value = false
-  }, 3000)
-})
-
-// Add function to open chat
-const openChat = () => {
-  // Add your chat opening logic here
-  console.log('Opening chat...')
-}
 </script>
 
 <style>
@@ -1112,111 +1214,5 @@ const openChat = () => {
 
 .marker-icon {
   animation: markerPulse 2s infinite;
-}
-
-/* Chatbot Styles */
-.chatbot-container {
-  position: fixed;
-  z-index: 1000;
-  transition: all 0.5s ease-in-out;
-}
-
-.chatbot-fullscreen {
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.chatbot-minimized {
-  bottom: 2rem;
-  right: 2rem;
-  transform: scale(1);
-}
-
-.chatbot-content {
-  text-align: center;
-  padding: 2rem;
-  background: linear-gradient(135deg, #1a5f3c 0%, #2d8659 100%);
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  animation: fadeIn 0.5s ease-out;
-}
-
-.chatbot-header {
-  margin-bottom: 1.5rem;
-}
-
-.chatbot-button {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  background-color: white;
-  color: #1a5f3c;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  border: none;
-  cursor: pointer;
-}
-
-.chatbot-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-.chatbot-button:active {
-  transform: translateY(0);
-}
-
-/* Animation for fullscreen to minimized transition */
-@keyframes minimizeChat {
-  from {
-    transform: scale(1);
-    opacity: 1;
-  }
-  to {
-    transform: scale(0.8);
-    opacity: 0.9;
-  }
-}
-
-.chatbot-minimized .chatbot-content {
-  animation: minimizeChat 0.5s ease-out forwards;
-}
-
-/* Dark mode support */
-.dark .chatbot-button {
-  background-color: #1f2937;
-  color: white;
-}
-
-.dark .chatbot-button:hover {
-  background-color: #374151;
-}
-
-/* Responsive adjustments */
-@media (max-width: 640px) {
-  .chatbot-minimized {
-    bottom: 1rem;
-    right: 1rem;
-  }
-
-  .chatbot-content {
-    padding: 1rem;
-  }
-
-  .chatbot-button span {
-    display: none;
-  }
-
-  .chatbot-button {
-    padding: 0.75rem;
-  }
 }
 </style>

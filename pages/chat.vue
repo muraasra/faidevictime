@@ -476,7 +476,7 @@
               <div class="w-2 h-2 bg-red-500 rounded-full animate-bounce" style="animation-delay: 0.1s;"></div>
               <div class="w-2 h-2 bg-red-500 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
         </div>
-            <span>🎤 Enregistrement en cours... Parlez maintenant</span>
+            <span>🎤 Écoute en cours... Parlez maintenant (arrêt automatique après 4s de silence)</span>
           </div>
           <div v-if="autoSendOnFinal && isRecording" class="mt-1 text-xs text-green-600 dark:text-green-400 text-center md:text-left">
             ✓ Envoi automatique activé
@@ -696,19 +696,49 @@ const setupSpeechSynthesis = () => {
 const filteredVoices = computed(() => {
   if (!ttsVoices.value) return []
   let voices = ttsVoices.value
-  // Filtrer par langue FR en priorité pour l'UX
-  const french = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('fr'))
-  voices = french.length ? french : voices
-  // Filtrer par genre si possible (certains navigateurs n'exposent pas le genre)
+  
+  // Prioriser les voix françaises adaptées au Cameroun
+  const cameroonFrenchVoices = voices.filter(v => {
+    const name = (v.name || '').toLowerCase()
+    const lang = (v.lang || '').toLowerCase()
+    
+    // Voix françaises avec accent africain ou neutre
+    return lang.startsWith('fr') && (
+      name.includes('afrique') || 
+      name.includes('cameroon') || 
+      name.includes('cameroun') ||
+      name.includes('neutral') ||
+      name.includes('neutre') ||
+      name.includes('marie') ||
+      name.includes('paul') ||
+      name.includes('thomas') ||
+      name.includes('amy') ||
+      name.includes('julie') ||
+      name.includes('alex') ||
+      name.includes('daniel')
+    )
+  })
+  
+  // Si pas de voix spécifique Cameroun, prendre toutes les voix françaises
+  const frenchVoices = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('fr'))
+  
+  // Prioriser les voix Cameroun, sinon toutes les voix françaises
+  voices = cameroonFrenchVoices.length ? cameroonFrenchVoices : frenchVoices
+  
+  // Filtrer par genre si spécifié
   if (ttsGender.value !== 'auto') {
     voices = voices.filter(v => {
       const name = (v.name || '').toLowerCase()
       if (ttsGender.value === 'female') {
-        return name.includes('fem') || name.includes('woman') || name.includes('female') || name.includes('amy') || name.includes('julie')
+        return name.includes('fem') || name.includes('woman') || name.includes('female') || 
+               name.includes('amy') || name.includes('julie') || name.includes('marie')
       }
-      return name.includes('masc') || name.includes('man') || name.includes('male') || name.includes('paul') || name.includes('thomas')
+      return name.includes('masc') || name.includes('man') || name.includes('male') || 
+             name.includes('paul') || name.includes('thomas') || name.includes('alex') || 
+             name.includes('daniel')
     })
   }
+  
   return voices
 })
 
@@ -727,14 +757,36 @@ const speakText = (text) => {
     // Arrêter l'audio en cours
     stopSpeaking()
     const utterance = new SpeechSynthesisUtterance(text)
+    
+    // Configuration optimisée pour le français du Cameroun
     utterance.lang = 'fr-FR'
+    utterance.rate = ttsRate.value || 0.95 // Légèrement plus lent pour la clarté
+    utterance.pitch = ttsPitch.value || 1.0
+    utterance.volume = 1.0
+    
     const voice = getSelectedVoice()
-    if (voice) utterance.voice = voice
-    utterance.rate = ttsRate.value || 1
-    utterance.pitch = ttsPitch.value || 1
-    utterance.onstart = () => { isReading.value = true }
-    utterance.onend = () => { isReading.value = false; currentUtterance.value = null }
-    utterance.onerror = () => { isReading.value = false; currentUtterance.value = null }
+    if (voice) {
+      utterance.voice = voice
+      console.log('🎤 Utilisation de la voix:', voice.name, voice.lang)
+    } else {
+      console.log('⚠️ Aucune voix spécifique trouvée, utilisation de la voix par défaut')
+    }
+    
+    utterance.onstart = () => { 
+      isReading.value = true 
+      console.log('🔊 Début de la lecture vocale')
+    }
+    utterance.onend = () => { 
+      isReading.value = false
+      currentUtterance.value = null
+      console.log('🔇 Fin de la lecture vocale')
+    }
+    utterance.onerror = (event) => { 
+      isReading.value = false
+      currentUtterance.value = null
+      console.error('❌ Erreur TTS:', event.error)
+    }
+    
     currentUtterance.value = utterance
     window.speechSynthesis.speak(utterance)
   } catch (e) {
@@ -813,20 +865,25 @@ const requestMicrophonePermission = async () => {
   }
 }
 
-// Speech Recognition
+// Speech Recognition avec pause de 4 secondes
+let silenceTimeout = null
+let lastSpeechTime = 0
+let finalizedText = '' // Stocker le texte finalisé pour éviter les doublons
+
 const setupSpeechRecognition = () => {
   if (isSpeechSupported.value) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
     recognition.value = new SpeechRecognition()
     recognition.value.lang = 'fr-FR'
     recognition.value.interimResults = true
-    recognition.value.continuous = false
+    recognition.value.continuous = true // Mode continu pour détecter les pauses
     recognition.value.maxAlternatives = 1
 
     recognition.value.onstart = () => {
       console.log('🎤 Reconnaissance vocale démarrée')
       isRecording.value = true
-      showToast('🎤 Écoute en cours...')
+      lastSpeechTime = Date.now()
+      showToast('🎤 Écoute en cours... Parlez maintenant')
     }
 
     recognition.value.onresult = (event) => {
@@ -837,14 +894,39 @@ const setupSpeechRecognition = () => {
         const transcript = event.results[i][0].transcript
         if (event.results[i].isFinal) {
           finalTranscript += transcript
+          lastSpeechTime = Date.now() // Mettre à jour le temps de dernière parole
         } else {
           interimTranscript += transcript
         }
       }
 
-      // Afficher le texte en temps réel
-      newMessage.value = finalTranscript + interimTranscript
+      // Accumuler le texte au lieu de le remplacer
+      if (finalTranscript.trim()) {
+        // Ajouter le texte finalisé au message existant
+        const newText = finalTranscript.trim()
+        
+        // Éviter les doublons en vérifiant si le texte n'est pas déjà présent
+        if (!finalizedText.includes(newText)) {
+          finalizedText += (finalizedText ? ' ' : '') + newText
+          newMessage.value = finalizedText
+        }
+      } else if (interimTranscript.trim()) {
+        // Pour le texte temporaire, afficher le texte finalisé + temporaire
+        newMessage.value = finalizedText + (finalizedText ? ' ' : '') + interimTranscript.trim()
+      }
+      
       adjustTextareaHeight()
+
+      // Réinitialiser le timeout de silence
+      if (finalTranscript.trim()) {
+        clearTimeout(silenceTimeout)
+        silenceTimeout = setTimeout(() => {
+          if (isRecording.value && Date.now() - lastSpeechTime >= 4000) {
+            console.log('🔇 Silence de 4 secondes détecté, arrêt de l\'écoute')
+            stopRecording()
+          }
+        }, 4000)
+      }
 
       // Envoi automatique quand la phrase est finalisée
       if (finalTranscript.trim() && autoSendOnFinal.value) {
@@ -862,6 +944,7 @@ const setupSpeechRecognition = () => {
     recognition.value.onend = () => {
       console.log('🎤 Reconnaissance vocale terminée')
       isRecording.value = false
+      clearTimeout(silenceTimeout)
       if (newMessage.value.trim() && !autoSendOnFinal.value) {
         showToast('Message vocal prêt. Cliquez sur Envoyer.')
       }
@@ -870,6 +953,7 @@ const setupSpeechRecognition = () => {
     recognition.value.onerror = (event) => {
       console.error('❌ Erreur reconnaissance vocale:', event.error)
       isRecording.value = false
+      clearTimeout(silenceTimeout)
       
       let errorMessage = 'Erreur lors de l\'enregistrement vocal.'
       switch (event.error) {
@@ -899,6 +983,14 @@ const setupSpeechRecognition = () => {
   }
 }
 
+const stopRecording = () => {
+  if (recognition.value && isRecording.value) {
+    recognition.value.stop()
+    isRecording.value = false
+    clearTimeout(silenceTimeout)
+  }
+}
+
 const toggleRecording = async () => {
   if (!isSpeechSupported.value) {
     showToast('Reconnaissance vocale non supportée sur ce navigateur.')
@@ -906,9 +998,8 @@ const toggleRecording = async () => {
   }
   
   if (isRecording.value) {
-    console.log('🛑 Arrêt de l\'enregistrement')
-    recognition.value.stop()
-    isRecording.value = false
+    console.log('🛑 Arrêt manuel de l\'enregistrement')
+    stopRecording()
     if (newMessage.value.trim() && !autoSendOnFinal.value) {
       showToast('Message vocal prêt. Cliquez sur Envoyer.')
     }
@@ -922,8 +1013,10 @@ const toggleRecording = async () => {
     }
     
     try {
-    newMessage.value = ''
-    adjustTextareaHeight()
+      newMessage.value = ''
+      finalizedText = '' // Réinitialiser le texte finalisé
+      adjustTextareaHeight()
+      clearTimeout(silenceTimeout) // Nettoyer les timeouts précédents
       recognition.value.start()
     } catch (error) {
       console.error('Erreur démarrage reconnaissance:', error)
@@ -1018,6 +1111,9 @@ onUnmounted(() => {
   if (recognition.value) {
     recognition.value.stop()
   }
+  // Nettoyer les timeouts et variables
+  clearTimeout(silenceTimeout)
+  finalizedText = ''
 })
 
 // Scroll Handling

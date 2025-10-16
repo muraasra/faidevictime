@@ -17,11 +17,11 @@ export const NAVIGATION_ITEMS = [
       link: "/collect/dash",
       icon: "i-heroicons-squares-plus",
     },
-    // {
-    //   name: "Demandes",
-    //   link: "/collect/list",
-    //   icon: "i-heroicons-squares-plus",
-    // }
+     {
+      name: "Demandes",
+      link: "/collect/list",
+      icon: "i-heroicons-squares-plus",
+    },
     // {
     //   name: "Order Lists",
     //   link: "/order-lists",

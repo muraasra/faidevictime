@@ -61,7 +61,7 @@
       </div>
 
       <!-- Liste des formations -->
-      <div v-else-if="filteredFormations.length > 0" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div v-else-if="filteredFormations.length > 0" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-12">
         <div
           v-for="formation in filteredFormations"
           :key="formation.id"
@@ -95,6 +95,62 @@
             <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section Documents PDF -->
+      <div v-if="documents.length > 0" class="mb-8">
+        <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">
+          Documents & Ressources PDF
+        </h3>
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div
+            v-for="document in documents"
+            :key="document.id"
+            class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-300"
+          >
+            <div class="flex items-start justify-between mb-4">
+              <div class="w-16 h-16 bg-gradient-to-br from-primary to-emerald-600 rounded-xl flex items-center justify-center">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="px-2 py-1 bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary text-xs font-medium rounded-full">
+                  {{ document.category }}
+                </span>
+                <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-full">
+                  {{ document.size }}
+                </span>
+              </div>
+            </div>
+            
+            <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-3">
+              {{ document.title }}
+            </h3>
+            
+            <p class="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
+              {{ document.description }}
+            </p>
+            
+            <div class="flex gap-2">
+              <button @click="openPreview(document)"
+                class="flex items-center text-white px-4 py-2 bg-primary gap-2 text-sm rounded-lg hover:bg-emerald-600 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                Aperçu
+              </button>
+              <a :href="`/pdf/${document.filename}`" download
+                class="flex items-center text-primary dark:text-primary px-4 py-2 border border-primary dark:border-primary gap-2 text-sm rounded-lg hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Télécharger
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -309,6 +365,39 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal d'aperçu PDF -->
+  <div v-if="previewDocument" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" @click="closePreview">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] flex flex-col" @click.stop>
+      <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-white">{{ previewDocument.title }}</h3>
+        <button @click="closePreview" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="flex-1 p-4">
+        <iframe 
+          :src="`/pdf/${previewDocument.filename}#toolbar=1&navpanes=0&scrollbar=1`" 
+          class="w-full h-full min-h-[500px] rounded border"
+          frameborder="0">
+        </iframe>
+      </div>
+      <div class="flex items-center justify-end gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+        <a :href="`/pdf/${previewDocument.filename}`" download
+          class="flex items-center text-primary px-4 py-2 border border-primary gap-2 text-sm rounded-lg hover:bg-primary/10 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          Télécharger
+        </a>
+        <button @click="closePreview" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white text-sm rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+          Fermer
+        </button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -340,7 +429,9 @@ const selectedFormation = ref<Formation | null>(null)
 const selectedSection = ref<string | null>(null)
 const selectedCategory = ref<string | null>(null)
 const formations = ref<Formation[]>([])
+const documents = ref<any[]>([])
 const isLoadingFormations = ref(false)
+const previewDocument = ref<any>(null)
 const isCompleted = ref(false)
 const showConfetti = ref(false)
 const quizAnswers = ref<Record<number, number>>({})
@@ -415,17 +506,27 @@ const selectFormation = (formation: Formation) => {
 const loadFormations = async () => {
   isLoadingFormations.value = true
   try {
-    const data = await $fetch('/formations.json') as { formations: Formation[] }
-    if (data && Array.isArray(data.formations)) {
-      formations.value = data.formations
+    // Charger les formations
+    const formationsData = await $fetch('/formations.json') as { formations: Formation[] }
+    if (formationsData && Array.isArray(formationsData.formations)) {
+      formations.value = formationsData.formations
     } else {
-      console.error('Format de données invalide')
+      console.error('Format de données formations invalide')
       formations.value = []
     }
+
+    // Charger les documents PDF
+    const documentsData = await $fetch('/documents.json') as { documents: any[] }
+    if (documentsData && Array.isArray(documentsData.documents)) {
+      documents.value = documentsData.documents
+    } else {
+      console.error('Format de données documents invalide')
+      documents.value = []
+    }
   } catch (error) {
-    console.error('Erreur lors du chargement des formations:', error)
-    // Données de fallback en cas d'erreur
+    console.error('Erreur lors du chargement des données:', error)
     formations.value = []
+    documents.value = []
   } finally {
     isLoadingFormations.value = false
   }
@@ -478,6 +579,15 @@ const launchConfetti = () => {
     setTimeout(() => piece.remove(), 6000)
   }
   setTimeout(() => { showConfetti.value = false }, 3500)
+}
+
+// Fonctions pour le modal d'aperçu PDF
+const openPreview = (document: any) => {
+  previewDocument.value = document
+}
+
+const closePreview = () => {
+  previewDocument.value = null
 }
 </script>
 

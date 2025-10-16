@@ -19,7 +19,7 @@
                     <div class="relative">
                         <AtomsTitle texte="Notre engagement contre les violences" />
                         <p class="text-gray-600 dark:text-gray-300 pt-8">
-                            Cette plateforme agit pour sensibiliser, écouter et orienter les victimes de violences sexuelles, culturelles et de genre, en mettant la technologie au service des victimes pour les accompagner, les écouter et les aider à trouver des solutions, en toute confidentialité.
+                            Cette plateforme agit pour sensibiliser, écouter et orienter les victimes de violences sexuelles, culturelles et de genre, en mettant la technologie au service des victimes , les travailleurs sociaux et de la communauté toute entiere pour les accompagner, les écouter et les aider à trouver des solutions, en toute confidentialité.
                         </p>
                         <div class="grid grid-cols-3 gap-4 max-w-lg pt-8">
                             <div
@@ -32,7 +32,7 @@
                                 class="text-center rounded-xl bg-box-bg shadow-lg shadow-box-shadow border border-box-border p-3">
                                 <h3 class="text-gray-800 dark:text-white font-bold text-xl sm:text-2xl lg:text-3xl">+
                                     500</h3>
-                                <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300">sensibilisés</p>
+                                <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300">Sensibilisés</p>
                             </div>
                             <div
                                 class="text-center rounded-xl bg-box-bg shadow-lg shadow-box-shadow border border-box-border p-3">

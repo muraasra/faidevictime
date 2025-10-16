@@ -3,7 +3,7 @@ useHead({
   title: 'SafePlace - Assistance aux Victimes | Soutien et Protection',
   meta: [
     { name: 'description', content: 'SafePlace est une plateforme d\'assistance aux victimes offrant un soutien confidentiel, des conseils juridiques et un accompagnement personnalisé pour les personnes en situation de détresse.' },
-    { name: 'keywords', content: 'assistance victimes, soutien victimes, protection victimes, aide juridique, accompagnement victimes, soutien psychologique' },
+    { name: 'keywords', content: 'assistance victimes, soutien victimes, protection victimes, aide juridique, accompagnement victimes, soutien psychologique, avina, safeplace' },
     { name: 'robots', content: 'index, follow' },
     { property: 'og:title', content: 'SafePlace - Assistance aux Victimes | Soutien et Protection' },
     { property: 'og:description', content: 'SafePlace est une plateforme d\'assistance aux victimes offrant un soutien confidentiel, des conseils juridiques et un accompagnement personnalisé pour les personnes en situation de détresse.' },
@@ -26,7 +26,7 @@ useHead({
         <SectionsHomeHeroSection/>
         <SectionsAboutPodux/>
         <SectionsWhyUs/>
-        <!-- <SectionsHomeLatestPodcast/> -->
+        <SectionsHomeLatestPodcast/>
         <SectionsHomePopularPodcasts/>
         <SectionsCallToAction/>
     </div>

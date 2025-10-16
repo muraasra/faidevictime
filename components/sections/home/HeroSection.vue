@@ -18,7 +18,7 @@
                 class="grid lg:grid-cols-2 gap-10 xl:gap-14 relative pt-24 lg:max-w-none max-w-2xl md:max-w-3xl mx-auto">
                 <div class="lg:py-6">
                     <div class="text-center lg:text-left">
-                        <span class="px-2 py-1 rounded-md bg-gray-100 dark:bg-body text-primary ">Services d’Aide aux Victimes </span>
+                        <span class="px-2 py-1 rounded-md bg-gray-100 dark:bg-body text-primary ">Services d’Aide aux Victimes de violences </span>
                         <h1 class="text-gray-800 pt-4 dark:text-white font-bold text-4xl md:text-5xl lg:text-6xl">
                              Vous <span
                                 class="text-transparent bg-clip-text bg-gradient-to-br from-primary to-[#8cd66a]">Accompagner</span>
@@ -49,7 +49,7 @@
 
                                 <span>
 
-                                    +237 6 58 93 41 47
+                                    +237 671624281 / 694021474 / 655051249
                                 </span>
                             </div>
                         </AtomsLinkBtn>
