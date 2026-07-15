@@ -21,9 +21,9 @@ export default defineNuxtConfig({
     public: {
       // API du RAG Avina — backend Baidevictime deploye sur VPS (services + IA fusionnes)
       // Surchargable via NUXT_PUBLIC_RAG_API_BASE (ex: en dev local, voir start-faidevictime.cmd)
-      ragApiBase: 'http://217.182.128.253',
+      ragApiBase: 'https://chidsafe.space',
       // API d'administration des services — meme backend, NUXT_PUBLIC_ADMIN_API_BASE
-      adminApiBase: 'http://217.182.128.253',
+      adminApiBase: 'https://chidsafe.space',
     },
   },
   pwa: {
