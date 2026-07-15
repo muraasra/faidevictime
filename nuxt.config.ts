@@ -17,6 +17,14 @@ export default defineNuxtConfig({
     },
   },
   compatibilityDate: '2025-04-13',
+  runtimeConfig: {
+    public: {
+      // API du RAG Avina (rag_django) — surchargable via NUXT_PUBLIC_RAG_API_BASE
+      ragApiBase: 'http://127.0.0.1:8000',
+      // API d'administration des services (backend Baidevictime local) — NUXT_PUBLIC_ADMIN_API_BASE
+      adminApiBase: 'http://127.0.0.1:8010',
+    },
+  },
   pwa: {
     registerType: 'autoUpdate',
     manifest: {

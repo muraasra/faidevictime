@@ -195,9 +195,6 @@ onUnmounted(() => {
               <input type="checkbox" v-model="rememberPassword" class="rounded" />
               <span class="text-gray-700 dark:text-gray-300">Se souvenir de moi</span>
             </label>
-            <NuxtLink to="/forget-password" class="text-sm text-emerald-600 hover:underline">
-              Mot de passe oublié ?
-            </NuxtLink>
           </div>
 
           <!-- Bouton -->
@@ -213,13 +210,6 @@ onUnmounted(() => {
           <!-- Erreur -->
           <p v-if="error" class="text-sm text-red-500 text-center mt-2">{{ error }}</p>
         </form>
-
-        <NuxtLink
-          to="/register/root_register.vue"
-          class="block text-center text-sm text-gray-600 dark:text-gray-300 hover:underline mt-4"
-        >
-          Pas encore de compte ? S'inscrire ici
-        </NuxtLink>
       </div>
     </div>
   </div>

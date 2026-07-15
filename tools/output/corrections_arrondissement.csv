@@ -1,0 +1,211 @@
+﻿id,nom_structure,latitude,longitude,arrondissement_propose,methode,confiance
+12,Hôpital de District de Foumbot,5.480000,10.410000,Bafoussam,nominatim,haute
+28,Hopital de District de Bandjoun,5.460000,10.420000,Bafoussam,nominatim,haute
+37,CIPCRE,5.481735,10.460801,Bafoussam 1,nominatim,haute
+39,Cfp njidam,5.481740,10.460930,Bafoussam 1,nominatim,haute
+122,Centre de santé islamique,5.483467,10.439419,Bafoussam 1,nominatim,haute
+124,Centre de formation professionnelle afro textile(CE-PAT,5.483653,10.439347,Bafoussam 1,nominatim,haute
+126,District de santé de la Mifi,5.483764,10.413143,Bafoussam 2,nominatim,haute
+129,Commissariat central du 2ème arrondissement ,5.483960,10.439074,Bafoussam 1,nominatim,haute
+131,Pharmacie le Nectar,5.484675,10.437853,Bafoussam 1,nominatim,haute
+137,Hôpital de District de Famla ,5.477132,10.420121,Bafoussam,nominatim,haute
+142,Centre de santé intégré de Badeng,5.554039,10.367510,Bafoussam 2,nominatim,haute
+143,Test nsangou,5.580876,10.370502,Bafoussam 2,nominatim,haute
+147,Centre de santé intégré de Bapi,5.558301,10.373981,Bafoussam 2,nominatim,haute
+155,MINPROFF,5.470441,10.420233,Bafoussam,nominatim,haute
+156,Chefferie bapi,5.556444,10.374750,Bafoussam 2,nominatim,haute
+160,Hébergement chefferie Bapi ,5.556444,10.374750,Bafoussam 2,nominatim,haute
+163,Centre de santé de Tchada-Baleng,5.481709,10.419814,Bafoussam,nominatim,haute
+167,Chefferie baleng,5.504459,10.411739,Bafoussam 2,nominatim,haute
+170,Étude Maître Tchango,5.468533,10.421804,Bafoussam,nominatim,haute
+176,Service pshyco-social de Hôpital régional Bafoussam ,5.481973,10.412562,Bafoussam 2,nominatim,haute
+178,Hôpital régional Bafoussam ,5.485291,10.414036,Bafoussam 2,nominatim,haute
+179,Santé mentale Hôpital régional ,5.485290,10.414036,Bafoussam 2,nominatim,haute
+184,CAO (centre d'accueil et d'observation),5.485290,10.414036,Bafoussam 2,nominatim,haute
+187,CAO,5.485290,10.414036,Bafoussam 2,nominatim,haute
+191,Centre de formation professionnelle MODAF,5.488368,10.406323,Bafoussam 2,nominatim,haute
+192,CAO bafoussam,5.488035,10.408930,Bafoussam 2,nominatim,haute
+193,Horizon femme,5.482383,10.412218,Bafoussam 2,nominatim,haute
+196,Palais de justice,5.482383,10.412218,Bafoussam 2,nominatim,haute
+199,Délégation départementale de la MiFi des affaires sociales ,5.471737,10.417708,Bafoussam,nominatim,haute
+262,Cercle International pour la Promotion de la création,5.481862,10.460989,Bafoussam 1,nominatim,haute
+272,test 0408,5.481812,10.460950,Bafoussam 1,nominatim,haute
+273,Clinique de ngaoundere ,5.482610,10.460556,Bafoussam 1,nominatim,haute
+274,Hyuj,5.730205,10.872489,Foumban,nominatim,haute
+275,CSM de Dang,7.326925,13.579059,Ngaoundere 2,nominatim,haute
+276,Centre de santé de hamadjangi,7.309378,13.586899,Ngaoundere 1,nominatim,haute
+277,Cipcre,5.730205,10.872489,Foumban,nominatim,haute
+287,Cipre,7.319097,13.576674,Ngaoundere 1,nominatim,haute
+288,Centre social Ndere 3 ,7.319098,13.576677,Ngaoundere 1,nominatim,haute
+289,Centre de santé intégré de burkina,7.303461,13.597387,Ngaoundere 1,nominatim,haute
+290,Hôpital régional de Ngaoundéré ,7.319108,13.576649,Ngaoundere 1,nominatim,haute
+291,Sainte ange gardien,7.303461,13.597387,Ngaoundere 1,nominatim,haute
+292,Cabinet maître Degoue,7.319099,13.576668,Ngaoundere 1,nominatim,haute
+293,Ajdc,7.319099,13.576677,Ngaoundere 1,nominatim,haute
+294,MINAS,7.319108,13.576649,Ngaoundere 1,nominatim,haute
+295,APRODHAFIM,7.302451,13.598110,Ngaoundere 1,nominatim,haute
+296,Centre médico social universitaire ,7.319098,13.576676,Ngaoundere 1,nominatim,haute
+297,Cnjc,7.319566,13.576054,Ngaoundere 1,nominatim,haute
+298,Csi djalingo ,7.353172,13.587261,Ngaoundere 2,nominatim,haute
+299,CIPCRE ,7.319108,13.576649,Ngaoundere 1,nominatim,haute
+300,Fne,7.319566,13.576054,Ngaoundere 1,nominatim,haute
+301,Tribunal grande instance ,7.353172,13.587261,Ngaoundere 2,nominatim,haute
+302,Agapé ,7.319099,13.576677,Ngaoundere 1,nominatim,haute
+303,Cmpj ndere 3,7.319566,13.576054,Ngaoundere 1,nominatim,haute
+304,Orphelinat saint ange gardien ,7.353172,13.587261,Ngaoundere 2,nominatim,haute
+305,Hôpital du district de Dang ,7.437147,13.558333,Ngaoundere 3,nominatim,haute
+306,Cipcre,7.317545,13.578220,Ngaoundere 1,nominatim,haute
+308,Centre de santé Gada Dang,7.441515,13.555803,Ngaoundere 3,nominatim,haute
+309,Centre de santé de tchabal,7.441515,13.555803,Ngaoundere 3,nominatim,haute
+310,Cabinet médical famouss,7.412720,13.548210,Ngaoundere 3,nominatim,haute
+311,Centre de santé privé protestant de Dang,7.415917,13.551464,Ngaoundere 3,nominatim,haute
+312,Hôpital du district de Dang ,7.421458,13.553633,Ngaoundere 3,nominatim,haute
+313,Centre de santé privé de malo,7.419445,13.554718,Ngaoundere 3,nominatim,haute
+314,Centre de santé privé clean ,7.441170,13.555477,Ngaoundere 3,nominatim,haute
+315,Centre de sante intégré la GLOIRE,7.303801,13.597025,Ngaoundere 1,nominatim,haute
+316,Centre de sante integré de burkina,7.306709,13.598834,Ngaoundere 1,nominatim,haute
+317,Hôpital protestant,7.309516,13.596833,Ngaoundere 1,nominatim,haute
+318,Hôpital protestant,7.309631,13.596814,Ngaoundere 1,nominatim,haute
+319,Centre de santé intégré privé de Ndelbe,7.309640,13.596810,Ngaoundere 1,nominatim,haute
+320,Centre social Ngaoundere 3,7.419127,13.554356,Ngaoundere 3,nominatim,haute
+321,Centre social de Ngaoundere 3,7.419127,13.554356,Ngaoundere 3,nominatim,haute
+322,Cabinet Maître BINYEL Jacques ( ndere 1),7.313868,13.580028,Ngaoundere 1,nominatim,haute
+323,Centre de santé Siloe,7.309640,13.596811,Ngaoundere 1,nominatim,haute
+324,Centre de santé Gada-dang,7.424079,13.543511,Ngaoundere 3,nominatim,haute
+325,DÉLÉGATION DÉPARTEMENTALE DE LA JEUNESSE ET DE L'EDUCATION CIVIQUE,7.317545,13.578220,Ngaoundere 1,nominatim,haute
+326,Centre médical Militaire de secteur n5,7.317760,13.603535,Ngaoundere 2,nominatim,haute
+327,DÉLÉGATION DÉPARTEMENALE DE JEUNESSE ET D'EDUCATION CIVIQUE,7.317545,13.578220,Ngaoundere 1,nominatim,haute
+328,JADENGA,7.426361,13.555079,Ngaoundere 3,nominatim,haute
+329,JADENGA ,7.426361,13.555079,Ngaoundere 3,nominatim,haute
+330,JADENGA ,7.426031,13.555079,Ngaoundere 3,nominatim,haute
+331,Centre de santé privé santé pour tous,7.318575,13.587623,Ngaoundere 2,nominatim,haute
+332,CIPCRE Ngaoundere,7.319099,13.576677,Ngaoundere 1,nominatim,haute
+333,Centre médico social ,7.424551,13.541428,Ngaoundere 3,nominatim,haute
+334,CIPCRE Ngaoundere,7.319098,13.576676,Ngaoundere 1,nominatim,haute
+335,CIPCRE Antenne Ngaoundéré,7.319099,13.576677,Ngaoundere 1,nominatim,haute
+336,Affaire social de Hôpital regional ,7.317521,13.589792,Ngaoundere 2,nominatim,haute
+337,DÉLÉGATION DÉPARTEMENTALE DE L'EMPLOI ET FORMATION PROFESSIONNELLE DE LA VINA( ndere 1),7.317874,13.578220,Ngaoundere 1,nominatim,haute
+338,AWAYE,7.433399,13.556141,Ngaoundere 3,nominatim,haute
+339,AWAYE ,7.433255,13.556164,Ngaoundere 3,nominatim,haute
+340,AFFADA (action des femmes et des filles pour l'appui au développement) ndere 1,7.320083,13.575862,Ngaoundere 1,nominatim,haute
+341,Mairie de Ngaoundere 3 ,7.433396,13.556138,Ngaoundere 3,nominatim,haute
+342,Mairie de Ndere 3 ,7.433399,13.556142,Ngaoundere 3,nominatim,haute
+343,AFFADA (Action des Femmes et des Filles pour l'Appui au Développement Alternatif) Ngaoundéré 1er ,7.319884,13.575860,Ngaoundere 1,nominatim,haute
+344,Hôpital régional de ngaoundere,7.315649,13.585778,Ngaoundere 1,nominatim,haute
+345,Cmpj Ngaoundere 3 ,7.392141,13.552549,Ngaoundere 2,nominatim,haute
+346,Cmpj Ngaoundere 3 ,7.386051,13.557610,Ngaoundere 2,nominatim,haute
+347,COMMISSAIRIAT CENTRALE AUX RENSEIGNEMENTS GÉNÉRAUX DE LA VINA( DÉPARTEMENTALE),7.339538,13.580121,Ngaoundere 2,nominatim,haute
+348,Réseau international de la santé de l'Afrique centrale,7.357158,13.580386,Ngaoundere 2,nominatim,haute
+349,CmpjNgaoundere3,7.386051,13.557610,Ngaoundere 2,nominatim,haute
+350,Centre de santé integré privé Islamique Lamidat,7.321221,13.587261,Ngaoundere 2,nominatim,haute
+351,ACPDD (Ation citoyenne pour le développement durable) ndéré 1,7.320125,13.579387,Ngaoundere 1,nominatim,haute
+352,Délégation d'arrondissement de Ngaoundere 3 ,7.386777,13.555441,Ngaoundere 2,nominatim,haute
+353,DIVISION REGIONAL DE LA POLICE JUDICIAIRE DE L'ADAMAOUA,7.337514,13.582198,Ngaoundere 2,nominatim,haute
+354,Centre de santé salam,7.336493,13.583283,Ngaoundere 2,nominatim,haute
+355,CODAS CARITAS (Ngaoundéré 1er),7.322069,13.572305,Ngaoundere 1,nominatim,haute
+356,HEAL TH WORLD (ndéré 1),7.319751,13.585387,Ngaoundere 2,nominatim,haute
+357,HEAL THE WORLD (ndéré 1),7.319751,13.585387,Ngaoundere 2,nominatim,haute
+358,CODAS CARITAS ,7.322069,13.572305,Ngaoundere 1,nominatim,haute
+359,Centre de santé intégré privé Aoudou tapare,7.322525,13.598472,Ngaoundere 2,nominatim,haute
+360,CROIX ROUGE (COMITÉ DÉPARTEMENTAL DE LA VINA( ndere1 ),7.319597,13.576615,Ngaoundere 1,nominatim,haute
+361,HEAL THE WORLD (ndéré 1),7.319751,13.585387,Ngaoundere 2,nominatim,haute
+362,Centre de santé privé catholique St.pierre Gada mabanga ,7.367544,13.569904,Ngaoundere 2,nominatim,haute
+363,Centre de santé intégré privé Lakenpa,7.327442,13.599195,Ngaoundere 2,nominatim,haute
+364,Centre de santé catholique de djaredi,7.323258,13.606791,Ngaoundere 2,nominatim,haute
+365,Cabinet de soin de bon secours ,7.359443,13.586899,Ngaoundere 2,nominatim,haute
+366,COMMISSARIAT CENTRALE ndere,7.320117,13.574877,Ngaoundere 1,nominatim,haute
+367,Commissariat de sécurité publique 4e arrondissement de Dang ,7.422799,13.552910,Ngaoundere 3,nominatim,haute
+368,APRODHAFIM,7.320266,13.586176,Ngaoundere 2,nominatim,haute
+369,APRODHAFIM ,7.320266,13.586176,Ngaoundere 2,nominatim,haute
+370,Brigade de gendarmerie de dang,7.434111,13.560503,Ngaoundere 3,nominatim,haute
+371,Centre de santé intégré de djalingo mabanga ,7.338358,13.588596,Ngaoundere 2,nominatim,haute
+372,Centre social universitaire ,7.416800,13.544234,Ngaoundere 3,nominatim,haute
+373,Centre de santé privé Alhadji yaouba,7.302800,13.592617,Ngaoundere 1,nominatim,haute
+374,Centre social Ngaoundere 1,7.318489,13.579667,Ngaoundere 1,nominatim,haute
+375,Centre social Ngaoundere 1,7.318489,13.579667,Ngaoundere 1,nominatim,haute
+376,Centre de santé privé OISA ANNOUR,7.296375,13.570627,Ngaoundere 1,nominatim,haute
+377,Centre social Ngaoundere 1 ,7.321293,13.577864,Ngaoundere 1,nominatim,haute
+378,Centre de santé intégré catholique de bamyanga marza,7.289602,13.581260,Ngaoundere 1,nominatim,haute
+379,Infirmièrie de la base aérienne 302 ngaoundéré ,7.351093,13.558333,Ngaoundere 2,nominatim,haute
+380,Service d'action sociale auprès de la population auchotone bororo de l'adamaoua ,7.317545,13.578220,Ngaoundere 1,nominatim,haute
+381,COMMISSION DES DROITS DE L'HOMME DU CAMEROUN ( antenne régional pour l'adamoua),7.320443,13.580390,Ngaoundere 2,nominatim,haute
+382,Centre de santé prive yves plumier de marza,7.281013,13.577859,Ngaoundere 1,nominatim,haute
+383,Service d'action sociale auprès de la population bororo,7.317545,13.578220,Ngaoundere 1,nominatim,haute
+384, Centre de santé intégré public de bamyanga hamadjandji,7.290416,13.560864,Ngaoundere 1,nominatim,haute
+385,AJVN (association des jeunes volontaires de ngaoundere) ndéré 2,7.343781,13.592685,Ngaoundere 2,nominatim,haute
+386,AJVN (association des jeunes volontaires de ngaoundere) ndere,7.343474,13.591962,Ngaoundere 2,nominatim,haute
+387,Gendarmerie Nationale de Légion de l'Adamaoua (Nderé 2),7.337678,13.568283,Ngaoundere 2,nominatim,haute
+388,EJEDIPRO (entraide jeunes diplômés pour le développement durable) ndéré 2,7.343474,13.591962,Ngaoundere 2,nominatim,haute
+389,Brigade de Recherche,7.342986,13.564841,Ngaoundere 2,nominatim,haute
+390,Centre médical de la police ,7.320354,13.583283,Ngaoundere 2,nominatim,haute
+391,Délégation régionale des affaires sociales pour l'adamaoua ,7.316915,13.579796,Ngaoundere 1,nominatim,haute
+392,BRIGADE TER de BIDEN,7.317545,13.578220,Ngaoundere 1,nominatim,haute
+393,Délégation régionale des affaires sociales pour l'adamaoua ,7.316915,13.579796,Ngaoundere 1,nominatim,haute
+394,Délégation régionale des affaires sociales pour l'adamaoua ,7.317845,13.580351,Ngaoundere 1,nominatim,haute
+395,Délégation départementale des affaires sociales de la Vina,7.327914,13.565680,Ngaoundere 1,nominatim,haute
+396,Chronique de la patience ,7.320354,13.583283,Ngaoundere 2,nominatim,haute
+397,Délégation régionale de la promotion de la femme et de la famille de l'adamaoua ,7.315196,13.579667,Ngaoundere 1,nominatim,haute
+398,centre de sante logements sociaux,7.320291,13.563757,Ngaoundere 1,nominatim,haute
+399,Délégation régionale de la promotion de la femme et de la famille pour l'adamaoua ,7.315196,13.579667,Ngaoundere 1,nominatim,haute
+400,Délégation régionale de la promotion de la femme et de la famille pour l'adamaoua ,7.315196,13.579667,Ngaoundere 1,nominatim,haute
+401,Délégation départementale des Affaires sociales ,7.328473,13.565549,Ngaoundere 1,nominatim,haute
+402,APROSPEN,7.324132,13.578220,Ngaoundere 2,nominatim,haute
+403,APROSPEN,7.325856,13.575689,Ngaoundere 2,nominatim,haute
+404,Centre de promotion de la femme et de la famille ,7.317545,13.578220,Ngaoundere 1,nominatim,haute
+405,Centre de promotion de la femme et de la famille ,7.319707,13.582921,Ngaoundere 2,nominatim,haute
+406,Centre de santé intégré de sabogari,7.330497,13.585453,Ngaoundere 2,nominatim,haute
+407,Centre de promotion de la femme et de la famille ,7.318489,13.579667,Ngaoundere 1,nominatim,haute
+408,APROSPEN ,7.325815,13.575610,Ngaoundere 2,nominatim,haute
+409,CENTRE D'ECOUTE DES ENFANTS DANS LA RUE( CEDER),7.320049,13.571712,Ngaoundere 1,nominatim,haute
+410,Centre médical camail ,7.338411,13.590667,Ngaoundere 2,nominatim,haute
+411,Tribunal de première instance de Ngaoundéré ,7.319214,13.577497,Ngaoundere 1,nominatim,haute
+412,CMPJ Départemental de la vina,7.311079,13.585091,Ngaoundere 1,nominatim,haute
+413,ORPHELINAT PORTEUR D'AMOUR,7.338535,13.581113,Ngaoundere 2,nominatim,haute
+414,COMMISSARIAT 1ER ndéré 1,7.310860,13.581475,Ngaoundere 1,nominatim,haute
+415,CMPJ Départemental de la vina,7.311046,13.586176,Ngaoundere 1,nominatim,haute
+416,Clinique slamique,7.328161,13.575689,Ngaoundere 2,nominatim,haute
+417,COMMISSARIAT de Sécurité publique Ngaoudéré 1,7.303562,13.572435,Ngaoundere 1,nominatim,haute
+418,Centre Social de Ngaoundéré 2ème ,7.327113,13.573173,Ngaoundere 2,nominatim,haute
+419,Centre Social de Ngaoundéré 2ème ,7.327113,13.573173,Ngaoundere 2,nominatim,haute
+420,CMPJ Régionale de la vina,7.311046,13.586176,Ngaoundere 1,nominatim,haute
+421,MAITRE KASSIA,7.320241,13.578498,Ngaoundere 1,nominatim,haute
+422,CMPJ Régionale de la VINA,7.306722,13.587623,Ngaoundere 1,nominatim,haute
+423,CAIRE AND SAID,7.326337,13.581475,Ngaoundere 2,nominatim,haute
+424,Cabinet maître KOULAGNA,7.321437,13.579340,Ngaoundere 2,nominatim,haute
+425,FOYER ST ANGES GARDIENS ndéré 1,7.288528,13.579667,Ngaoundere 1,nominatim,haute
+426,FOYER ST ANGES GARDIENS ndéré 1,7.284645,13.577497,Ngaoundere 1,nominatim,haute
+427,Groupement Mobile d'Intervention N°9,7.317545,13.578220,Ngaoundere 1,nominatim,haute
+428,Union santé ,7.322551,13.579395,Ngaoundere 2,nominatim,haute
+435,Service de l'action sociale auprès de la prison centrale de Ngaoundere,7.312551,13.580028,Ngaoundere 1,nominatim,haute
+436,L'infirmerie de la prison,7.313538,13.580028,Ngaoundere 1,nominatim,haute
+437,CENTRE Mgr YVES PLUMEY,7.282374,13.576412,Ngaoundere 1,nominatim,haute
+438,Mairie Ndéré 2,7.357114,13.587623,Ngaoundere 2,nominatim,haute
+439,Service de l'action sociale auprès du commissariat central,7.320325,13.574773,Ngaoundere 1,nominatim,haute
+440,Service de l'action sociale auprès du commissariat central de Ngaoundere,7.320329,13.574775,Ngaoundere 1,nominatim,haute
+441,Centre de santé privé da Sare dama,7.294454,13.579667,Ngaoundere 1,nominatim,haute
+442,CMPJ Ngaoundere 2,7.331806,13.574966,Ngaoundere 2,nominatim,haute
+443,Centre de santé privé ALKAWAL DJAMOU,7.298898,13.574243,Ngaoundere 1,nominatim,haute
+444,CHR,7.322707,13.560141,Ngaoundere 1,nominatim,haute
+445,CMPJ Ngaoundere 2,7.331081,13.577136,Ngaoundere 2,nominatim,haute
+446,Cabinet sanitaire la reférénce casar,7.334823,13.588008,Ngaoundere 2,nominatim,haute
+447,Délégation d'arrondissement de la jeunesse de Ngaoundere 2,7.328931,13.575328,Ngaoundere 2,nominatim,haute
+448,Centre de santé AMAL,7.306097,13.575689,Ngaoundere 1,nominatim,haute
+449,Centre de santé privé Alexis Marie Atangana ,7.309819,13.572435,Ngaoundere 1,nominatim,haute
+450,STAR OF HOPE Foundation,7.303618,13.559780,Ngaoundere 1,nominatim,haute
+451,ZAMYIR,7.315196,13.579667,Ngaoundere 1,nominatim,haute
+452,STAR OF HOPE FOUNDATION ,7.337651,13.556164,Ngaoundere 2,nominatim,haute
+453,Service d'action sociale auprès des tribunaux de la vina,7.316524,13.578271,Ngaoundere 1,nominatim,haute
+454,STAR OF HOPE FOUNDATION ,7.317549,13.534835,Ngaoundere 1,nominatim,haute
+455,Communauté Urbaine de Ngaoundéré 1er ,7.315171,13.579386,Ngaoundere 1,nominatim,haute
+456,Centre de santé intégré de boumdjéré,7.314690,13.585453,Ngaoundere 1,nominatim,haute
+457,Service d'action sociale auprès près des tribunaux de Ngaoundere et la vina,7.316523,13.578272,Ngaoundere 1,nominatim,haute
+458,Centre de santé de l'espoir,7.310527,13.603174,Ngaoundere 2,nominatim,haute
+459,Service d'action sociale auprès du lycée classique de Ngaoundere ,7.318939,13.575689,Ngaoundere 1,nominatim,haute
+460,AGAPE ,7.313444,13.615471,Ngaoundere 2,nominatim,haute
+461,AGAPE,7.306879,13.625600,Ngaoundere 2,nominatim,haute
+462,AREWA MEDICARE (ndéré 1),7.335271,13.587910,Ngaoundere 2,nominatim,haute
+463,Délégation départementale de la promotion de la femme et de la famille (Nderé 2),7.318654,13.578868,Ngaoundere 1,nominatim,haute
+464,Délégation Départementale de la promotion de la Femme et de la Famille de la VINA,7.318654,13.578868,Ngaoundere 1,nominatim,haute
+465,"AJLC (ASSOCIATION DES JEUNES POIR LA LUTTE CONTRE LES MALADIES, LA POLLUTION DE L'ENVIRONNEMENT ET DE LA NATURE) ndéré 1",7.303673,13.565870,Ngaoundere 1,nominatim,haute
+466,CENTRE MULTI- FONTIONNEL DE PROMOTION DES JEUNES (CMPJ) ndere 1,7.314294,13.587623,Ngaoundere 1,nominatim,haute
+467,DÉLÉGATION D'ARRONDISSEMENT DE LA JEUNESSE( ndere1),7.314294,13.587623,Ngaoundere 1,nominatim,haute

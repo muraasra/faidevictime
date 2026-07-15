@@ -22,7 +22,6 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function setUser(data: { id: number; username: string ; }) {
-    console.log('Setting user:', data);
     user.value = data
     if (process.client) {
       localStorage.setItem('user', JSON.stringify(data))
@@ -31,18 +30,14 @@ export const useAuthStore = defineStore('auth', () => {
 
   function restoreUser() {
     if (process.client) {
-      console.log('Restoring user from localStorage');
       const storedUser = localStorage.getItem('user')
-      console.log('Stored user:', storedUser);
       if (storedUser) {
         user.value = JSON.parse(storedUser)
-        console.log('Restored user:', user.value);
       }
     }
   }
 
   function logout() {
-    console.log('Logging out user');
     token.value = null
     cookieToken.value = null
     user.value = null
@@ -55,10 +50,8 @@ export const useAuthStore = defineStore('auth', () => {
 
   // restauration automatique si client
   if (process.client) {
-    console.log('Initializing auth store');
     const storedToken = localStorage.getItem('access_token')
     if (storedToken) {
-      console.log('Found stored token');
       token.value = storedToken
       cookieToken.value = storedToken
     }

@@ -1,1218 +1,1206 @@
 <template>
-  <div class="service-page py-12 px-6 md:px-12">
-    <!-- Popup d'introduction -->
-    <div v-if="showIntroPopup" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full mx-4 p-6" @click.stop>
-        <div class="text-center">
-          <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+  <div class="services-page bg-gray-50 dark:bg-zinc-900">
+    <!-- ===== Barre de recherche flottante ===== -->
+    <div class="search-overlay">
+      <div class="bg-white/95 dark:bg-zinc-800/95 backdrop-blur rounded-2xl shadow-lg border border-gray-100 dark:border-zinc-700 p-3 space-y-2.5">
+        <div class="flex gap-2">
+          <div class="relative flex-1">
+            <input
+              v-model="searchQuery"
+              type="search"
+              aria-label="Rechercher un service par nom"
+              placeholder="Nom d'un service…"
+              class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-gray-200 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-700 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-shadow"
+            />
+            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
-          <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-3">
-            Services d'assistance
-          </h3>
-          <p class="text-gray-600 dark:text-gray-400 mb-4">
-            Cette page vous permet de localiser les services d'assistance aux personnes victimes de violences près de chez vous. 
-            Activez votre localisation pour une aide plus pertinente et personnalisée.
-          </p>
-          <div class="flex gap-3">
-            <button @click="closeIntroPopup" class="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
-              Continuer sans localisation
+          <select
+            v-model="selectedArrondissement"
+            aria-label="Filtrer par arrondissement"
+            class="w-40 md:w-56 px-3 py-2.5 rounded-xl border border-gray-200 dark:border-zinc-600 bg-gray-50 dark:bg-zinc-700 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+          >
+            <option value="">📍 Les 9 arrondissements</option>
+            <option v-for="zone in zoneOptions" :key="zone.name" :value="zone.name">
+              {{ zone.name }} ({{ zone.count }})
+            </option>
+          </select>
+        </div>
+
+        <!-- Chips catégories avec compteurs live -->
+        <div class="flex gap-1.5 overflow-x-auto pb-1 -mb-1 category-scroll">
+          <button
+            v-for="cat in categoriesWithCounts"
+            :key="cat.value"
+            @click="toggleCategory(cat.value)"
+            :class="[
+              'chip flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap border',
+              currentCategory === cat.value
+                ? 'text-white border-transparent shadow-md scale-105'
+                : 'bg-white dark:bg-zinc-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-zinc-600 hover:border-gray-300',
+            ]"
+            :style="currentCategory === cat.value ? { backgroundColor: cat.color } : {}"
+          >
+            <i :class="cat.icon" class="text-[11px]" :style="currentCategory !== cat.value ? { color: cat.color } : {}" />
+            {{ cat.label }}
+            <span
+              class="px-1.5 py-0.5 rounded-full text-[10px] font-bold tabular-nums"
+              :class="currentCategory === cat.value ? 'bg-white/25' : 'bg-gray-100 dark:bg-zinc-600'"
+            >{{ cat.count }}</span>
+          </button>
+        </div>
+
+        <!-- Filtres rapides + compteur animé + géoloc -->
+        <div class="flex items-center gap-2 text-xs px-0.5 flex-wrap">
+          <button
+            @click="onlyOpenToday = !onlyOpenToday"
+            :class="['chip px-2.5 py-1 rounded-full font-semibold border',
+              onlyOpenToday
+                ? 'bg-emerald-600 text-white border-transparent shadow-sm'
+                : 'bg-white dark:bg-zinc-700 text-gray-500 dark:text-gray-300 border-gray-200 dark:border-zinc-600']"
+          >
+            🕐 Ouvert aujourd'hui
+          </button>
+          <button
+            @click="onlyFree = !onlyFree"
+            :class="['chip px-2.5 py-1 rounded-full font-semibold border',
+              onlyFree
+                ? 'bg-emerald-600 text-white border-transparent shadow-sm'
+                : 'bg-white dark:bg-zinc-700 text-gray-500 dark:text-gray-300 border-gray-200 dark:border-zinc-600']"
+          >
+            💚 Gratuit
+          </button>
+
+          <span class="flex-1" />
+
+          <transition name="fade">
+            <button
+              v-if="hasActiveFilters"
+              @click="resetFilters"
+              class="chip text-gray-400 hover:text-red-500 font-medium underline decoration-dotted"
+            >
+              Réinitialiser
             </button>
-            <button @click="activateLocation" :disabled="isActivatingLocation" class="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-emerald-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-              <div v-if="isActivatingLocation" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              <span>{{ isActivatingLocation ? 'Activation...' : 'Activer ma localisation' }}</span>
-            </button>
-          </div>
+          </transition>
+
+          <span class="font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+            {{ animatedCount }} service{{ animatedCount > 1 ? 's' : '' }}
+          </span>
+
+          <button
+            v-if="!userPosition"
+            @click="locate"
+            :disabled="isLocating"
+            class="chip flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold disabled:opacity-50"
+          >
+            <svg class="w-3.5 h-3.5" :class="{ 'animate-spin': isLocating }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            {{ isLocating ? '…' : 'Me localiser' }}
+          </button>
+          <span v-else class="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Position
+          </span>
         </div>
       </div>
     </div>
 
-    <div class="title">
-      <AtomsContainer class="relative pt-12">
-        <AtomsTitle texte="Services d'assistance aux personnes victimes" />
-        
-        <!-- Message d'erreur -->
-        <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-          {{ error }}
-        </div>
+    <!-- ===== Carte plein écran ===== -->
+    <div id="map" class="map-container" />
 
-        <!-- Indicateur de chargement -->
-        <div v-if="loading" class="text-center py-4">
-          <div class="inline-flex items-center gap-2">
-            <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
-            <p class="text-gray-600 dark:text-gray-400">Chargement des services...</p>
-          </div>
-        </div>
+    <!-- État vide -->
+    <transition name="pop">
+      <div v-if="!loading && !filteredServices.length" class="empty-state dark:bg-zinc-800">
+        <span class="text-4xl mb-2">🔎</span>
+        <p class="font-semibold text-gray-700 dark:text-gray-200 mb-1">Aucun service trouvé</p>
+        <p class="text-sm text-gray-400 mb-4">Essaie d'élargir tes critères.</p>
+        <button @click="resetFilters" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-5 py-2.5 rounded-full transition active:scale-95">
+          Tout afficher
+        </button>
+      </div>
+    </transition>
 
-        <div class="maincontainer flex flex-col lg:flex-row justify-between gap-8 mx-auto max-w-screen-xl mt-6">
-          <!-- Carte et détails -->
-          <div class="leftsection flex-1">
-            <!-- Carte -->
-            <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-lg overflow-hidden">
-              <div id="map" style="height: 70vh; width: 100%; z-index: 1;" class="rounded-lg"></div>
-            </div>
-
-            <!-- Détails du service sélectionné -->
-            <div v-if="selectedService" class="mt-6 bg-white dark:bg-zinc-800 rounded-xl shadow-lg p-6">
-              <div class="flex justify-between items-start mb-6">
-                <div>
-                  <h2 class="text-2xl font-bold text-gray-800 dark:text-white">{{ selectedService.nom_structure }}</h2>
-                  <p class="text-lg mt-1" :style="{ color: getTextColor(getServiceCategory(selectedService)) }">
-                    {{ getServiceCategory(selectedService) }}
-                  </p>
-                  <p v-if="selectedService.distance !== undefined" class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    À {{ formatDistance(selectedService.distance) }} de votre position
-                  </p>
-                </div>
-                <span 
-                  :class="selectedService.statut ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-                  class="px-3 py-1 rounded-full text-sm"
-                >
-                  {{ selectedService.statut ? 'Actif' : 'Inactif' }}
-                </span>
-              </div>
-              
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p class="text-gray-600 dark:text-gray-400">Catégorie:</p>
-                  <p class="font-medium" :style="{ color: getTextColor(getServiceCategory(selectedService)) }">
-                    {{ getServiceCategory(selectedService) }}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-gray-600 dark:text-gray-400">Département:</p>
-                  <p class="font-medium text-gray-800 dark:text-white">{{ selectedService.departement }}</p>
-                </div>
-                <div>
-                  <p class="text-gray-600 dark:text-gray-400">Contact:</p>
-                  <p class="font-medium text-gray-800 dark:text-white">{{ selectedService.telephone_repondant }}</p>
-                </div>
-                <div>
-                  <p class="text-gray-600 dark:text-gray-400">Répondant:</p>
-                  <p class="font-medium text-gray-800 dark:text-white">{{ selectedService.nom_repondant }}</p>
-                </div>
-                <div v-if="selectedService.fonction_repondant">
-                  <p class="text-gray-600 dark:text-gray-400">Fonction:</p>
-                  <p class="font-medium text-gray-800 dark:text-white">{{ selectedService.fonction_repondant }}</p>
-                </div>
-                <div v-if="selectedService.email">
-                  <p class="text-gray-600 dark:text-gray-400">Email:</p>
-                  <a :href="`mailto:${selectedService.email}`" class="font-medium text-emerald-700 dark:text-emerald-300 hover:underline">{{ selectedService.email }}</a>
-                </div>
-                <div v-if="selectedService.site_web">
-                  <p class="text-gray-600 dark:text-gray-400">Site web:</p>
-                  <a :href="formatWebsiteUrl(selectedService.site_web || '')" target="_blank" rel="noopener" class="font-medium text-emerald-700 dark:text-emerald-300 hover:underline">Visiter</a>
-                </div>
-                <div v-if="selectedService.region">
-                  <p class="text-gray-600 dark:text-gray-400">Région:</p>
-                  <p class="font-medium text-gray-800 dark:text-white">{{ selectedService.region }}</p>
-                </div>
-                <div v-if="selectedService.arrondissement">
-                  <p class="text-gray-600 dark:text-gray-400">Arrondissement:</p>
-                  <p class="font-medium text-gray-800 dark:text-white">{{ selectedService.arrondissement }}</p>
-                </div>
-              </div>
-
-              <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div v-if="selectedService.langues_parlees?.length">
-                  <p class="text-gray-600 dark:text-gray-400 mb-1">Langues parlées:</p>
-                  <div class="flex flex-wrap gap-2">
-                    <span v-for="lang in selectedService.langues_parlees" :key="lang" class="px-2 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">{{ lang }}</span>
-                  </div>
-                </div>
-                <div v-if="selectedService.jours_ouverture?.length || selectedService.heures_ouverture">
-                  <p class="text-gray-600 dark:text-gray-400 mb-1">Horaires:</p>
-                  <div class="text-sm text-gray-800 dark:text-gray-200">
-                    <div v-if="selectedService.jours_ouverture?.length" class="mb-1">
-                      {{ selectedService.jours_ouverture.join(', ') }}
-                    </div>
-                    <div v-if="selectedService.heures_ouverture">
-                      Heures: {{ selectedService.heures_ouverture }}
-                    </div>
-                  </div>
-                </div>
-                <div v-if="selectedService.gratuit !== undefined && selectedService.gratuit !== null">
-                  <p class="text-gray-600 dark:text-gray-400">Tarification:</p>
-                  <p class="font-medium text-gray-800 dark:text-white">{{ typeof selectedService.gratuit === 'string' ? selectedService.gratuit : (selectedService.gratuit ? 'Gratuit' : 'Payant') }}</p>
-                </div>
-              </div>
-
-              <div class="mt-4 flex gap-3">
-                <a 
-                  :href="'https://www.google.com/maps/dir//' + selectedService.latitude + ',' + selectedService.longitude" 
-                  target="_blank"
-                  class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-                >
-                  <span>Itinéraire</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-                  </svg>
-                </a>
-                <button 
-                  @click="selectedService = null"
-                  class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-4 py-2 rounded-lg"
-                >
-                  Fermer
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Liste des services -->
-          <div class="rightsection w-full lg:w-96">
-            <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-lg overflow-hidden">
-              <div class="p-4 bg-gray-50 dark:bg-zinc-700 border-b dark:border-zinc-600">
-                <h2 class="text-lg font-semibold text-gray-800 dark:text-white flex items-center justify-between">
-                  <span>Services disponibles</span>
-                  <button 
-                    @click="getUserLocation"
-                    class="text-sm flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 rounded-full hover:bg-emerald-200 dark:hover:bg-emerald-800 transition-colors"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span>{{ userPosition ? 'Actualiser position' : 'Ma position' }}</span>
-                  </button>
-                </h2>
-              </div>
-              
-              <!-- Barre de recherche et filtres -->
-              <div class="flex flex-col gap-4 mb-6 p-4">
-                <!-- Barre de recherche principale -->
-                <div class="relative">
-                  <input
-                    v-model="searchQuery"
-                    type="text"
-                    placeholder="Rechercher un service par nom, département ou type d'assistance..."
-                    class="w-full px-4 py-3 rounded-lg border dark:border-zinc-600 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                  />
-                  <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  </span>
-                </div>
-
-                <!-- Filtre par ville -->
-                <div class="relative">
-                  <select
-                    v-model="selectedCity"
-                    class="w-full px-4 py-3 rounded-lg border dark:border-zinc-600 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                  >
-                    <option value="">Toutes les villes</option>
-                    <option v-for="city in availableCities" :key="city" :value="city">{{ city }}</option>
-                  </select>
-                </div>
-
-                <!-- Filtres rapides avec icônes -->
-                <div class="flex flex-wrap gap-2">
-                  <button 
-                    v-for="category in categories" 
-                    :key="category.value"
-                    @click="filterByCategory(category.value)"
-                    :class="[
-                      'px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2',
-                      currentCategory === category.value 
-                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200'
-                        : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600'
-                    ]"
-                  >
-                    <span class="w-2 h-2 rounded-full" :style="{ backgroundColor: getMarkerColor(category.label).color }"></span>
-                    {{ category.label }}
-                  </button>
-                </div>
-              </div>
-
-              <div class="overflow-y-auto" style="max-height: 60vh;">
-                <div v-if="filteredServices.length === 0" class="p-4 text-center text-gray-500 dark:text-gray-400">
-                  Aucun service actif trouvé
-                </div>
-                <div v-else class="divide-y dark:divide-zinc-600">
-                  <div 
-                    v-for="service in sortedServices" 
-                    :key="service.id"
-                    @click="selectService(service)"
-                    class="p-4 hover:bg-gray-50 dark:hover:bg-zinc-700 cursor-pointer transition-colors"
-                    :class="{'bg-emerald-50 dark:bg-emerald-900/20': selectedService?.id === service.id}"
-                  >
-                    <div class="flex justify-between items-start">
-                      <h3 class="font-medium text-gray-800 dark:text-white">{{ service.nom_structure }}</h3>
-                      <div class="flex flex-col items-end gap-1">
-                        <span 
-                          :class="service.statut ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
-                          class="px-2 py-0.5 rounded-full text-xs"
-                        >
-                          {{ service.statut ? 'Actif' : 'Inactif' }}
-                        </span>
-                        <span v-if="service.distance !== undefined" class="text-sm text-gray-500 dark:text-gray-400">
-                          {{ formatDistance(service.distance) }}
-                        </span>
-                      </div>
-                    </div>
-                    <p class="text-sm mt-1" :style="{ color: getTextColor(getServiceCategory(service)) }">
-                      {{ getServiceCategory(service) }}
-                    </p>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                      {{ service.departement }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </AtomsContainer>
+    <!-- Chargement -->
+    <div v-if="loading" class="absolute inset-0 z-[500] flex items-center justify-center bg-white/70 dark:bg-zinc-900/70">
+      <div class="flex flex-col items-center gap-3">
+        <div class="animate-spin rounded-full h-9 w-9 border-[3px] border-emerald-500 border-t-transparent" />
+        <p class="text-sm text-gray-600 dark:text-gray-300">Chargement des services…</p>
+      </div>
     </div>
 
-    <!-- Bouton de géolocalisation -->
-    <button 
-      @click="getUserLocation"
-      class="fixed bottom-4 right-4 bg-white dark:bg-zinc-800 p-3 rounded-full shadow-lg hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors z-20"
-      title="Utiliser ma position"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+    <!-- Erreur -->
+    <div v-if="error" class="absolute top-44 left-1/2 -translate-x-1/2 z-[500] bg-red-50 dark:bg-red-900/60 text-red-700 dark:text-red-200 text-sm px-4 py-2.5 rounded-xl shadow">
+      {{ error }}
+    </div>
+
+    <!-- ===== Bouton liste (mobile) ===== -->
+    <button v-if="!selectedService && filteredServices.length" @click="showList = true" class="list-fab md:hidden">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
       </svg>
+      Liste ({{ filteredServices.length }})
     </button>
+
+    <!-- ===== Panneau liste ===== -->
+    <transition name="sheet">
+      <div v-if="showList" class="list-panel bg-white dark:bg-zinc-800" @click.self="showList = false">
+        <div class="flex items-center justify-between px-4 pt-3 pb-2 border-b border-gray-100 dark:border-zinc-700">
+          <div class="sheet-handle md:hidden" />
+          <h2 class="font-semibold text-gray-800 dark:text-white text-sm">
+            {{ filteredServices.length }} service{{ filteredServices.length > 1 ? 's' : '' }}
+            <span v-if="selectedArrondissement"> — {{ selectedArrondissement }}</span>
+            <span v-if="isRoutingLoading" class="ml-2 text-[11px] font-medium text-blue-500 animate-pulse">
+              🛣 calcul des trajets…
+            </span>
+          </h2>
+          <button @click="showList = false" class="p-2 text-gray-400 hover:text-gray-600" aria-label="Fermer la liste">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="overflow-y-auto flex-1 divide-y divide-gray-50 dark:divide-zinc-700">
+          <p v-if="!sortedServices.length" class="p-6 text-center text-sm text-gray-400">
+            Aucun service ne correspond à ces critères.
+          </p>
+          <button
+            v-for="(service, index) in sortedServices"
+            :key="service.id"
+            @click="selectService(service); showList = false"
+            class="list-item w-full text-left px-4 py-3.5 hover:bg-emerald-50/50 dark:hover:bg-zinc-700/50 transition group"
+            :style="{ animationDelay: `${Math.min(index * 30, 300)}ms` }"
+          >
+            <div class="flex items-start justify-between gap-2">
+              <h3 class="font-medium text-gray-800 dark:text-white text-sm leading-snug group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors">
+                {{ service.nom_structure }}
+              </h3>
+              <span v-if="effectiveDistance(service) !== undefined" class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold whitespace-nowrap text-right">
+                <template v-if="roadInfo[service.id]">
+                  🛣 {{ formatDistance(roadInfo[service.id].km) }}
+                  <span class="block text-[10px] font-medium text-gray-400">≈ {{ formatDuration(roadInfo[service.id].min) }}</span>
+                </template>
+                <template v-else>{{ formatDistance(effectiveDistance(service)!) }}</template>
+              </span>
+            </div>
+            <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+              <span
+                v-for="cat in serviceCategories(service)"
+                :key="cat.value"
+                class="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full"
+                :style="{ backgroundColor: cat.color + '18', color: cat.color }"
+              >
+                <i :class="cat.icon" class="text-[9px]" />{{ cat.label }}
+              </span>
+              <span v-if="isOpenToday(service)" class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-300">
+                Ouvert auj.
+              </span>
+              <span v-if="!service.statut" class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-900/40 text-amber-600 dark:text-amber-300">
+                À confirmer
+              </span>
+              <span v-if="service.arrondissement" class="text-[11px] text-gray-400">📍 {{ service.arrondissement }}</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </transition>
+
+    <!-- ===== Fiche service ===== -->
+    <transition name="sheet">
+      <div v-if="selectedService" class="service-sheet bg-white dark:bg-zinc-800">
+        <div class="sheet-handle mx-auto mt-2.5 md:hidden" />
+        <div class="px-5 pt-3 pb-5 overflow-y-auto">
+          <div class="flex items-start justify-between gap-3 mb-1">
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white leading-snug">
+              {{ selectedService.nom_structure }}
+            </h2>
+            <button @click="selectedService = null" class="p-1.5 -mr-1.5 text-gray-400 hover:text-gray-600 flex-shrink-0" aria-label="Fermer">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-1.5 mb-4">
+            <span
+              v-for="cat in serviceCategories(selectedService)"
+              :key="cat.value"
+              class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full"
+              :style="{ backgroundColor: cat.color + '18', color: cat.color }"
+            >
+              <i :class="cat.icon" class="text-[10px]" />{{ cat.label }}
+            </span>
+            <span v-if="isFree(selectedService)" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">
+              Gratuit
+            </span>
+            <span v-if="isOpenToday(selectedService)" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">
+              🕐 Ouvert aujourd'hui
+            </span>
+            <span v-if="!selectedService.statut" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
+              ⚠️ Disponibilité à confirmer
+            </span>
+            <span v-if="roadInfo[selectedService.id]" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">
+              🛣 {{ formatDistance(roadInfo[selectedService.id].km) }} par la route · ≈ {{ formatDuration(roadInfo[selectedService.id].min) }}
+            </span>
+            <span v-else-if="selectedService.distance !== undefined" class="text-xs text-gray-500 dark:text-gray-400">
+              à {{ formatDistance(selectedService.distance) }}
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mb-4">
+            <a
+              v-if="selectedService.telephone_repondant"
+              :href="`tel:${cleanPhone(selectedService.telephone_repondant)}`"
+              class="action-btn bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+              </svg>
+              Appeler
+            </a>
+            <a
+              :href="`https://www.google.com/maps/dir//${selectedService.latitude},${selectedService.longitude}`"
+              target="_blank"
+              rel="noopener"
+              class="action-btn bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M12.293 2.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 8H5a1 1 0 110-2h9.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" transform="rotate(45 10 10)" />
+              </svg>
+              Itinéraire
+            </a>
+          </div>
+
+          <dl class="space-y-2.5 text-sm">
+            <div v-if="selectedService.telephone_repondant" class="detail-row">
+              <dt>Téléphone</dt>
+              <dd class="font-semibold">{{ selectedService.telephone_repondant }}</dd>
+            </div>
+            <div v-if="openingLabel(selectedService)" class="detail-row">
+              <dt>Horaires</dt>
+              <dd>{{ openingLabel(selectedService) }}</dd>
+            </div>
+            <div v-if="selectedService.arrondissement || selectedService.region" class="detail-row">
+              <dt>Zone</dt>
+              <dd>{{ [selectedService.arrondissement, selectedService.region].filter(Boolean).join(', ') }}</dd>
+            </div>
+            <div v-if="selectedService.langues_parlees?.length" class="detail-row">
+              <dt>Langues</dt>
+              <dd>{{ selectedService.langues_parlees.join(', ') }}</dd>
+            </div>
+            <div v-if="selectedService.nom_repondant" class="detail-row">
+              <dt>Contact</dt>
+              <dd>{{ [selectedService.fonction_repondant, selectedService.nom_repondant].filter(Boolean).join(' — ') }}</dd>
+            </div>
+            <div v-if="selectedService.email" class="detail-row">
+              <dt>Email</dt>
+              <dd><a :href="`mailto:${selectedService.email}`" class="text-emerald-600 dark:text-emerald-400 underline">{{ selectedService.email }}</a></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
-  
-<script setup lang="ts">
-import { onMounted, ref, computed, nextTick, watch } from 'vue'
-import axios from 'axios' 
-import { useAuthStore } from '@/stores/auth'
 
-// Cache pour les services
-const CACHE_KEY = 'services_cache'
-const CACHE_DURATION = 30 * 60 * 1000 // 30 minutes
+<script setup lang="ts">
+import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import arrondissementMap from '~/assets/data/arrondissements.json'
+
+useHead({ title: 'Trouver un service — Assistance aux victimes' })
+
+interface Service {
+  id: number
+  nom_structure: string
+  latitude: string | number
+  longitude: string | number
+  statut: boolean
+  soins_medicaux: unknown
+  appui_psychosocial: unknown
+  police_securite: unknown
+  assistance_juridique: unknown
+  sante_mentale: unknown
+  reinsertion_economique: unknown
+  hebergement: unknown
+  telephone_repondant: string
+  nom_repondant: string
+  fonction_repondant?: string | null
+  email?: string | null
+  site_web?: string | null
+  langues_parlees?: string[] | null
+  jours_ouverture?: string[] | null
+  heures_ouverture?: string | null
+  gratuit?: string | boolean | null
+  region?: string | null
+  departement?: string | null
+  arrondissement?: string | null
+  distance?: number
+}
+
+const API_URL = 'https://wilfriedtayou.pythonanywhere.com/api/question-transversale/'
+const CACHE_KEY = 'services_cache_v3'
+const CACHE_DURATION = 30 * 60 * 1000
+
+// Les 9 arrondissements couverts par la plateforme
+const ZONES = [
+  'Bafoussam 1', 'Bafoussam 2', 'Bafoussam 3',
+  'Foumbot', 'Foumban', 'Koutaba',
+  'Ngaoundere 1', 'Ngaoundere 2', 'Ngaoundere 3',
+]
+
+const categories = [
+  { value: 'soins_medicaux', label: 'Soins médicaux', color: '#dc2626', icon: 'fas fa-hospital' },
+  { value: 'appui_psychosocial', label: 'Appui psychosocial', color: '#ca8a04', icon: 'fas fa-hands-helping' },
+  { value: 'police_securite', label: 'Police / Sécurité', color: '#16a34a', icon: 'fas fa-shield-alt' },
+  { value: 'assistance_juridique', label: 'Aide juridique', color: '#2563eb', icon: 'fas fa-balance-scale' },
+  { value: 'sante_mentale', label: 'Santé mentale', color: '#7c3aed', icon: 'fas fa-brain' },
+  { value: 'reinsertion_economique', label: 'Réinsertion', color: '#ea580c', icon: 'fas fa-briefcase' },
+  { value: 'hebergement', label: 'Hébergement', color: '#db2777', icon: 'fas fa-house-user' },
+] as const
+
+const DAY_NAMES = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi']
 
 const loading = ref(true)
 const error = ref<string | null>(null)
-const mapInitialized = ref(false)
+const services = ref<Service[]>([])
 const selectedService = ref<Service | null>(null)
 const currentCategory = ref('')
 const searchQuery = ref('')
-const selectedCity = ref('')
+const debouncedSearchQuery = ref('')
+let searchDebounce: ReturnType<typeof setTimeout> | null = null
+watch(searchQuery, (value) => {
+  if (searchDebounce) clearTimeout(searchDebounce)
+  searchDebounce = setTimeout(() => { debouncedSearchQuery.value = value }, 250)
+})
+const selectedArrondissement = ref('')
+const onlyOpenToday = ref(false)
+const onlyFree = ref(false)
 const userPosition = ref<[number, number] | null>(null)
-const userMarker = ref<any>(null)
-const userCircle = ref<any>(null)
-const showIntroPopup = ref(false)
-const isActivatingLocation = ref(false)
+const isLocating = ref(false)
+const showList = ref(false)
+const animatedCount = ref(0)
 
-interface Service {
-  id: number;
-  nom_structure: string;
-  latitude: string | number;
-  longitude: string | number;
-  statut: boolean;
-  soins_medicaux: any | null;
-  appui_psychosocial: any | null;
-  police_securite: any | null;
-  assistance_juridique: any | null;
-  sante_mentale: any | null;
-  reinsertion_economique: any | null;
-  departement: string;
-  is_active: boolean;
-  telephone_repondant: string;
-  nom_repondant: string;
-  fonction_repondant?: string | null;
-  email?: string | null;
-  site_web?: string | null;
-  langues_parlees?: string[] | null;
-  jours_ouverture?: string[] | null;
-  heures_ouverture?: string | null;
-  gratuit?: string | boolean | null;
-  region?: string | null;
-  arrondissement?: string | null;
-  distance?: number;
-}
-
-const categories = [
-  { value: '', label: 'Tous' },
-  { value: 'soins_medicaux', label: 'Soins médicaux' },
-  { value: 'appui_psychosocial', label: 'Appui psychosocial' },
-  { value: 'police_securite', label: 'Police / Sécurité' },
-  { value: 'assistance_juridique', label: 'Assistance juridique' },
-  { value: 'sante_mentale', label: 'Santé mentale' },
-  { value: 'reinsertion_economique', label: 'Réinsertion économique' }
-]
-
-const services = ref<Service[]>([])
-let map: any
-let markers: any[] = []
+let map: any = null
+let clusterGroup: any = null
+let leaflet: any = null
+let userMarker: any = null
 const serviceIdToMarker = new Map<number, any>()
-let clusterGroupRef: any = null
-const auth = useAuthStore()
 
-// Fonctions de cache
-const getCachedServices = (): Service[] | null => {
-  try {
-    const cached = localStorage.getItem(CACHE_KEY)
-    if (!cached) return null
-    
-    const { data, timestamp } = JSON.parse(cached)
-    const now = Date.now()
-    
-    if (now - timestamp > CACHE_DURATION) {
-      localStorage.removeItem(CACHE_KEY)
-      return null
-    }
-    
-    return data
-  } catch {
-    return null
-  }
+/* ---------- Utilitaires données ---------- */
+
+const normalizeCache = new Map<string, string>()
+function normalize(text: string): string {
+  const key = text || ''
+  const cached = normalizeCache.get(key)
+  if (cached !== undefined) return cached
+  const result = key.normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().trim()
+  normalizeCache.set(key, result)
+  return result
 }
 
-const setCachedServices = (data: Service[]) => {
-  try {
-    const cacheData = {
-      data,
-      timestamp: Date.now()
-    }
-    localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData))
-  } catch {
-    // Ignore cache errors
-  }
+function cleanPhone(phone: string): string {
+  return (phone || '').replace(/[^\d+]/g, '')
 }
 
-// Liste des villes disponibles basée sur les arrondissements des services
-const availableCities = computed(() => {
-  const cities = new Set<string>()
-  services.value.forEach(service => {
-    if (service.arrondissement) {
-      cities.add(service.arrondissement)
-    }
-  })
-  return Array.from(cities).sort()
-})
-
-// Modifier le computed filteredServices
-const filteredServices = computed(() => {
-  let filtered = services.value
-
-  // Filtre par catégorie
-  if (currentCategory.value) {
-    filtered = filtered.filter(service => service[currentCategory.value as keyof Service])
-  }
-
-  // Filtre par ville
-  if (selectedCity.value) {
-    filtered = filtered.filter(service => {
-      if (!service.arrondissement) return false
-      
-      // Utiliser directement le champ arrondissement
-      return service.arrondissement.toLowerCase().includes(selectedCity.value.toLowerCase())
-    })
-  }
-
-  // Filtre par recherche
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(service => 
-      service.nom_structure.toLowerCase().includes(query) ||
-      (service.departement && service.departement.toLowerCase().includes(query)) ||
-      getServiceCategory(service).toLowerCase().includes(query)
-    )
-  }
-
-  return filtered
-})
-
-// Ajouter un computed pour trier les services par distance
-const sortedServices = computed(() => {
-  if (!userPosition.value) return filteredServices.value
-
-  return [...filteredServices.value].sort((a, b) => {
-    if (a.distance === undefined || b.distance === undefined) return 0
-    return a.distance - b.distance
-  })
-})
-
-// Ajouter le watcher pour les filtres
-watch([currentCategory, searchQuery, selectedCity], () => {
-  if (!map) return
-
-  // Mettre à jour la visibilité des marqueurs
-  markers.forEach(marker => {
-    const service = services.value.find(s => 
-      s.latitude === marker.getLatLng().lat && 
-      s.longitude === marker.getLatLng().lng
-    )
-    
-    if (service) {
-      const isVisible = filteredServices.value.some(s => s.id === service.id)
-      marker.setOpacity(isVisible ? 1 : 0.3)
-    }
-  })
-
-  // Centrer la carte sur les services filtrés
-  centerMapOnFilteredServices()
-})
-
-// Fonction pour centrer la carte sur les services filtrés
-async function centerMapOnFilteredServices() {
-  if (!map || !filteredServices.value.length) return
-
-  const visibleServices = filteredServices.value.filter(service => 
-    service.latitude && service.longitude
-  )
-
-  if (visibleServices.length === 0) return
-
-  if (visibleServices.length === 1) {
-    // Un seul service : centrer dessus avec zoom élevé
-    const service = visibleServices[0]
-    const lat = parseFloat(service.latitude as string)
-    const lng = parseFloat(service.longitude as string)
-    map.setView([lat, lng], 15)
-  } else {
-    // Plusieurs services : ajuster la vue pour tous les voir
-    const bounds = visibleServices.map(service => [
-      parseFloat(service.latitude as string),
-      parseFloat(service.longitude as string)
-    ])
-    
-    // Créer un groupe de marqueurs temporaire pour calculer les bounds
-    const L = await import('leaflet')
-    const group = L.default.featureGroup()
-    
-    bounds.forEach(([lat, lng]) => {
-      group.addLayer(L.default.marker([lat, lng]))
-    })
-    
-    map.fitBounds(group.getBounds(), {
-      padding: [50, 50],
-      maxZoom: 12
-    })
-  }
+function coordsOf(service: Service): [number, number] | null {
+  const lat = parseFloat(service.latitude as string)
+  const lng = parseFloat(service.longitude as string)
+  if (isNaN(lat) || isNaN(lng)) return null
+  // Coordonnées hors du Cameroun = donnée erronée
+  if (lat < 1.5 || lat > 13.5 || lng < 8 || lng > 16.5) return null
+  return [lat, lng]
 }
 
-function filterByCategory(category: string) {
-  currentCategory.value = currentCategory.value === category ? '' : category
-}
-
-function selectService(service: Service) {
-  selectedService.value = service
-  if (map && service.latitude && service.longitude) {
-    const lat = parseFloat(service.latitude as string)
-    const lng = parseFloat(service.longitude as string)
-    const targetLatLng = [lat, lng] as [number, number]
-
-    const marker = serviceIdToMarker.get(service.id)
-    if (marker && clusterGroupRef && typeof clusterGroupRef.zoomToShowLayer === 'function') {
-      clusterGroupRef.zoomToShowLayer(marker, () => {
-        map.setView(targetLatLng, 16)
-        try { marker.openTooltip && marker.openTooltip() } catch {}
-      })
-    } else {
-      map.setView(targetLatLng, 16)
-      try { marker && marker.openTooltip && marker.openTooltip() } catch {}
-    }
-
-    // Calculer et ajouter la distance si la position de l'utilisateur est disponible
-    if (userPosition.value) {
-      const distance = calculateDistance(
-        userPosition.value[0],
-        userPosition.value[1],
-        lat,
-        lng
-      )
-      selectedService.value = {
-        ...service,
-        distance,
-        departement: getDepartement(lat, lng)
-      }
-    }
-  }
-}
-
-function getServiceCategory(service: Service): string {
-  if (!service) return 'Non spécifié';
-  if (service.soins_medicaux) return 'Soins médicaux';
-  if (service.appui_psychosocial) return 'Appui psychosocial';
-  if (service.police_securite) return 'Police / Sécurité';
-  if (service.assistance_juridique) return 'Assistance juridique';
-  if (service.sante_mentale) return 'Santé mentale';
-  if (service.reinsertion_economique) return 'Réinsertion économique';
-  return 'Non spécifié';
-}
-
-function getMarkerColor(categorie: string): { color: string, icon: string } {
-  switch (categorie.toLowerCase()) {
-    case "soins médicaux": 
-      return { 
-        color: '#dc2626',
-        icon: 'fas fa-hospital'
-      }
-    case "appui psychosocial": 
-      return { 
-        color: '#ca8a04',
-        icon: 'fas fa-hands-helping'
-      }
-    case "police / sécurité": 
-      return { 
-        color: '#16a34a',
-        icon: 'fas fa-shield-alt'
-      }
-    case "assistance juridique": 
-      return { 
-        color: '#2563eb',
-        icon: 'fas fa-balance-scale'
-      }
-    case "santé mentale": 
-      return { 
-        color: '#7c3aed',
-        icon: 'fas fa-brain'
-      }
-    case "réinsertion économique": 
-      return { 
-        color: '#ea580c',
-        icon: 'fas fa-briefcase'
-      }
-    default: 
-      return { 
-        color: '#4b5563',
-        icon: 'fas fa-map-marker-alt'
-      }
-  }
-}
-
-function getTextColor(categorie: string): string {
-  switch (categorie.toLowerCase()) {
-    case "soins médicaux": return "#dc2626"
-    case "appui psychosocial": return "#ca8a04"
-    case "police / sécurité": return "#16a34a"
-    case "assistance juridique": return "#2563eb"
-    case "santé mentale": return "#7c3aed"
-    case "réinsertion économique": return "#ea580c"
-    default: return "#4b5563"
-  }
-}
-
-function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
-  const R = 6371 // Rayon de la Terre en km
-  const dLat = (lat2 - lat1) * Math.PI / 180
-  const dLon = (lon2 - lon1) * Math.PI / 180
-  const a = 
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-    Math.sin(dLon/2) * Math.sin(dLon/2)
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
-  return R * c
+function haversine(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371
+  const dLat = ((lat2 - lat1) * Math.PI) / 180
+  const dLon = ((lon2 - lon1) * Math.PI) / 180
+  const a = Math.sin(dLat / 2) ** 2
+    + Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
 function formatDistance(distance: number): string {
-  if (distance < 1) {
-    return `${Math.round(distance * 1000)} m`
-  }
-  return `${Math.round(distance)} km`
+  return distance < 1 ? `${Math.round(distance * 1000)} m` : `${distance.toFixed(1)} km`
 }
 
-function formatWebsiteUrl(url: string): string {
-  if (!url) return '#'
-  if (!/^https?:\/\//i.test(url)) {
-    return `https://${url}`
-  }
-  return url
+function formatDuration(minutes: number): string {
+  if (minutes < 60) return `${minutes} min`
+  const hours = Math.floor(minutes / 60)
+  return `${hours} h ${String(minutes % 60).padStart(2, '0')}`
 }
 
-const departements = {
-  Adamaoua: {
-    bounds: [[6.5, 11.5], [8.0, 15.0]],
-    center: [7.25, 13.25]
-  },
-  Centre: {
-    bounds: [[3.5, 10.5], [6.0, 13.0]],
-    center: [4.75, 11.75]
-  },
-  Est: {
-    bounds: [[2.0, 13.0], [6.0, 16.0]],
-    center: [4.0, 14.5]
-  },
-  "Extrême-Nord": {
-    bounds: [[10.0, 13.5], [13.0, 15.5]],
-    center: [11.5, 14.5]
-  },
-  Littoral: {
-    bounds: [[3.5, 9.5], [5.0, 10.5]],
-    center: [4.25, 10.0]
-  },
-  Nord: {
-    bounds: [[8.0, 13.0], [10.0, 15.5]],
-    center: [9.0, 14.25]
-  },
-  "Nord-Ouest": {
-    bounds: [[5.7, 9.8], [7.0, 11.2]],
-    center: [6.35, 10.5]
-  },
-  Ouest: {
-    bounds: [[5.0, 9.8], [6.0, 11.2]],
-    center: [5.5, 10.5]
-  },
-  Sud: {
-    bounds: [[2.0, 10.0], [3.5, 12.0]],
-    center: [2.75, 11.0]
-  },
-  "Sud-Ouest": {
-    bounds: [[4.0, 8.5], [6.5, 10.0]],
-    center: [5.25, 9.25]
+/** Retire les doublons (même nom normalisé à moins de 500 m). */
+function dedupe(list: Service[]): Service[] {
+  const kept: Service[] = []
+  for (const service of list) {
+    const point = coordsOf(service)
+    const isDuplicate = kept.some(other => {
+      if (normalize(other.nom_structure) !== normalize(service.nom_structure)) return false
+      const otherPoint = coordsOf(other)
+      if (!point || !otherPoint) return true
+      return haversine(point[0], point[1], otherPoint[0], otherPoint[1]) < 0.5
+    })
+    if (!isDuplicate) kept.push(service)
+  }
+  return kept
+}
+
+/** Complète l'arrondissement manquant via le mapping géocodé embarqué. */
+function enrichArrondissement(service: Service): Service {
+  const corrected = (arrondissementMap as Record<string, string>)[String(service.id)]
+  if (corrected && !(service.arrondissement || '').trim()) {
+    service.arrondissement = corrected
+  }
+  return service
+}
+
+function serviceCategories(service: Service) {
+  return categories.filter(cat => (service as any)[cat.value])
+}
+
+function isFree(service: Service): boolean {
+  const value = service.gratuit
+  if (typeof value === 'boolean') return value
+  return normalize(String(value ?? '')).includes('gratuit')
+}
+
+function isOpenToday(service: Service): boolean {
+  const days = service.jours_ouverture
+  if (!days?.length) return false
+  const today = DAY_NAMES[new Date().getDay()]
+  return days.some(day => normalize(day) === today)
+}
+
+function openingLabel(service: Service): string {
+  const days = service.jours_ouverture?.length ? service.jours_ouverture.join(', ') : ''
+  const hours = service.heures_ouverture && service.heures_ouverture !== '00:00:00'
+    ? `à partir de ${service.heures_ouverture.slice(0, 5)}` : ''
+  return [days, hours].filter(Boolean).join(' — ')
+}
+
+/* ---------- Filtres ---------- */
+
+function matchesStaticFilters(service: Service, ignoreCategory = false): boolean {
+  if (!ignoreCategory && currentCategory.value && !(service as any)[currentCategory.value]) return false
+  if (selectedArrondissement.value && normalize(service.arrondissement || '') !== normalize(selectedArrondissement.value)) return false
+  if (onlyOpenToday.value && !isOpenToday(service)) return false
+  if (onlyFree.value && !isFree(service)) return false
+  if (debouncedSearchQuery.value.trim()) {
+    const query = normalize(debouncedSearchQuery.value)
+    const matches = normalize(service.nom_structure).includes(query)
+      || normalize(service.arrondissement || '').includes(query)
+      || serviceCategories(service).some(cat => normalize(cat.label).includes(query))
+    if (!matches) return false
+  }
+  return true
+}
+
+const filteredServices = computed(() => services.value.filter(s => matchesStaticFilters(s)))
+
+const categoriesWithCounts = computed(() =>
+  categories.map(cat => ({
+    ...cat,
+    count: services.value.filter(s => (s as any)[cat.value] && matchesStaticFilters(s, true)).length,
+  }))
+)
+
+const zoneOptions = computed(() =>
+  ZONES.map(name => ({
+    name,
+    count: services.value.filter(s => normalize(s.arrondissement || '') === normalize(name)).length,
+  })).filter(zone => zone.count > 0)
+)
+
+/* ---------- Distances routières (OSRM) ---------- */
+
+// Distances par la route calculées via OSRM : id service → { km, min }
+const roadInfo = ref<Record<number, { km: number; min: number }>>({})
+const isRoutingLoading = ref(false)
+let routingRequestId = 0
+
+/** Distance effective : par la route si connue, sinon à vol d'oiseau. */
+function effectiveDistance(service: Service): number | undefined {
+  return roadInfo.value[service.id]?.km ?? service.distance
+}
+
+/** Calcule les distances routières des 24 services les plus proches (à vol
+ * d'oiseau) via l'API table d'OSRM, en une seule requête. Repli silencieux
+ * sur le vol d'oiseau si le serveur ne répond pas. */
+async function fetchRoadDistances() {
+  if (!userPosition.value) return
+  const [userLat, userLng] = userPosition.value
+
+  const nearest = [...filteredServices.value]
+    .filter(s => s.distance !== undefined && coordsOf(s))
+    .sort((a, b) => a.distance! - b.distance!)
+    .slice(0, 24)
+  if (!nearest.length) return
+
+  const requestId = ++routingRequestId
+  isRoutingLoading.value = true
+  try {
+    const coordinates = [`${userLng},${userLat}`]
+    for (const service of nearest) {
+      const [lat, lng] = coordsOf(service)!
+      coordinates.push(`${lng},${lat}`)
+    }
+    const url = `https://router.project-osrm.org/table/v1/driving/${coordinates.join(';')}`
+      + '?sources=0&annotations=distance,duration'
+    const response = await fetch(url)
+    if (!response.ok) throw new Error(`OSRM ${response.status}`)
+    const data = await response.json()
+    if (requestId !== routingRequestId) return   // une requête plus récente a pris le relais
+
+    const updated: Record<number, { km: number; min: number }> = {}
+    nearest.forEach((service, index) => {
+      const meters = data.distances?.[0]?.[index + 1]
+      const seconds = data.durations?.[0]?.[index + 1]
+      if (typeof meters === 'number' && meters > 0) {
+        updated[service.id] = { km: meters / 1000, min: Math.max(1, Math.round((seconds || 0) / 60)) }
+      }
+    })
+    roadInfo.value = updated
+  } catch {
+    // OSRM indisponible : on garde le tri à vol d'oiseau, sans bruit pour l'utilisateur
+  } finally {
+    if (requestId === routingRequestId) isRoutingLoading.value = false
   }
 }
 
-function getDepartement(lat: number, lon: number): string {
-  for (const [nom, coords] of Object.entries(departements)) {
-    const [[minLat, minLon], [maxLat, maxLon]] = coords.bounds
-    if (lat >= minLat && lat <= maxLat && lon >= minLon && lon <= maxLon) {
-      return nom
+// Recalcule (débouncé) quand la position ou les filtres changent
+let routingDebounce: ReturnType<typeof setTimeout> | null = null
+watch([userPosition, filteredServices], () => {
+  if (!userPosition.value) return
+  if (routingDebounce) clearTimeout(routingDebounce)
+  routingDebounce = setTimeout(fetchRoadDistances, 600)
+})
+
+const sortedServices = computed(() => {
+  if (!userPosition.value) return filteredServices.value
+  return [...filteredServices.value].sort(
+    (a, b) => (effectiveDistance(a) ?? Infinity) - (effectiveDistance(b) ?? Infinity)
+  )
+})
+
+const hasActiveFilters = computed(() =>
+  Boolean(currentCategory.value || selectedArrondissement.value || debouncedSearchQuery.value || onlyOpenToday.value || onlyFree.value)
+)
+
+function toggleCategory(value: string) {
+  currentCategory.value = currentCategory.value === value ? '' : value
+}
+
+function resetFilters() {
+  currentCategory.value = ''
+  selectedArrondissement.value = ''
+  searchQuery.value = ''
+  debouncedSearchQuery.value = ''
+  onlyOpenToday.value = false
+  onlyFree.value = false
+}
+
+/* Compteur animé (ease-out cubique) */
+watch(filteredServices, (list) => {
+  const target = list.length
+  const start = animatedCount.value
+  if (start === target) return
+  const startTime = performance.now()
+  const duration = 450
+  function tick(now: number) {
+    const progress = Math.min((now - startTime) / duration, 1)
+    animatedCount.value = Math.round(start + (target - start) * (1 - (1 - progress) ** 3))
+    if (progress < 1) requestAnimationFrame(tick)
+  }
+  requestAnimationFrame(tick)
+})
+
+/* ---------- Carte ---------- */
+
+// Zoom à partir duquel les noms des services s'affichent sous les épingles
+const LABEL_ZOOM = 14
+
+// WCAG 2.3.3 : pas d'animations pour qui les désactive dans son système
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+function flyDuration(base: number): number {
+  return prefersReducedMotion() ? 0 : base
+}
+
+function labelText(service: Service): string {
+  const name = service.nom_structure.trim()
+  return name.length > 26 ? `${name.slice(0, 24)}…` : name
+}
+
+/** Étiquette permanente (pattern Google Maps POI) : nom sous l'épingle,
+ * masquée en dessous de LABEL_ZOOM via la classe CSS labels-hidden. */
+function bindLabel(marker: any, service: Service, active = false) {
+  marker.unbindTooltip()
+  marker.bindTooltip(labelText(service), {
+    permanent: true,
+    direction: 'bottom',
+    offset: [0, 2],
+    className: `marker-label${active ? ' marker-label-active' : ''}`,
+    opacity: 1,
+  })
+}
+
+function updateLabelVisibility() {
+  if (!map) return
+  map.getContainer().classList.toggle('labels-hidden', map.getZoom() < LABEL_ZOOM)
+}
+
+function markerIcon(service: Service, highlighted = false) {
+  const primary = serviceCategories(service)[0]
+  const color = primary?.color || '#4b5563'
+  const icon = primary?.icon || 'fas fa-map-marker-alt'
+  return leaflet.divIcon({
+    className: 'custom-marker',
+    html: `<div class="marker-pin marker-drop ${highlighted ? 'marker-active' : ''}" style="background:${color}"><i class="${icon}"></i></div>`,
+    iconSize: [38, 38],
+    iconAnchor: [19, 38],
+  })
+}
+
+function rebuildMarkers() {
+  if (!map || !clusterGroup) return
+  clusterGroup.clearLayers()
+  serviceIdToMarker.clear()
+
+  filteredServices.value.forEach(service => {
+    const point = coordsOf(service)
+    if (!point) return
+    const marker = leaflet.marker(point, {
+      icon: markerIcon(service),
+      alt: service.nom_structure,   // texte alternatif pour lecteurs d'écran
+    })
+    bindLabel(marker, service)
+    marker.on('click', () => selectService(service))
+    clusterGroup.addLayer(marker)
+    serviceIdToMarker.set(service.id, marker)
+  })
+
+  if (filteredServices.value.length && hasActiveFilters.value) {
+    const bounds = clusterGroup.getBounds()
+    if (bounds.isValid()) map.flyToBounds(bounds, { padding: [70, 70], maxZoom: 13, duration: flyDuration(0.8) })
+  }
+}
+
+watch([currentCategory, selectedArrondissement, debouncedSearchQuery, onlyOpenToday, onlyFree], () => {
+  selectedService.value = null
+  rebuildMarkers()
+})
+
+function selectService(service: Service) {
+  // Remet le marqueur précédemment sélectionné à la normale
+  if (selectedService.value) {
+    const previous = serviceIdToMarker.get(selectedService.value.id)
+    if (previous) {
+      previous.setIcon(markerIcon(selectedService.value))
+      bindLabel(previous, selectedService.value)
     }
   }
-  return "Non déterminé"
-}
-
-// Fonctions pour le popup d'introduction
-function closeIntroPopup() {
-  showIntroPopup.value = false
-}
-
-async function activateLocation() {
-  isActivatingLocation.value = true
-  try {
-    await getUserLocation()
-    closeIntroPopup()
-  } catch (error) {
-    console.error('Erreur lors de l\'activation de la localisation:', error)
-    // Garder le popup ouvert en cas d'erreur
-    alert('Impossible d\'obtenir votre position. Veuillez vérifier que vous avez autorisé l\'accès à la géolocalisation.')
-  } finally {
-    isActivatingLocation.value = false
+  selectedService.value = service
+  const point = coordsOf(service)
+  if (!point || !map) return
+  const marker = serviceIdToMarker.get(service.id)
+  if (marker) {
+    marker.setIcon(markerIcon(service, true))
+    bindLabel(marker, service, true)   // étiquette toujours visible pour la sélection
+  }
+  if (marker && clusterGroup?.zoomToShowLayer) {
+    clusterGroup.zoomToShowLayer(marker, () => map.flyTo(point, Math.max(map.getZoom(), 15), { duration: flyDuration(0.7) }))
+  } else {
+    map.flyTo(point, 15, { duration: flyDuration(0.7) })
   }
 }
 
-// Modifier la fonction getUserLocation pour mettre à jour l'interface
-async function getUserLocation() {
-  try {
-    const position = await new Promise<GeolocationPosition>((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
-      })
-    })
+/* ---------- Géolocalisation ---------- */
 
+async function locate() {
+  if (!('geolocation' in navigator)) return
+  isLocating.value = true
+  try {
+    const position = await new Promise<GeolocationPosition>((resolve, reject) =>
+      navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 8000 })
+    )
     const { latitude, longitude } = position.coords
     userPosition.value = [latitude, longitude]
 
-    if (map) {
-      // Supprimer les anciens marqueurs si ils existent
-      if (userMarker.value) map.removeLayer(userMarker.value)
-      if (userCircle.value) map.removeLayer(userCircle.value)
+    services.value = services.value.map(service => {
+      const point = coordsOf(service)
+      return point ? { ...service, distance: haversine(latitude, longitude, point[0], point[1]) } : service
+    })
 
-      // Ajouter le marqueur de position
-      const L = await import('leaflet')
-      userMarker.value = L.default.marker([latitude, longitude], {
-        icon: L.default.divIcon({
-          className: 'user-location-marker',
-          html: '<div class="ping"></div>',
-          iconSize: [20, 20]
-        })
-      }).addTo(map)
-
-      // Ajouter un cercle pour montrer la précision
-      userCircle.value = L.default.circle([latitude, longitude], {
-        radius: 1000, // 1km de rayon
-        color: '#3b82f6',
-        fillColor: '#3b82f6',
-        fillOpacity: 0.1,
-        weight: 1
-      }).addTo(map)
-
-      // Centrer la carte sur la position avec un zoom approprié
-      map.setView([latitude, longitude], 13)
-
-      // Mettre à jour les distances pour tous les services
-      services.value = services.value.map(service => {
-        if (!service.latitude || !service.longitude) return service
-
-        const lat = parseFloat(service.latitude as string)
-        const lng = parseFloat(service.longitude as string)
-        
-        if (isNaN(lat) || isNaN(lng)) return service
-
-        return {
-          ...service,
-          distance: calculateDistance(latitude, longitude, lat, lng),
-          departement: getDepartement(lat, lng)
-        }
-      })
+    // Déduit l'arrondissement le plus proche et pré-remplit le filtre
+    const nearest = services.value
+      .filter(s => s.arrondissement?.trim() && s.distance !== undefined)
+      .sort((a, b) => a.distance! - b.distance!)[0]
+    if (nearest?.arrondissement && !selectedArrondissement.value) {
+      selectedArrondissement.value = ZONES.find(z => normalize(z) === normalize(nearest.arrondissement!)) || ''
     }
-  } catch (error) {
-    console.error('Erreur de géolocalisation:', error)
-    throw error // Re-throw pour que activateLocation puisse gérer l'erreur
+
+    if (map) {
+      if (userMarker) map.removeLayer(userMarker)
+      userMarker = leaflet.marker([latitude, longitude], {
+        icon: leaflet.divIcon({ className: 'user-location-marker', html: '<div class="ping"></div>', iconSize: [20, 20] }),
+      }).addTo(map)
+      map.flyTo([latitude, longitude], 13, { duration: flyDuration(0.8) })
+    }
+  } catch {
+    error.value = "Position indisponible. Vérifie l'autorisation de géolocalisation."
+    setTimeout(() => { error.value = null }, 4000)
+  } finally {
+    isLocating.value = false
   }
 }
 
-// Ajouter un watcher pour mettre à jour les distances quand la position change
-watch(userPosition, () => {
-  if (!userPosition.value) return
+/* ---------- Chargement ---------- */
 
-  const [latitude, longitude] = userPosition.value
-  services.value = services.value.map(service => {
-    if (!service.latitude || !service.longitude) return service
-
-    const lat = parseFloat(service.latitude as string)
-    const lng = parseFloat(service.longitude as string)
-    
-    if (isNaN(lat) || isNaN(lng)) return service
-
-    return {
-      ...service,
-      distance: calculateDistance(latitude, longitude, lat, lng),
-      departement: getDepartement(lat, lng)
-    }
-  })
-})
+function readCache(): Service[] | null {
+  try {
+    const cached = localStorage.getItem(CACHE_KEY)
+    if (!cached) return null
+    const { data, timestamp } = JSON.parse(cached)
+    if (Date.now() - timestamp > CACHE_DURATION) return null
+    return data
+  } catch { return null }
+}
 
 onMounted(async () => {
+  // Pré-filtre depuis la page d'accueil (/services?cat=hebergement)
+  const requestedCategory = useRoute().query.cat as string | undefined
+  if (requestedCategory && categories.some(c => c.value === requestedCategory)) {
+    currentCategory.value = requestedCategory
+  }
+
   try {
-    loading.value = true
-    error.value = null
-
-    // Afficher le popup à chaque actualisation de la page
-    showIntroPopup.value = true
-
-    // Essayer de charger depuis le cache d'abord
-    const cachedServices = getCachedServices()
-    if (cachedServices) {
-      services.value = cachedServices
-      console.log('Services chargés depuis le cache')
+    const cached = readCache()
+    if (cached) {
+      services.value = cached
     } else {
-      // Charger depuis l'API si pas de cache
-      const response = await axios.get('https://wilfriedtayou.pythonanywhere.com/api/question-transversale/', {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      })
-      
-      if (!response.data) {
-        error.value = 'Pas de données reçues de l\'API'
-        return
-      }
-
-      // Filtrer les services actifs en utilisant uniquement le champ statut
-      services.value = Array.isArray(response.data) 
-        ? response.data.filter((s: Service) => s.statut)
-        : []
-
-      // Mettre en cache les services
-      setCachedServices(services.value)
-      console.log('Services chargés depuis l\'API et mis en cache')
+      const response = await fetch(API_URL, { headers: { Accept: 'application/json' } })
+      const data = await response.json()
+      // TOUS les services (actifs comme à confirmer), sans entrées de test,
+      // dédupliqués, arrondissements complétés par le géocodage embarqué
+      services.value = dedupe(
+        (Array.isArray(data) ? data : [])
+          .filter((s: Service) => !normalize(s.nom_structure).includes('test'))
+          .map(enrichArrondissement)
+      )
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ data: services.value, timestamp: Date.now() })) } catch {}
     }
+    animatedCount.value = services.value.length
 
-    if (services.value.length === 0) {
-      error.value = 'Aucun service actif trouvé'
-      return
-    }
-
-    // Import Leaflet dynamiquement côté client
     const L = await import('leaflet')
-    // Import du CSS de Leaflet
-    await import('leaflet/dist/leaflet.css')
-    // Import MarkerCluster plugin et CSS (side effects)
-    await import('leaflet.markercluster')
-    await import('leaflet.markercluster/dist/MarkerCluster.css')
-    await import('leaflet.markercluster/dist/MarkerCluster.Default.css')
-    
-    // Attendre que le DOM soit prêt
+    leaflet = L.default ?? L
+    await import('leaflet/dist/leaflet.css' as any)
+    await import('leaflet.markercluster' as any)
+    await import('leaflet.markercluster/dist/MarkerCluster.css' as any)
+    await import('leaflet.markercluster/dist/MarkerCluster.Default.css' as any)
     await nextTick()
-    
-    // Vérifier si le conteneur de la carte existe
-    const mapContainer = document.getElementById('map')
-    if (!mapContainer) {
-      console.error('Le conteneur de la carte n\'existe pas encore')
-      error.value = 'Erreur lors de l\'initialisation de la carte'
-      return
-    }
-    
-    interface TileProvider {
-      url: string;
-      options: {
-        attribution: string;
-        subdomains?: string[];
-      };
-    }
 
-    // Configuration des tuiles avec plusieurs fournisseurs pour la redondance
-    const tileProviders: TileProvider[] = [
-      {
-        url: 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-        options: {
-          attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          subdomains: ['a', 'b', 'c']
-        }
-      },
-      {
-        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        options: {
-          attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          subdomains: ['a', 'b', 'c']
-        }
-      },
-      {
-        url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-        options: {
-          attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }
-      },
-      {
-        url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
-        options: {
-          attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, © <a href="https://carto.com/attribution">CARTO</a>',
-          subdomains: ['a', 'b', 'c', 'd']
-        }
-      }
-    ]
-
-    let currentProviderIndex = 0
-    let retryCount = 0
-    const maxRetries = 3
-    const retryDelay = 1000 // 1 seconde
-
-    // Fonction pour créer une couche de tuiles avec gestion des erreurs
-    function createTileLayer(providerIndex: number) {
-      const provider = tileProviders[providerIndex]
-      const layer = L.default.tileLayer(provider.url, {
-        ...provider.options,
-        crossOrigin: true,
-        maxZoom: 18,
-        minZoom: 5,
-        errorTileUrl: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
-        className: 'map-tiles',
-        keepBuffer: 4,
-        updateWhenIdle: true,
-        updateWhenZooming: false,
-        maxNativeZoom: 18,
-        tileSize: 256
-      })
-
-      layer.on('tileerror', async () => {
-        console.warn(`Erreur de chargement de tuile avec le fournisseur ${providerIndex}, tentative ${retryCount + 1}/${maxRetries}`)
-        
-        if (retryCount < maxRetries) {
-          retryCount++
-          // Attendre avant de réessayer
-          await new Promise(resolve => setTimeout(resolve, retryDelay))
-          
-          // Essayer le prochain fournisseur
-          currentProviderIndex = (currentProviderIndex + 1) % tileProviders.length
-          const newLayer = createTileLayer(currentProviderIndex)
-          
-          if (map.hasLayer(layer)) {
-            map.removeLayer(layer)
-            newLayer.addTo(map)
-          }
-        } else {
-          console.error('Échec du chargement des tuiles après plusieurs tentatives')
-          // Afficher un message d'erreur à l'utilisateur
-          error.value = 'Problème de chargement de la carte. Certaines tuiles peuvent ne pas s\'afficher correctement.'
-        }
-      })
-
-      layer.on('load', () => {
-        // Réinitialiser le compteur de tentatives si le chargement réussit
-        retryCount = 0
-      })
-
-      return layer
-    }
-
-    // Initialisation de la carte avec options avancées
-    map = L.default.map('map', {
-      center: [7.3697, 12.3547],
-    zoom: 6,
+    map = leaflet.map('map', {
+      center: [6.4, 11.5],
+      zoom: 7,
       minZoom: 5,
       maxZoom: 18,
-      zoomControl: true,
-      attributionControl: true,
-      // Ajouter des options pour améliorer les performances
+      zoomControl: false,
       preferCanvas: true,
-      renderer: L.default.canvas(),
-      fadeAnimation: false,
-      zoomAnimation: true,
-      markerZoomAnimation: true
     })
+    leaflet.control.zoom({
+      position: 'bottomright',
+      zoomInTitle: 'Zoomer',
+      zoomOutTitle: 'Dézoomer',
+    }).addTo(map)
 
-    // Création et ajout de la couche de tuiles initiale
-    createTileLayer(currentProviderIndex).addTo(map)
+    // Échelle graphique — norme cartographique de base
+    leaflet.control.scale({ metric: true, imperial: false, position: 'bottomleft' }).addTo(map)
 
-    // Création d'un groupe de clusters pour réduire le fouillis de marqueurs
-    const clusterGroup = (L as any).default.markerClusterGroup({
+    // Légende repliable — consultable à tout moment (norme d'accessibilité)
+    const LegendControl = leaflet.Control.extend({
+      onAdd() {
+        const container = leaflet.DomUtil.create('div', 'legend-control leaflet-bar')
+        container.innerHTML = `
+          <button class="legend-toggle" aria-label="Afficher la légende" aria-expanded="false">
+            <i class="fas fa-list-ul"></i>
+          </button>
+          <div class="legend-body" hidden>
+            <p class="legend-title">Types de services</p>
+            ${categories.map(cat => `
+              <div class="legend-row">
+                <span class="legend-dot" style="background:${cat.color}"><i class="${cat.icon}"></i></span>
+                ${cat.label}
+              </div>`).join('')}
+          </div>`
+        leaflet.DomEvent.disableClickPropagation(container)
+        const toggle = container.querySelector('.legend-toggle') as HTMLButtonElement
+        const body = container.querySelector('.legend-body') as HTMLElement
+        toggle.addEventListener('click', () => {
+          const isOpen = !body.hidden
+          body.hidden = isOpen
+          toggle.setAttribute('aria-expanded', String(!isOpen))
+        })
+        return container
+      },
+    })
+    new LegendControl({ position: 'bottomright' }).addTo(map)
+
+    leaflet.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap',
+      maxZoom: 18,
+    }).addTo(map)
+
+    clusterGroup = (leaflet as any).markerClusterGroup({
       showCoverageOnHover: false,
       spiderfyOnMaxZoom: true,
-      disableClusteringAtZoom: 14,
+      disableClusteringAtZoom: LABEL_ZOOM,   // dès que les noms s'affichent, plus de clusters
       chunkedLoading: true,
-      maxClusterRadius: 60
+      maxClusterRadius: 55,
     })
-    clusterGroupRef = clusterGroup
-
-    // Ajout des marqueurs pour chaque service
-    services.value.forEach((service) => {
-      if (!service.latitude || !service.longitude) {
-        console.warn(`Service sans coordonnées: ${service.nom_structure}`)
-        return
-      }
-
-      const lat = parseFloat(service.latitude as string)
-      const lng = parseFloat(service.longitude as string)
-      
-      if (isNaN(lat) || isNaN(lng)) {
-        console.warn(`Coordonnées invalides pour le service ${service.nom_structure}`)
-        return
-      }
-
-      const categorie = getServiceCategory(service)
-      const { color, icon } = getMarkerColor(categorie)
-
-      // Créer un marqueur personnalisé épuré (icône seulement, nom via tooltip)
-      const marker = L.default.divIcon({
-        className: 'custom-marker',
-        html: `
-          <div class="marker-container">
-            <div class="marker-icon" style="background-color: ${color}">
-              <i class="${icon}"></i>
-            </div>
-          </div>
-        `,
-        iconSize: [40, 60],
-        iconAnchor: [20, 60],
-        popupAnchor: [0, -60]
-      })
-
-      const markerInstance = L.default.marker([lat, lng], { icon: marker })
-
-      markerInstance.bindTooltip(service.nom_structure, {
-        permanent: false,
-        direction: 'bottom',
-        offset: [0, 6],
-        className: 'custom-tooltip'
-      })
-
-      markerInstance.on('click', () => {
-        selectService(service)
-      })
-
-      clusterGroup.addLayer(markerInstance)
-      markers.push(markerInstance)
-      serviceIdToMarker.set(service.id, markerInstance)
-    })
-
-    // Ajout du groupe de clusters à la carte
     clusterGroup.addTo(map)
 
-    // Ajuster la vue pour montrer tous les marqueurs
-    if (markers.length > 0) {
-      map.fitBounds(clusterGroup.getBounds(), {
-        padding: [50, 50],
-        maxZoom: 12
-      })
-    }
+    map.on('zoomend', updateLabelVisibility)
+    updateLabelVisibility()
 
-    // Les noms des services restent visibles en permanence via les tooltips permanents
-    mapInitialized.value = true
+    rebuildMarkers()
+    const bounds = clusterGroup.getBounds()
+    if (bounds.isValid()) map.fitBounds(bounds, { padding: [40, 40], maxZoom: 11 })
   } catch (err) {
-    console.error("Erreur lors du chargement des services:", err)
-    error.value = 'Une erreur est survenue lors du chargement des services.'
+    console.error(err)
+    error.value = 'Impossible de charger les services. Réessaie plus tard.'
   } finally {
     loading.value = false
   }
 })
 </script>
 
-<style>
-.leaflet-container {
-  font-family: inherit;
-  background-color: #f8fafc;
-}
-
-.dark .leaflet-container {
-  background-color: #18181b;
-}
-
-.map-tiles {
-  filter: brightness(1.02) contrast(1.02);
-}
-
-.dark .map-tiles {
-  filter: brightness(0.8) contrast(1.1) saturate(1.2);
-}
-
-.custom-tooltip {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  padding: 0;
-  font-size: 0.70rem;
-  font-weight: 600;
-  line-height: 1.1;
-  color: #111827;
-  text-align: center;
-  white-space: normal;
-  max-width: 140px;
-}
-
-.dark .custom-tooltip {
-  background: transparent;
-  color: #e5e7eb;
-}
-
-.leaflet-control-zoom {
-  border: none !important;
-  border-radius: 0.5rem !important;
+<style scoped>
+.services-page {
+  position: relative;
+  height: calc(100dvh - 64px);
+  margin-top: 64px;
   overflow: hidden;
 }
 
-.leaflet-control-zoom a {
-  background-color: white !important;
-  color: #374151 !important;
-  border: 1px solid #e5e7eb !important;
-}
-
-.dark .leaflet-control-zoom a {
-  background-color: #27272a !important;
-  color: #e5e7eb !important;
-  border: 1px solid #3f3f46 !important;
-}
-
-.leaflet-control-zoom a:hover {
-  background-color: #f3f4f6 !important;
-}
-
-.dark .leaflet-control-zoom a:hover {
-  background-color: #3f3f46 !important;
-}
-
-/* Animation de chargement des tuiles */
-.leaflet-tile-loading {
-  animation: tileLoading 1s infinite;
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.dark .leaflet-tile-loading {
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-@keyframes tileLoading {
-  0% { opacity: 0.6; }
-  50% { opacity: 0.8; }
-  100% { opacity: 0.6; }
-}
-
-.user-location-marker {
-  position: relative;
-  z-index: 1000;
-}
-
-.ping {
-  width: 20px;
-  height: 20px;
-  background-color: #3b82f6;
-  border: 2px solid white;
-  border-radius: 50%;
-  position: relative;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
-}
-
-.ping::after {
-  content: '';
+.map-container {
   position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  border-radius: 50%;
-  background-color: #3b82f6;
-  animation: ping 1.5s ease-in-out infinite;
-  z-index: -1;
+  inset: 0;
+  z-index: 1;
 }
 
-@keyframes ping {
-  0% {
-    transform: scale(1);
-    opacity: 0.8;
-  }
-  80%, 100% {
-    transform: scale(2.5);
-    opacity: 0;
-  }
+.search-overlay {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  z-index: 600;
+  max-width: 580px;
+  margin: 0 auto;
 }
 
-.custom-marker {
-  background: none;
-  border: none;
-}
+.category-scroll { scrollbar-width: none; }
+.category-scroll::-webkit-scrollbar { display: none; }
 
-.marker-container {
-  position: relative;
+/* Micro-interactions génériques */
+.chip {
+  transition: all 0.16s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.chip:active { transform: scale(0.92); }
+
+/* État vide */
+.empty-state {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -30%);
+  z-index: 550;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  background: white;
+  border-radius: 1.5rem;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  text-align: center;
 }
 
-.marker-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+.list-fab {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #111827;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.65rem 1.3rem;
+  border-radius: 9999px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s;
+}
+.list-fab:active { transform: translateX(-50%) scale(0.94); }
+
+.list-panel {
+  position: absolute;
+  z-index: 700;
+  display: flex;
+  flex-direction: column;
+  inset: auto 0 0 0;
+  height: 65dvh;
+  border-radius: 1.25rem 1.25rem 0 0;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.15);
+}
+
+@media (min-width: 768px) {
+  .list-panel {
+    inset: 12px auto 12px 12px;
+    width: 360px;
+    height: auto;
+    border-radius: 1rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* Apparition en cascade des items de liste */
+.list-item {
+  animation: list-in 0.35s both cubic-bezier(0.21, 1.02, 0.73, 1);
+}
+@keyframes list-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.service-sheet {
+  position: absolute;
+  z-index: 800;
+  inset: auto 0 0 0;
+  max-height: 70dvh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 1.25rem 1.25rem 0 0;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.18);
+}
+
+@media (min-width: 768px) {
+  .service-sheet {
+    inset: auto 16px 16px auto;
+    width: 400px;
+    border-radius: 1rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.sheet-handle {
+  width: 42px;
+  height: 4px;
+  border-radius: 9999px;
+  background: #d1d5db;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem;
+  border-radius: 0.9rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.15s;
+}
+.action-btn:active { transform: scale(0.97); }
+
+.detail-row { display: flex; gap: 0.75rem; }
+.detail-row dt { width: 84px; flex-shrink: 0; color: #9ca3af; }
+.detail-row dd { color: #1f2937; }
+:global(.dark) .detail-row dd { color: #e5e7eb; }
+
+.sheet-enter-active, .sheet-leave-active { transition: all 0.28s cubic-bezier(0.32, 0.72, 0, 1); }
+.sheet-enter-from, .sheet-leave-to { transform: translateY(100%); opacity: 0.5; }
+@media (min-width: 768px) {
+  .sheet-enter-from, .sheet-leave-to { transform: translateY(16px); opacity: 0; }
+}
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
+.pop-enter-active { transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.pop-leave-active { transition: all 0.15s; }
+.pop-enter-from, .pop-leave-to { opacity: 0; transform: translate(-50%, -30%) scale(0.8); }
+</style>
+
+<style>
+/* Styles globaux Leaflet (non scopés) */
+.custom-marker { background: none; border: none; }
+
+.marker-pin {
+  width: 38px;
+  height: 38px;
+  border-radius: 50% 50% 50% 4px;
+  transform: rotate(-45deg);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  border: 2px solid white;
-  transition: transform 0.2s ease;
-  z-index: 2;
+  border: 2.5px solid white;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.marker-pin:hover {
+  transform: rotate(-45deg) scale(1.15);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.4);
+}
+.marker-pin i {
+  transform: rotate(45deg);
+  font-size: 0.95rem;
 }
 
-.marker-icon i {
-  font-size: 1.2rem;
+/* Apparition des marqueurs */
+.marker-drop {
+  animation: marker-drop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes marker-drop {
+  from { transform: rotate(-45deg) scale(0); opacity: 0; }
+  to { transform: rotate(-45deg) scale(1); opacity: 1; }
 }
 
+/* Marqueur sélectionné : pulsation */
+.marker-active {
+  transform: rotate(-45deg) scale(1.25);
+  animation: marker-pulse 1.6s infinite;
+}
+@keyframes marker-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.35), 0 6px 16px rgba(0, 0, 0, 0.4); }
+  50% { box-shadow: 0 0 0 9px rgba(16, 185, 129, 0.12), 0 6px 16px rgba(0, 0, 0, 0.4); }
+}
+
+/* Étiquettes de nom sous les épingles (pattern Google Maps POI) */
 .marker-label {
-  display: none;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  border-radius: 9999px;
+  padding: 2px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1f2937;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+  pointer-events: none;
 }
+.marker-label::before { display: none; }   /* pas de flèche de tooltip */
+
+.marker-label-active {
+  background: #059669;
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.5);
+}
+
+/* En dessous du zoom seuil, seules les étiquettes du service sélectionné restent */
+.labels-hidden .marker-label:not(.marker-label-active) { display: none; }
 
 .dark .marker-label {
-  display: none;
+  background: rgba(39, 39, 42, 0.95);
+  color: #e5e7eb;
+}
+.dark .marker-label-active {
+  background: #059669;
+  color: white;
 }
 
-.marker-container:hover .marker-icon {
-  transform: scale(1.1);
+.user-location-marker { position: relative; }
+.user-location-marker .ping {
+  width: 18px;
+  height: 18px;
+  background: #3b82f6;
+  border: 3px solid white;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4);
+}
+.user-location-marker .ping::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: #3b82f6;
+  animation: user-ping 1.6s ease-out infinite;
+  z-index: -1;
+}
+@keyframes user-ping {
+  0% { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(2.6); opacity: 0; }
 }
 
-.dark .marker-icon {
-  border-color: #1f2937;
+/* Légende repliable (norme cartographique) */
+.legend-control {
+  background: white;
+  border-radius: 12px !important;
+  border: none !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+.legend-toggle {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #374151;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.legend-body {
+  padding: 10px 14px 12px;
+  min-width: 175px;
+}
+.legend-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  margin: 0 0 8px;
+}
+.legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #1f2937;
+  padding: 3px 0;
+}
+.legend-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 9px;
+  flex-shrink: 0;
+}
+.dark .legend-control { background: #27272a; }
+.dark .legend-toggle { color: #d4d4d8; }
+.dark .legend-title { color: #a1a1aa; }
+.dark .legend-row { color: #e5e7eb; }
+
+/* WCAG 2.3.3 — animations coupées si l'utilisateur les refuse */
+@media (prefers-reduced-motion: reduce) {
+  .marker-drop { animation: none; }
+  .marker-active { animation: none; }
+  .user-location-marker .ping::after { animation: none; }
 }
 
-/* Animation pour les marqueurs */
-@keyframes markerPulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-.marker-icon {
-  animation: markerPulse 2s infinite;
-}
+.dark .leaflet-container { background: #18181b; }
+.dark .empty-state { background: #27272a; }
 </style>
