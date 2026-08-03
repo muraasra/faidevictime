@@ -93,7 +93,7 @@
           </svg>
         </button>
 
-        <div class="avina-avatar">A</div>
+        <AvinaMark :size="38" />
         <div class="flex-1 min-w-0">
           <h1 class="font-semibold text-gray-800 dark:text-white leading-tight">Avina</h1>
           <p class="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
@@ -148,7 +148,7 @@
       <div ref="messagesContainer" class="flex-1 overflow-y-auto px-4 py-6">
         <!-- État d'accueil -->
         <div v-if="!chat.messages.length" class="max-w-md mx-auto text-center pt-8 md:pt-16">
-          <div class="avina-avatar avina-avatar-lg mx-auto mb-4">A</div>
+          <AvinaMark :size="64" class="mx-auto mb-4" />
           <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-2">Bonjour, je suis Avina 🌸</h2>
           <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-8">
             Je suis là pour t'écouter, sans jugement, et t'aider à trouver des services
@@ -184,7 +184,7 @@
             </div>
             <!-- Message Avina : texte plein, pas de bulle, avec action copier au survol -->
             <div v-else class="group flex items-start gap-3">
-              <div class="avina-avatar avina-avatar-sm flex-shrink-0 mt-0.5">A</div>
+              <AvinaMark :size="28" class="flex-shrink-0 mt-0.5" />
               <div class="min-w-0 flex-1">
                 <div class="prose-avina text-gray-800 dark:text-gray-100 text-[15px] leading-relaxed" v-html="renderMarkdown(message.content)" />
                 <button
@@ -206,7 +206,7 @@
 
           <!-- Indicateur "Avina écrit..." -->
           <div v-if="chat.isSending" class="flex items-start gap-3">
-            <div class="avina-avatar avina-avatar-sm flex-shrink-0 mt-0.5">A</div>
+            <AvinaMark :size="28" class="flex-shrink-0 mt-0.5" />
             <div class="typing"><span /><span /><span /></div>
           </div>
 
@@ -513,23 +513,6 @@ onMounted(() => {
   min-width: 0;
   height: 100dvh;
 }
-
-/* Avatar Avina */
-.avina-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 9999px;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35);
-}
-.avina-avatar-sm { width: 28px; height: 28px; font-size: 0.8rem; }
-.avina-avatar-lg { width: 64px; height: 64px; font-size: 1.6rem; }
 
 /* Bulles */
 .bubble {
