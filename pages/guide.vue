@@ -31,6 +31,12 @@
               Si vous cherchez un service, elle vous demandera votre situation puis votre zone, pour vous proposer les structures correspondantes
               (nom, téléphone, lien vers la carte, horaires).
             </p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+              <strong>Pas sûr·e que votre message soit assez clair ?</strong> Dans le chat, le bouton
+              <em>« 🎯 Choisir précisément un type d'aide + une zone »</em> affiche des boutons pour sélectionner
+              exactement le type d'aide puis la zone recherchés — plus fiable qu'une phrase écrite librement,
+              qui peut parfois être mal comprise si elle mélange votre situation et le service demandé.
+            </p>
             <p class="text-sm text-gray-500 dark:text-gray-400">
               La base ne couvre pas encore toutes les villes : si votre zone n'est pas reconnue, Avina vous le dira honnêtement plutôt que d'inventer un service.
             </p>
@@ -52,12 +58,37 @@
         <div class="guide-card">
           <div class="guide-num">4</div>
           <div class="flex-1">
+            <h2 class="font-semibold text-gray-800 dark:text-white mb-1">Utilisez votre position (facultatif)</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Le bouton <em>« Ma position »</em>, dans le chat ou sur la carte, trie les services par distance réelle
+              depuis l'endroit où vous êtes — pratique si vous ne connaissez pas le nom exact de votre zone.
+              Votre position n'est utilisée que pour ce tri, elle n'est pas enregistrée.
+            </p>
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-num">5</div>
+          <div class="flex-1">
             <h2 class="font-semibold text-gray-800 dark:text-white mb-1">Entrez en contact</h2>
             <p class="text-sm text-gray-500 dark:text-gray-400">
               Appelez directement le service proposé ou suivez l'itinéraire sur la carte — la plupart des services référencés sont gratuits.
             </p>
           </div>
         </div>
+      </div>
+
+      <div class="rounded-2xl border border-gray-100 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-5 mb-6">
+        <h2 class="font-semibold text-gray-800 dark:text-white mb-2 flex items-center gap-2">
+          <i class="fas fa-comments text-emerald-600 dark:text-emerald-400" /> Gérer vos conversations
+        </h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+          Dans le chat, le panneau des conversations (icône en haut à gauche sur mobile, toujours visible sur ordinateur) liste vos échanges précédents avec Avina.
+          Le bouton <em>« Nouvelle conversation »</em> permet d'en démarrer une nouvelle sans perdre les précédentes.
+        </p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          Chaque conversation peut être supprimée définitivement au survol (icône corbeille) — utile si vous partagez votre appareil et voulez effacer une trace.
+        </p>
       </div>
 
       <div class="rounded-2xl border border-gray-100 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-5 mb-6">
@@ -73,7 +104,7 @@
         </p>
       </div>
 
-      <div class="rounded-2xl border border-red-100 dark:border-red-900/50 bg-red-50 dark:bg-red-900/20 p-5">
+      <div class="rounded-2xl border border-red-100 dark:border-red-900/50 bg-red-50 dark:bg-red-900/20 p-5 mb-10">
         <p class="text-sm font-semibold text-red-800 dark:text-red-200 mb-3">En danger immédiat ? Appelez maintenant :</p>
         <div class="flex flex-wrap gap-2">
           <a href="tel:117" class="emergency-chip">🚔 Police — 117</a>
@@ -81,12 +112,47 @@
           <a href="tel:1510" class="emergency-chip">💜 SOS Violences — 1510</a>
         </div>
       </div>
+
+      <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Questions fréquentes</h2>
+      <div class="grid gap-3">
+        <details v-for="item in faq" :key="item.q" class="faq-item">
+          <summary class="faq-question">{{ item.q }}</summary>
+          <p class="faq-answer">{{ item.a }}</p>
+        </details>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { SITE_URL, SITE_DEFAULT_OG_IMAGE } from '~/utils/site'
+
+const faq = [
+  {
+    q: 'Dois-je créer un compte pour utiliser childsafe ?',
+    a: "Non. Discuter avec Avina et consulter la carte des services ne nécessitent aucune inscription.",
+  },
+  {
+    q: 'Mes échanges avec Avina sont-ils confidentiels ?',
+    a: "Oui, ils sont anonymes et ne sont partagés avec personne. Sur un appareil partagé, pensez à naviguer en mode privé ou à effacer votre historique après votre visite.",
+  },
+  {
+    q: "Que se passe-t-il si ma ville n'est pas couverte par la base de services ?",
+    a: "Avina vous le dit honnêtement plutôt que d'inventer un service, et vous propose les zones actuellement disponibles ou une alternative.",
+  },
+  {
+    q: 'Avina peut-elle m\'aider en cas de danger immédiat ?',
+    a: "Non, Avina est un outil d'écoute et d'orientation, pas un service d'urgence. En cas de danger immédiat, appelez directement la Police (117), les Pompiers (119) ou SOS Violences (1510).",
+  },
+  {
+    q: 'Comment être sûr·e qu\'Avina comprend bien ma demande ?',
+    a: 'Utilisez le bouton "Choisir précisément un type d\'aide + une zone" dans le chat : il affiche des boutons de sélection plutôt que de dépendre d\'un texte libre qui peut parfois être ambigu.',
+  },
+  {
+    q: 'Puis-je supprimer une conversation ?',
+    a: 'Oui, chaque conversation peut être supprimée définitivement depuis le panneau des conversations du chat.',
+  },
+]
 
 useHead({
   title: 'Guide d\'utilisation — childsafe',
@@ -107,11 +173,24 @@ useHead({
         '@type': 'HowTo',
         name: 'Comment utiliser childsafe pour trouver de l\'aide',
         step: [
-          { '@type': 'HowToStep', name: 'Décrivez votre besoin', text: 'Parlez librement à Avina ou choisissez une catégorie d\'aide sur la page d\'accueil.' },
+          { '@type': 'HowToStep', name: 'Décrivez votre besoin', text: 'Parlez librement à Avina, ou utilisez le sélecteur de type d\'aide + zone pour plus de précision, ou choisissez une catégorie sur la page d\'accueil.' },
           { '@type': 'HowToStep', name: 'Discutez avec Avina', text: 'Avina écoute ou oriente vers un service selon votre situation et votre zone.' },
           { '@type': 'HowToStep', name: 'Explorez la carte des services', text: 'Filtrez par catégorie et zone sur la carte interactive des services.' },
+          { '@type': 'HowToStep', name: 'Utilisez votre position', text: 'Triez les services par distance réelle sans avoir à nommer votre zone.' },
           { '@type': 'HowToStep', name: 'Entrez en contact', text: 'Appelez le service ou suivez l\'itinéraire indiqué sur la carte.' },
         ],
+      }),
+    },
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: faq.map((item) => ({
+          '@type': 'Question',
+          name: item.q,
+          acceptedAnswer: { '@type': 'Answer', text: item.a },
+        })),
       }),
     },
   ],
@@ -170,4 +249,40 @@ useHead({
   color: #fca5a5;
   border-color: #7f1d1d;
 }
+
+.faq-item {
+  background: white;
+  border: 1px solid #f3f4f6;
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+}
+:global(.dark) .faq-item {
+  background: #27272a;
+  border-color: #3f3f46;
+}
+.faq-question {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #1f2937;
+  list-style: none;
+}
+:global(.dark) .faq-question { color: white; }
+.faq-question::-webkit-details-marker { display: none; }
+.faq-question::before {
+  content: '+';
+  display: inline-block;
+  width: 1.1rem;
+  color: #059669;
+  font-weight: 700;
+}
+details[open] .faq-question::before { content: '−'; }
+.faq-answer {
+  margin-top: 0.6rem;
+  padding-left: 1.1rem;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #6b7280;
+}
+:global(.dark) .faq-answer { color: #a1a1aa; }
 </style>
