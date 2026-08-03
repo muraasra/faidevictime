@@ -308,8 +308,24 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import arrondissementMap from '~/assets/data/arrondissements.json'
+// Instantané des services embarqué dans le bundle (voir tools/update_services_snapshot.mjs) :
+// les services changent rarement, donc pas besoin d'attendre un aller-retour réseau vers
+// l'API (parfois lente, parfois carrément indisponible) avant le premier rendu de la carte.
+import servicesSnapshot from '~/assets/data/services-snapshot.json'
+import { SITE_URL, SITE_DEFAULT_OG_IMAGE } from '~/utils/site'
 
-useHead({ title: 'Trouver un service — Assistance aux victimes' })
+useHead({
+  title: 'Trouver un service — childsafe',
+  meta: [
+    { name: 'description', content: 'Carte interactive des services d\'aide aux victimes au Cameroun : soutien psychologique, soins médicaux, aide juridique, hébergement d\'urgence, sécurité, santé mentale, réinsertion économique — filtrable par zone et catégorie.' },
+    { property: 'og:title', content: 'Trouver un service — childsafe' },
+    { property: 'og:description', content: 'Carte interactive des services d\'aide aux victimes, filtrable par zone et catégorie.' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: `${SITE_URL}/services` },
+    { property: 'og:image', content: SITE_DEFAULT_OG_IMAGE },
+  ],
+  link: [{ rel: 'canonical', href: `${SITE_URL}/services` }],
+})
 
 interface Service {
   id: number
@@ -341,7 +357,10 @@ interface Service {
 
 const API_URL = 'https://wilfriedtayou.pythonanywhere.com/api/question-transversale/'
 const CACHE_KEY = 'services_cache_v3'
-const CACHE_DURATION = 30 * 60 * 1000
+// Les services changent rarement (mises à jour manuelles occasionnelles) : un cache
+// de quelques heures évite de re-télécharger 300+ services à chaque visite sans
+// risquer d'afficher des données très périmées.
+const CACHE_DURATION = 6 * 60 * 60 * 1000
 
 // Les 9 arrondissements couverts par la plateforme
 const ZONES = [
@@ -770,6 +789,34 @@ function readCache(): Service[] | null {
   } catch { return null }
 }
 
+// TOUS les services (actifs comme à confirmer), sans entrées de test, dédupliqués,
+// arrondissements complétés par le géocodage embarqué — appliqué uniformément que
+// la donnée vienne de l'instantané statique embarqué ou d'un fetch live de l'API.
+function processServices(raw: unknown): Service[] {
+  return dedupe(
+    (Array.isArray(raw) ? raw : [])
+      .filter((s: Service) => !normalize(s.nom_structure).includes('test'))
+      .map(enrichArrondissement)
+  )
+}
+
+/** Rafraîchit les données depuis l'API en arrière-plan, sans bloquer le rendu déjà
+ * affiché (instantané statique ou cache localStorage) : les services changeant
+ * rarement, un échec silencieux ici (API lente/indisponible) n'est pas grave — on
+ * garde simplement ce qui est déjà affiché plutôt que de faire attendre l'utilisateur
+ * ou d'afficher une erreur pour une donnée déjà utilisable. */
+async function refreshServicesInBackground() {
+  try {
+    const response = await fetch(API_URL, { headers: { Accept: 'application/json' } })
+    const data = await response.json()
+    services.value = processServices(data)
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ data: services.value, timestamp: Date.now() })) } catch {}
+    if (map && clusterGroup) rebuildMarkers()
+  } catch (err) {
+    console.error('Rafraîchissement des services en arrière-plan échoué, données déjà affichées conservées :', err)
+  }
+}
+
 onMounted(async () => {
   // Pré-filtre depuis la page d'accueil (/services?cat=hebergement)
   const requestedCategory = useRoute().query.cat as string | undefined
@@ -778,21 +825,11 @@ onMounted(async () => {
   }
 
   try {
+    // Rendu instantané avec le cache localStorage si encore valide, sinon avec
+    // l'instantané statique embarqué (assets/data/services-snapshot.json) — dans
+    // les deux cas, zéro attente réseau avant le premier affichage de la carte.
     const cached = readCache()
-    if (cached) {
-      services.value = cached
-    } else {
-      const response = await fetch(API_URL, { headers: { Accept: 'application/json' } })
-      const data = await response.json()
-      // TOUS les services (actifs comme à confirmer), sans entrées de test,
-      // dédupliqués, arrondissements complétés par le géocodage embarqué
-      services.value = dedupe(
-        (Array.isArray(data) ? data : [])
-          .filter((s: Service) => !normalize(s.nom_structure).includes('test'))
-          .map(enrichArrondissement)
-      )
-      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ data: services.value, timestamp: Date.now() })) } catch {}
-    }
+    services.value = cached ?? processServices(servicesSnapshot)
     animatedCount.value = services.value.length
 
     const L = await import('leaflet')
@@ -869,6 +906,10 @@ onMounted(async () => {
     rebuildMarkers()
     const bounds = clusterGroup.getBounds()
     if (bounds.isValid()) map.fitBounds(bounds, { padding: [40, 40], maxZoom: 11 })
+
+    // Cache expiré ou absent : on va chercher des données à jour en arrière-plan,
+    // sans faire attendre l'utilisateur (la carte est déjà utilisable).
+    if (!cached) refreshServicesInBackground()
   } catch (err) {
     console.error(err)
     error.value = 'Impossible de charger les services. Réessaie plus tard.'

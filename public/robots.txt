@@ -1,0 +1,33 @@
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /login/
+Disallow: /admin-services
+Disallow: /quote
+Disallow: /collect/
+Disallow: /register
+
+# Moteurs de reponse / IA generatives -- autorises explicitement pour la
+# visibilite dans les reponses IA (ChatGPT, Perplexity, Google AI Overviews...)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+Sitemap: https://childsafe.space/sitemap.xml

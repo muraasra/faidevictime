@@ -1,7 +1,7 @@
 import { useTokenCheck } from '~/stores/useTokenCheck' // ou ~/composables/ selon ton organisation
 
 export default defineNuxtRouteMiddleware(async (to) => {
-  const PUBLIC_ROUTES = ['/', '/login', '/register', '/about','/login/login','/services','/quote','/contact','/faq','/terms','/privacy','/about','/chat','/contact','/formations','/','/chatbot','/admin-services']
+  const PUBLIC_ROUTES = ['/', '/login', '/register', '/about','/login/login','/services','/quote','/contact','/faq','/terms','/privacy','/about','/chat','/contact','/formations','/','/chatbot','/admin-services','/guide']
 
   // Laisse passer les routes publiques
   if (PUBLIC_ROUTES.includes(to.path)) {

@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 
 definePageMeta({ layout: 'auth' });
+useHead({ meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 
 const auth = useAuthStore();
 const router = useRouter();

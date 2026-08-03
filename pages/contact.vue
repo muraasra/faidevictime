@@ -26,7 +26,7 @@
           </div>
           <div class="flex-1">
             <h2 class="font-semibold text-gray-800 dark:text-white">Écrire à CIPCRE</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400">L'organisation qui porte SafePlace — cipcre.org/contact</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">L'organisation qui porte childsafe — cipcre.org/contact</p>
           </div>
           <i class="fas fa-arrow-up-right-from-square text-sm text-gray-300 dark:text-zinc-600" />
         </a>
@@ -56,7 +56,20 @@
 </template>
 
 <script setup lang="ts">
-useHead({ title: 'Contact — SafePlace' })
+import { SITE_URL, SITE_DEFAULT_OG_IMAGE } from '~/utils/site'
+
+useHead({
+  title: 'Contact — childsafe',
+  meta: [
+    { name: 'description', content: 'Contactez childsafe : discutez avec Avina, consultez la carte des services ou joignez CIPCRE. Numéros d\'urgence Cameroun : Police 117, Pompiers 119, SOS Violences 1510.' },
+    { property: 'og:title', content: 'Contact — childsafe' },
+    { property: 'og:description', content: 'Discutez avec Avina, consultez la carte des services ou joignez CIPCRE.' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: `${SITE_URL}/contact` },
+    { property: 'og:image', content: SITE_DEFAULT_OG_IMAGE },
+  ],
+  link: [{ rel: 'canonical', href: `${SITE_URL}/contact` }],
+})
 </script>
 
 <style scoped>

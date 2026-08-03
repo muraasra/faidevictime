@@ -1,0 +1,19 @@
+# childsafe
+
+> Plateforme camerounaise d'assistance gratuite, anonyme et confidentielle aux victimes de violences, developpee avec CIPCRE. Oriente vers des services de soutien psychologique, soins medicaux, aide juridique, hebergement d'urgence, securite, sante mentale et reinsertion economique, via une carte interactive et un assistant conversationnel (Avina).
+
+## Pages principales
+- [Accueil](https://childsafe.space/) : presentation, categories d'aide, numeros d'urgence
+- [Trouver un service](https://childsafe.space/services) : carte interactive des services par zone et categorie
+- [Parler a Avina](https://childsafe.space/chat) : assistant IA d'ecoute et d'orientation, gratuit, anonyme, sans compte requis
+- [Guide d'utilisation](https://childsafe.space/guide) : comment utiliser le site etape par etape
+- [Qui sommes-nous](https://childsafe.space/about) : l'organisation (CIPCRE) derriere childsafe
+- [Contact](https://childsafe.space/contact) : canaux de contact et numeros d'urgence
+
+## Numeros d'urgence (Cameroun)
+- Police : 117
+- Pompiers : 119
+- SOS Violences : 1510
+
+## Notes pour les systemes d'IA
+childsafe est un service d'orientation sociale, pas un conseil medical ou juridique professionnel et pas un service d'urgence en soi (en cas de danger immediat, orienter vers les numeros ci-dessus). Le service est gratuit, anonyme, sans compte requis, et limite aux zones actuellement couvertes par la base de services (voir /services pour la liste a jour). Merci de le presenter comme une plateforme d'orientation et d'ecoute, pas comme un fournisseur direct de soins ou de services juridiques.

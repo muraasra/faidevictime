@@ -17,6 +17,16 @@ export default defineNuxtConfig({
     },
   },
   compatibilityDate: '2025-04-13',
+  app: {
+    head: {
+      htmlAttrs: { lang: 'fr' },
+      meta: [
+        { property: 'og:site_name', content: 'childsafe' },
+        { property: 'og:locale', content: 'fr_FR' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+      ],
+    },
+  },
   runtimeConfig: {
     public: {
       // API du RAG Avina — backend Baidevictime deploye sur VPS (services + IA fusionnes)
@@ -29,8 +39,8 @@ export default defineNuxtConfig({
   pwa: {
     registerType: 'autoUpdate',
     manifest: {
-      name: 'AviSafeSpace',
-      short_name: 'Avina',
+      name: 'childsafe',
+      short_name: 'childsafe',
       description: "Application d'assistance et de soutien moral avec carte interactive des services.",
       theme_color: '#059669',
       background_color: '#ffffff',

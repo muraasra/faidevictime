@@ -402,8 +402,20 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { SITE_URL, SITE_DEFAULT_OG_IMAGE } from '~/utils/site'
 
 definePageMeta({ layout: 'default' })
+useHead({
+  title: 'Formations & Sensibilisation — childsafe',
+  meta: [
+    { name: 'description', content: 'Ressources de formation et de sensibilisation aux violences faites aux victimes, proposées par childsafe et CIPCRE.' },
+    { property: 'og:title', content: 'Formations & Sensibilisation — childsafe' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: `${SITE_URL}/formations` },
+    { property: 'og:image', content: SITE_DEFAULT_OG_IMAGE },
+  ],
+  link: [{ rel: 'canonical', href: `${SITE_URL}/formations` }],
+})
 
 // Types
 interface Section {

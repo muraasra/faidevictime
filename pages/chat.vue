@@ -222,6 +222,43 @@
 
       <!-- Zone de saisie -->
       <footer class="px-4 pb-4 pt-2 bg-gradient-to-t from-gray-50 dark:from-zinc-900 flex-shrink-0">
+        <!-- Sélecteur guidé type d'aide + zone : évite les malentendus du texte libre -->
+        <div
+          v-if="showServicePicker"
+          class="max-w-[46rem] mx-auto mb-3 bg-white dark:bg-zinc-800 border border-gray-100 dark:border-zinc-700 rounded-2xl p-4 shadow-lg"
+        >
+          <div class="flex items-center justify-between mb-3">
+            <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">
+              {{ pickerCategory ? `${pickerCategory} — dans quelle zone ?` : "Quel type d'aide cherches-tu ?" }}
+            </p>
+            <button @click="closePicker" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1" aria-label="Fermer le sélecteur">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div v-if="!pickerCategory" class="flex flex-wrap gap-2">
+            <button v-for="cat in pickerCategories" :key="cat" @click="pickCategory(cat)" class="picker-chip">
+              {{ cat }}
+            </button>
+          </div>
+          <div v-else class="flex flex-wrap gap-2">
+            <button @click="pickerCategory = null" class="picker-chip picker-chip-back" aria-label="Revenir au choix du type d'aide">
+              ←
+            </button>
+            <button v-for="zone in pickerZones" :key="zone" @click="pickZone(zone)" class="picker-chip">
+              {{ zone }}
+            </button>
+          </div>
+        </div>
+
+        <div class="max-w-[46rem] mx-auto mb-2 flex justify-center">
+          <button @click="showServicePicker = !showServicePicker" class="picker-toggle">
+            🎯 Choisir précisément un type d'aide + une zone
+          </button>
+        </div>
+
         <form
           @submit.prevent="onSend"
           class="max-w-[46rem] mx-auto flex items-end gap-2 bg-white dark:bg-zinc-800 rounded-3xl shadow-lg shadow-gray-200/60 dark:shadow-none border border-gray-100 dark:border-zinc-700 px-4 py-2"
@@ -276,9 +313,21 @@
 import { ref, nextTick, watch, onMounted } from 'vue'
 import { marked } from 'marked'
 import { useChatStore } from '~/stores/chat'
+import { SITE_URL, SITE_DEFAULT_OG_IMAGE } from '~/utils/site'
 
 definePageMeta({ layout: false })
-useHead({ title: 'Avina — Écoute et orientation' })
+useHead({
+  title: 'Avina — Écoute et orientation | childsafe',
+  meta: [
+    { name: 'description', content: 'Parlez à Avina, l\'assistant IA gratuit et anonyme de childsafe : écoute, soutien et orientation vers un service d\'aide adapté à votre situation, sans compte requis.' },
+    { property: 'og:title', content: 'Avina — Écoute et orientation | childsafe' },
+    { property: 'og:description', content: 'Assistant IA gratuit et anonyme : écoute, soutien et orientation vers un service d\'aide adapté.' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: `${SITE_URL}/chat` },
+    { property: 'og:image', content: SITE_DEFAULT_OG_IMAGE },
+  ],
+  link: [{ rel: 'canonical', href: `${SITE_URL}/chat` }],
+})
 
 const chat = useChatStore()
 const draft = ref('')
@@ -297,6 +346,38 @@ const suggestions = [
   { emoji: '⚖️', text: "J'ai besoin d'une aide juridique" },
   { emoji: '🏠', text: "Je cherche un hébergement d'urgence" },
 ]
+
+// Sélecteur guidé (type d'aide + zone) : en texte libre, une phrase qui décrit à la
+// fois la situation vécue et le service demandé peut être mal comprise (ex: mélange
+// "violence" et "juridique"), et une zone mal orthographiée ou hors liste n'est pas
+// reconnue. Les boutons envoient des libellés exacts qui matchent toujours les
+// catégories/zones connues côté backend (rag_service.py), donc pas d'ambiguïté possible.
+const showServicePicker = ref(false)
+const pickerCategory = ref<string | null>(null)
+const pickerCategories = [
+  'Soutien psychologique', 'Soins médicaux', 'Aide juridique',
+  "Hébergement d'urgence", 'Police / Sécurité', 'Santé mentale', 'Réinsertion économique',
+]
+const pickerZones = [
+  'Bafoussam 1', 'Bafoussam 2', 'Bafoussam 3', 'Foumbot', 'Koutaba',
+  'Foumban', 'Ngaoundéré 1', 'Ngaoundéré 2', 'Ngaoundéré 3',
+]
+
+function pickCategory(category: string) {
+  pickerCategory.value = category
+}
+
+function pickZone(zone: string) {
+  if (!pickerCategory.value) return
+  const text = `Je cherche un service : ${pickerCategory.value}, à ${zone}.`
+  closePicker()
+  sendSuggestion(text)
+}
+
+function closePicker() {
+  showServicePicker.value = false
+  pickerCategory.value = null
+}
 
 // Demande la position au navigateur (stockée dans le store) puis jointe automatiquement
 // aux prochains messages par chat.sendMessage — le backend trie alors les services par
@@ -553,6 +634,62 @@ onMounted(() => {
   opacity: 0.6;
   cursor: default;
   transform: none;
+}
+
+/* Sélecteur guidé type d'aide + zone */
+.picker-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  background: white;
+  border: 1px dashed #d1d5db;
+  color: #6b7280;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+.picker-toggle:hover {
+  border-color: #10b981;
+  color: #059669;
+}
+:global(.dark) .picker-toggle {
+  background: #27272a;
+  border-color: #52525b;
+  color: #a1a1aa;
+}
+:global(.dark) .picker-toggle:hover {
+  border-color: #10b981;
+  color: #34d399;
+}
+
+.picker-chip {
+  padding: 0.5rem 0.9rem;
+  border-radius: 9999px;
+  background: #f3f4f6;
+  border: 1px solid transparent;
+  color: #374151;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+.picker-chip:hover {
+  background: #d1fae5;
+  color: #047857;
+}
+:global(.dark) .picker-chip {
+  background: #3f3f46;
+  color: #e4e4e7;
+}
+:global(.dark) .picker-chip:hover {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+}
+.picker-chip-back {
+  font-weight: 700;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
 }
 
 /* Numéros d'urgence */

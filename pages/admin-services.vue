@@ -299,7 +299,7 @@
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 
 definePageMeta({ layout: false })
-useHead({ title: 'Administration des services' })
+useHead({ title: 'Administration des services', meta: [{ name: 'robots', content: 'noindex, nofollow' }] })
 
 const API_BASE = useRuntimeConfig().public.adminApiBase as string
 

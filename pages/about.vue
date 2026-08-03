@@ -138,6 +138,20 @@
 </template>
 
 <script setup>
+import { SITE_URL, SITE_DEFAULT_OG_IMAGE } from '~/utils/site'
+
+useHead({
+  title: 'Qui sommes-nous — childsafe',
+  meta: [
+    { name: 'description', content: 'childsafe est développé avec CIPCRE, une ONG camerounaise active depuis 1990 dans l\'accompagnement social, les droits humains et le dialogue interreligieux.' },
+    { property: 'og:title', content: 'Qui sommes-nous — childsafe' },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: `${SITE_URL}/about` },
+    { property: 'og:image', content: SITE_DEFAULT_OG_IMAGE },
+  ],
+  link: [{ rel: 'canonical', href: `${SITE_URL}/about` }],
+})
+
 const identiteItems = [
   'Le Cercle International pour la Promotion de la Création',
   'Une Organisation Non Gouvernementale (ONG) de droit camerounais créée en 1990',
